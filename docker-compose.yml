@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: dealaxis-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dealaxis
+      POSTGRES_PASSWORD: dealaxis
+      POSTGRES_DB: dealaxis
+    ports:
+      - "5432:5432"
+    volumes:
+      - dealaxis_pgdata:/var/lib/postgresql/data
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./db/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dealaxis -d dealaxis"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  dealaxis_pgdata:

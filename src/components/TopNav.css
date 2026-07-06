@@ -1,0 +1,125 @@
+.top-nav {
+  position: fixed;
+  top: 0;
+  left: var(--sidebar-width);
+  right: 0;
+  z-index: 100;
+  height: var(--sidebar-logo-height); /* align with logo area */
+  background: var(--color-bg-nav);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 16px;
+}
+
+.top-nav__page-title {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-text-nav-label);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.top-nav__search-wrap {
+  flex: 1;
+  max-width: 520px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.top-nav__search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.top-nav__search {
+  width: 100%;
+  height: 36px;
+  padding: 0 16px 0 40px;
+  background: var(--color-bg-search);
+  border: 1px solid var(--color-border-search);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-inverse);
+  font-size: 13px;
+  outline: none;
+}
+
+.top-nav__search::placeholder {
+  color: #6b7280;
+}
+
+.top-nav__search:focus {
+  border-color: var(--color-brand-ai);
+}
+
+.top-nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.top-nav__btn-outline {
+  height: 34px;
+  padding: 0 14px;
+  background: transparent;
+  border: 1px solid var(--color-border-button);
+  border-radius: var(--radius-button);
+  color: var(--color-text-inverse);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s ease;
+}
+
+.top-nav__btn-outline:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.top-nav__avatar {
+  height: 34px;
+  padding: 0 16px;
+  background: var(--color-brand-avatar);
+  border: none;
+  border-radius: var(--radius-pill);
+  color: var(--color-text-inverse);
+  font-size: 13px;
+  font-weight: 600;
+  transition: opacity 0.15s ease;
+}
+
+.top-nav__avatar:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .top-nav {
+    left: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .top-nav__page-title {
+    display: none;
+  }
+
+  .top-nav__search-wrap {
+    max-width: 280px;
+  }
+}
+
+@media (max-width: 640px) {
+  .top-nav__search-wrap {
+    display: none;
+  }
+
+  .top-nav__btn-outline {
+    padding: 0 10px;
+    font-size: 12px;
+  }
+}

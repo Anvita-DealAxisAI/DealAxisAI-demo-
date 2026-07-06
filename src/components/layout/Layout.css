@@ -1,0 +1,53 @@
+.app-brand {
+  display: block;
+  padding: 8px 8px 20px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-decoration: none;
+}
+
+.app-brand__box {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14);
+}
+
+.app-brand__logo {
+  width: 100%;
+  height: auto;
+  max-height: 36px;
+  object-fit: contain;
+  display: block;
+}
+
+.app-sidebar {
+  width: 200px;
+  background: #0a1628;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 12px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  z-index: 50;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.app-topbar {
+  background: #0a1628;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 12px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}

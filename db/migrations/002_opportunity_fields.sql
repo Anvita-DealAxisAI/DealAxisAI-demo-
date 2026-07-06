@@ -1,0 +1,2 @@
+-- Deprecated: folded into db/schema.sql (fresh installs only use schema.sql + seed.sql).
+-- Kept for reference if you applied an older schema before June 2026.

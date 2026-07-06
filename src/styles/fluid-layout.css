@@ -1,0 +1,62 @@
+/* Shared fluid layout tokens — scale proportionally with viewport */
+:root {
+  --fluid-gap: clamp(12px, 1.2vw, 20px);
+  --fluid-page-pad: clamp(16px, 2.4vw, 32px);
+  --fluid-title: clamp(22px, 1.6vw + 14px, 32px);
+  --fluid-subtitle: clamp(13px, 0.35vw + 11px, 16px);
+}
+
+.app-main {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: var(--fluid-page-pad);
+  background: #f8fafc;
+  overflow-x: clip;
+}
+
+.page-header {
+  margin-bottom: clamp(16px, 2vw, 24px);
+}
+
+.page-header__title {
+  font-size: var(--fluid-title);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  line-height: 1.2;
+}
+
+.page-header__subtitle {
+  font-size: var(--fluid-subtitle);
+  color: var(--text-secondary);
+  line-height: 1.5;
+  max-width: 72ch;
+}
+
+/* Reusable responsive card grid */
+.fluid-card-grid {
+  display: grid;
+  gap: var(--fluid-gap);
+  width: 100%;
+  min-width: 0;
+  align-items: stretch;
+}
+
+.fluid-card-grid--kpi {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: clamp(16px, 2vw, 24px);
+}
+
+@media (max-width: 1200px) {
+  .fluid-card-grid--kpi {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .fluid-card-grid--kpi {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

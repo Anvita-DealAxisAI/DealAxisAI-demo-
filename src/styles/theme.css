@@ -1,0 +1,168 @@
+/* AccountSignal AI — Design System */
+:root {
+  --navy: #0a1628;
+  --navy-mid: #0f2040;
+  --blue-primary: #1d4ed8;
+  --blue-hover: #1e40af;
+  --blue-light: #eff6ff;
+  --green: #16a34a;
+  --green-light: #f0fdf4;
+  --orange: #ea580c;
+  --orange-light: #fff7ed;
+  --purple: #7c3aed;
+  --purple-light: #f5f3ff;
+  --teal: #0891b2;
+  --teal-light: #ecfeff;
+  --yellow: #ca8a04;
+  --yellow-light: #fefce8;
+  --red: #dc2626;
+  --red-light: #fef2f2;
+
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --bg: #f8fafc;
+  --bg-white: #ffffff;
+  --card-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 6px 16px rgba(15,23,42,0.08);
+  --card-shadow-hover: 0 8px 24px rgba(15,23,42,0.14);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+/* Animations */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+.animate-in { animation: fadeIn 0.3s ease forwards; }
+.animate-slide { animation: slideUp 0.4s ease forwards; }
+
+/* ── Dark theme ───────────────────────────────────────────────── */
+.theme-dark {
+  --bg: #0f172a;
+  --bg-white: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border: #334155;
+  --border-light: #1e293b;
+  --card-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 6px 18px rgba(0,0,0,0.45);
+}
+
+.theme-dark body {
+  background: #0f172a;
+  color: #f1f5f9;
+}
+
+.theme-dark .asi-card,
+.theme-dark .asi-kpi,
+.theme-dark .asi-info-card,
+.theme-dark .asi-financials,
+.theme-dark .asi-financial,
+.theme-dark .asi-strategy,
+.theme-dark .asi-signal-card,
+.theme-dark .asi-org-section,
+.theme-dark .asi-news-card,
+.theme-dark .asi-event-card,
+.theme-dark .asi-opp-card,
+.theme-dark .asi-quote-card,
+.theme-dark .asi-detail-section,
+.theme-dark .asi-summary-card,
+.theme-dark .account-card,
+.theme-dark .stat-card,
+.theme-dark [style*="background: white"],
+.theme-dark [style*="background:'white'"],
+.theme-dark [style*='background:"white"'] {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f1f5f9;
+}
+
+.theme-dark main {
+  background: #0f172a !important;
+}
+
+.theme-dark .asi-table th {
+  background: #1e293b;
+  color: #94a3b8;
+  border-color: #334155;
+}
+
+.theme-dark .asi-table td {
+  border-color: #1e293b;
+  color: #f1f5f9;
+}
+
+.theme-dark .asi-table tr:hover td {
+  background: #0f172a;
+}
+
+.theme-dark input,
+.theme-dark select {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+.theme-dark p, .theme-dark h1, .theme-dark h2,
+.theme-dark h3, .theme-dark h4, .theme-dark span {
+  color: inherit;
+}
+
+/* ── Corporate theme ──────────────────────────────────────────── */
+.theme-corporate {
+  --bg: #f0f4f8;
+  --bg-white: #ffffff;
+  --text-primary: #1a2332;
+  --text-secondary: #4a5568;
+  --text-muted: #718096;
+  --border: #d1dce8;
+  --border-light: #e8eef5;
+  --blue-primary: #0052cc;
+  --blue-hover: #0747a6;
+  --navy: #1a2332;
+  --card-shadow: 0 2px 6px rgba(0,0,82,0.10), 0 1px 2px rgba(0,0,82,0.05);
+}
+
+.theme-corporate body {
+  background: #f0f4f8;
+  color: #1a2332;
+}
+
+.theme-corporate .asi-card,
+.theme-corporate .asi-kpi,
+.theme-corporate .asi-info-card,
+.theme-corporate .asi-financials,
+.theme-corporate .asi-signal-card,
+.theme-corporate .asi-org-section,
+.theme-corporate .stat-card,
+.theme-corporate .account-card {
+  background: #ffffff;
+  box-shadow: 0 2px 4px rgba(0,0,52,0.08);
+}
+
+.theme-corporate main {
+  background: #f0f4f8 !important;
+}
+
+.theme-corporate aside {
+  background: #1a2332 !important;
+}

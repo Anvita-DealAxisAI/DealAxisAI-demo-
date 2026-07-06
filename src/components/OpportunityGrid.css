@@ -1,0 +1,130 @@
+.opportunity-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+}
+
+.opportunity-grid__cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.opportunity-grid--empty {
+  flex: 1;
+  display: flex;
+}
+
+.opportunity-grid__empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  background: var(--color-bg-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+.opportunity-grid__empty-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  color: var(--color-text-muted);
+}
+
+.opportunity-grid__empty-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 8px;
+}
+
+.opportunity-grid__empty-text {
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  max-width: 320px;
+}
+
+/* Loading skeleton */
+.opportunity-grid--loading {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.opportunity-card-skeleton {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 140px;
+}
+
+.opportunity-card-skeleton__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.opportunity-card-skeleton__badges {
+  display: flex;
+  gap: 8px;
+}
+
+.opportunity-card-skeleton__block {
+  background: linear-gradient(
+    90deg,
+    #e5e7eb 0%,
+    #f3f4f6 50%,
+    #e5e7eb 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.2s ease-in-out infinite;
+  border-radius: 6px;
+}
+
+.opportunity-card-skeleton__block--pill {
+  width: 56px;
+  height: 22px;
+  border-radius: var(--radius-pill);
+}
+
+.opportunity-card-skeleton__block--link {
+  width: 100px;
+  height: 16px;
+}
+
+.opportunity-card-skeleton__block--title {
+  width: 75%;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.opportunity-card-skeleton__meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: auto;
+}
+
+.opportunity-card-skeleton__block--label {
+  width: 60%;
+  height: 10px;
+  margin-bottom: 8px;
+}
+
+.opportunity-card-skeleton__block--value {
+  width: 80%;
+  height: 14px;
+}
+
+@keyframes skeleton-shimmer {
+  0%  { background-position: 200% 0; }
+  100%{ background-position: -200% 0; }
+}
