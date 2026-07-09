@@ -609,22 +609,22 @@ function NewsTab({ name }) {
         {activeNewsTab === 2 && (
           <>
             <ColHdr cols={[
-              {label:'Event Name',w:'2fr'},{label:'Date',w:'130px'},{label:'Location',w:'120px'},
-              {label:'Category',w:'150px'},{label:'Audience',w:'2fr'},{label:'Why Relevant',w:'1.8fr'},{label:'Website',w:'70px'}
+              {label:'Event Name',w:'2fr'},{label:'Date',w:'130px'},{label:'Location',w:'160px'},
+              {label:'Category',w:'180px'},{label:'Audience',w:'2fr'},{label:'Why Relevant',w:'1.8fr'},{label:'Website',w:'70px'}
             ]}/>
             {SYNOVUS_NEWS.upcomingEvents.map((ev,i) => (
               <div key={ev.name} style={{
-                display:'grid',gridTemplateColumns:'2fr 130px 120px 150px 2fr 1.8fr 70px',
+                display:'grid',gridTemplateColumns:'2fr 130px 160px 180px 2fr 1.8fr 70px',
                 alignItems:'start',padding:'14px 20px',
                 borderBottom: i < SYNOVUS_NEWS.upcomingEvents.length-1 ? '1px solid #f1f5f9' : 'none',
               }}>
                 <span style={{fontSize:13,fontWeight:500,color:'#0f172a',lineHeight:1.4,paddingRight:12}}>{ev.name}</span>
                 <span style={{fontSize:12,color:'#64748b',paddingTop:2}}>{ev.date}</span>
-                <span style={{fontSize:12,color:'#64748b',paddingTop:2}}>{ev.location}</span>
+                <span style={{fontSize:12,color:'#64748b',paddingTop:2,paddingRight:16}}>{ev.location}</span>
                 <div style={{paddingTop:2}}><CategoryPill label={ev.category} color={ev.categoryColor} bg={ev.categoryBg}/></div>
                 <span style={{fontSize:12,color:'#475569',lineHeight:1.4,paddingRight:12}}>{ev.audience}</span>
                 <span style={{fontSize:12,color:'#475569',lineHeight:1.4,paddingRight:12}}>{ev.whyRelevant}</span>
-                <ExternalLink/>
+                <ExternalLink href={ev.website}/>
               </div>
             ))}
           </>
