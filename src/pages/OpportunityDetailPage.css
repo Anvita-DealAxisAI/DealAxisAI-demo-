@@ -147,6 +147,33 @@
   box-shadow: var(--shadow-card);
 }
 
+.detail-block__heading {
+  margin: 0;
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  position: relative;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: #0f172a;
+  background:
+    linear-gradient(90deg, rgba(37, 99, 235, 0.08) 0%, rgba(37, 99, 235, 0.04) 45%, rgba(37, 99, 235, 0.015) 78%, rgba(37, 99, 235, 0) 100%) padding-box,
+    linear-gradient(90deg, rgba(37, 99, 235, 0.10) 0%, rgba(37, 99, 235, 0.05) 45%, rgba(37, 99, 235, 0.015) 80%, rgba(37, 99, 235, 0) 100%) border-box;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  padding: 7px 14px;
+}
+
+.detail-block__heading::before {
+  content: none;
+}
+
+.detail-block__heading::after {
+  content: none;
+}
+
 .detail-block__label {
   font-size: 10px;
   font-weight: 700;
@@ -154,6 +181,16 @@
   letter-spacing: 0.07em;
   color: var(--color-text-link);
   margin: 0;
+}
+
+.detail-block__label--subsection {
+  font-size: 11px;
+  margin-bottom: 2px;
+}
+
+.detail-block__label--inline {
+  display: inline;
+  margin-right: 6px;
 }
 
 .detail-block__body {
@@ -183,26 +220,29 @@
 .detail-combined-quote {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
 }
 
 .detail-combined-quote__item {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
 
 .detail-combined-quote__item + .detail-combined-quote__item {
-  padding-top: 14px;
-  border-top: 1px solid var(--color-border);
+  padding-top: 0;
+  border-top: none;
 }
 
-.detail-combined-quote__label {
+.detail-combined-quote .detail-text {
   margin: 0;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--color-text-secondary);
-  text-transform: none;
+  padding: 0;
+  text-indent: 0;
 }
 
 /* ── Bullet list ── */
@@ -305,8 +345,8 @@
 }
 
 .tech-stack__row--inferred .tech-stack__label {
-  background: #dbeafe;
-  color: #1d4ed8;
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .tech-stack__row--unknowns .tech-stack__label {

@@ -5,7 +5,7 @@ import './OpportunityDetailPage.css';
 function DetailBlock({ label, children }) {
   return (
     <div className="detail-block">
-      <h3 className="detail-block__label">{label}</h3>
+      <h3 className="detail-block__heading">{label}</h3>
       <div className="detail-block__body">{children}</div>
     </div>
   );
@@ -84,7 +84,7 @@ export default function OpportunityDetailPage() {
     <div className="detail-page">
 
       <button className="detail-back-btn" onClick={() => navigate(-1)}>
-        ← Back to Landscape
+        ← Back to Opportunities
       </button>
 
       <header className="detail-header">
@@ -148,22 +148,26 @@ export default function OpportunityDetailPage() {
         )}
 
         {(siEntryWedge || firstMeetingTheme) && (
-          <div className="detail-block">
+          <DetailBlock label="Entry Approach">
             <div className="detail-combined-quote">
               {siEntryWedge && (
                 <div className="detail-combined-quote__item">
-                  <h4 className="detail-combined-quote__label">SI Entry Wedge</h4>
-                  <p className="detail-text detail-text--quote">"{siEntryWedge}"</p>
+                  <p className="detail-text">
+                    <span className="detail-block__label detail-block__label--subsection detail-block__label--inline">SI Entry Wedge :</span>
+                    {siEntryWedge}
+                  </p>
                 </div>
               )}
               {firstMeetingTheme && (
                 <div className="detail-combined-quote__item">
-                  <h4 className="detail-combined-quote__label">First Meeting Theme</h4>
-                  <p className="detail-text detail-text--quote">"{firstMeetingTheme}"</p>
+                  <p className="detail-text">
+                    <span className="detail-block__label detail-block__label--subsection detail-block__label--inline">First Meeting Theme :</span>
+                    {firstMeetingTheme}
+                  </p>
                 </div>
               )}
             </div>
-          </div>
+          </DetailBlock>
         )}
 
         {firstThirtyDays && firstThirtyDays.length > 0 && (

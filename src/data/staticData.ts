@@ -1,4 +1,4 @@
-export const BANKS: Record<string, { logo: string; bg: string; initials: string }> = {
+﻿export const BANKS: Record<string, { logo: string; bg: string; initials: string }> = {
   Citizens:    { logo: '/banks/citizens.png',    bg: '#16a34a', initials: 'CI' },
   Synovus:     { logo: '/banks/synovus.jpg',     bg: '#dc2626', initials: 'S'  },
   BECU:        { logo: '/banks/becu.png',        bg: '#1d4ed8', initials: 'BE' },
@@ -23,7 +23,7 @@ export const PORTFOLIO_ACCOUNTS = [
   { id:'A008', name:'Fifth Third', opps:3,  value:'$2M',  valueMid:2,  capabilities:['Reg Rpt','Data'],   monStart:'June 2026',   status:'Monitor', easeX:50, color:'#3b82f6' },
 ];
 
-// ── Experimental helper for demo1..demo10 accounts ───────────────────────
+// ΓöÇΓöÇ Experimental helper for demo1..demo10 accounts ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 // Returns the first N banks from PORTFOLIO_ACCOUNTS (a stable, deterministic
 // subset) so the manager can preview how the Prioritization Matrix renders
 // with anywhere from 1 to 8 subscribed banks. Does not affect the official
@@ -43,7 +43,7 @@ export const SYNOVUS_SIGNALS = [
 ];
 
 export const SYNOVUS_ORG = {
-  summary: 'Synovus operates as a hybrid organization, vertically aligned by core business lines—Retail Banking, Commercial Banking, and Wealth Management—supported by centralized enterprise functions. The technology, data, and analytics leadership (CIO, CDO, and CAO) work in close partnership to coordinate technology strategy, modernization, risk management, and customer experience initiatives across all lines of business.',
+  summary: 'Synovus operates as a hybrid organization, vertically aligned by core business linesΓÇöRetail Banking, Commercial Banking, and Wealth ManagementΓÇösupported by centralized enterprise functions. The technology, data, and analytics leadership (CIO, CDO, and CAO) work in close partnership to coordinate technology strategy, modernization, risk management, and customer experience initiatives across all lines of business.',
   kpis: { totalStakeholders:48, executiveLeaders:15, functionLeaders:32, opportunityOwners:15 },
   tabs: [
     {
@@ -325,8 +325,8 @@ export const SYNOVUS_OPPORTUNITIES = [
 
 export const SYNOVUS_NEWS = {
   bankNews: [
-    { title:'Synovus Reports Q1 2026 Results: Net Income Up 12% YoY',         date:'Jul 15, 2026', source:'Business Wire',    category:'Earnings Update',    categoryColor:'#7c3aed', categoryBg:'#f5f3ff', relevance:'Strong loan growth and expense discipline drive record profitability.' },
-    { title:'Synovus Announces Leadership Changes in Technology Division',      date:'Jul 18, 2026', source:'Synovus Newsroom', category:'Leadership Change',   categoryColor:'#2563eb', categoryBg:'#eff6ff', relevance:'New CTO and CDO to lead digital and data strategy.' },
+    { title:'Pinnacle and Synovus complete merger to become regional bank growth champion', date:'Jan 2, 2026', source:'Synovus / Pinnacle Financial Partners press release',    category:'Bank Announcement',    categoryColor:'#ea580c', categoryBg:'#fff7ed', relevance:'Merger integration and planned system conversion create a credible window to discuss integration governance, platform rationalization, data migration, cybersecurity, testing, and customer-transition readiness.', link:'https://www.synovus.com/about-us/news/2026/2026-01-02-pinnacle-and-synovus-complete-merger-to-become-regional-bank-growth-champion' },
+    { title:'Synovus announces earnings for the fourth quarter 2025',      date:'Jan 21, 2026', source:'Synovus / Pinnacle Financial Partners earnings release', category:'Earnings Update',   categoryColor:'#7c3aed', categoryBg:'#f5f3ff', relevance:'Growth in middle-market lending, deposits, capital markets, and wealth provides evidence-based themes for client onboarding, treasury, lending workflow, data, and revenue-operations discussions.', link:'https://www.synovus.com/about-us/news/2026/2026-01-21-synovus-announces-earnings-for-fourth-quarter/' },
     { title:'Synovus Partners with nCino to Expand Commercial Lending Platform',date:'Jul 22, 2026', source:'PR Newswire',      category:'Technology / Vendor', categoryColor:'#0891b2', categoryBg:'#ecfeff', relevance:'Multi-year partnership to enhance loan origination and servicing.' },
     { title:'Synovus Completes FCB Integration Ahead of Schedule',              date:'Jul 28, 2026', source:'Business Wire',    category:'Merger / Integration',categoryColor:'#16a34a', categoryBg:'#f0fdf4', relevance:'Integration milestone reduces operational risk and unlocks deposit base.' },
     { title:'Synovus Launches Digital Wallet for Retail Customers',             date:'Aug 5, 2026', source:'Fintech Times',    category:'Digital Banking',     categoryColor:'#2563eb', categoryBg:'#eff6ff', relevance:'Accelerates self-service adoption and reduces branch cost per transaction.' },

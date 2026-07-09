@@ -25,8 +25,13 @@ function Protected({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const routerBase =
+    import.meta.env.BASE_URL === '/'
+      ? '/'
+      : import.meta.env.BASE_URL.replace(/\/$/, '');
+
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={routerBase}>
       <ThemeProvider>
         <AuthProvider>
           <ScrollToTop />

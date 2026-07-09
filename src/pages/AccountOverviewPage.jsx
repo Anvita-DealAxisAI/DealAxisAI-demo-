@@ -256,10 +256,38 @@ function OrganizationTab({ name }) {
   ));
 
   const kpis = [
-    { label:'Total Stakeholders',  value:SYNOVUS_ORG.kpis.totalStakeholders,  sub:'Across all functions',      icon: stakeholdersIcon, color:'#eff6ff' },
-    { label:'Executive Leaders',   value:SYNOVUS_ORG.kpis.executiveLeaders,   sub:'CxO / SVP / EVP',           icon: userStarIcon,     color:'#f0fdf4' },
-    { label:'Function Leaders',    value:SYNOVUS_ORG.kpis.functionLeaders,    sub:'Directors and above',       icon: userPenIcon,      color:'#faf5ff' },
-    { label:'Opportunity Owners',  value:SYNOVUS_ORG.kpis.opportunityOwners,  sub:'Mapped to opportunities',   icon: teamIcon,         color:'#fff7ed' },
+    {
+      label:'Total Stakeholders',
+      value:SYNOVUS_ORG.kpis.totalStakeholders,
+      sub:'Across all functions',
+      icon: stakeholdersIcon,
+      color:'#eff6ff',
+      gradient:'linear-gradient(135deg, rgba(96, 176, 232, 0.03) 0%, rgba(37, 99, 235, 0.06) 35%, rgba(0, 89, 207, 0.09) 70%, rgba(0, 89, 207, 0.1) 100%)',
+    },
+    {
+      label:'Executive Leaders',
+      value:SYNOVUS_ORG.kpis.executiveLeaders,
+      sub:'CxO / SVP / EVP',
+      icon: userStarIcon,
+      color:'#f0fdf4',
+      gradient:'linear-gradient(135deg, rgba(204, 251, 196, 0.03) 0%, rgba(130, 209, 115, 0.06) 35%, rgba(36, 158, 70, 0.09) 70%, rgba(36, 158, 70, 0.1) 100%)',
+    },
+    {
+      label:'Function Leaders',
+      value:SYNOVUS_ORG.kpis.functionLeaders,
+      sub:'Directors and above',
+      icon: userPenIcon,
+      color:'#faf5ff',
+      gradient:'linear-gradient(135deg, rgba(237, 233, 254, 0.03) 0%, rgba(196, 181, 253, 0.06) 35%, rgba(139, 92, 246, 0.09) 70%, rgba(109, 40, 217, 0.1) 100%)',
+    },
+    {
+      label:'Opportunity Owners',
+      value:SYNOVUS_ORG.kpis.opportunityOwners,
+      sub:'Mapped to opportunities',
+      icon: teamIcon,
+      color:'#fff7ed',
+      gradient:'linear-gradient(135deg, rgba(254, 226, 226, 0.03) 0%, rgba(252, 165, 165, 0.06) 35%, rgba(239, 68, 68, 0.09) 70%, rgba(220, 38, 38, 0.1) 100%)',
+    },
   ];
 
   const engagementColor = (e) => e==='Very High' ? '#16a34a' : e==='High' ? '#2563eb' : '#94a3b8';
@@ -273,7 +301,7 @@ function OrganizationTab({ name }) {
       {/* 4 KPI cards */}
       <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16,marginBottom:24}}>
         {kpis.map(k => (
-          <div key={k.label} style={{background:'white',borderRadius:12,padding:'20px 18px',boxShadow:'var(--card-shadow)',display:'flex',alignItems:'flex-start',gap:14}}>
+          <div key={k.label} style={{background:k.gradient,borderRadius:12,padding:'20px 18px',boxShadow:'var(--card-shadow)',display:'flex',alignItems:'flex-start',gap:14}}>
             <div style={{width:48,height:48,borderRadius:10,background:k.color,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
               <img src={k.icon} alt="" width={24} height={24} aria-hidden />
             </div>
@@ -488,8 +516,17 @@ function NewsTab({ name }) {
     <span style={{display:'inline-block',fontSize:11,fontWeight:600,padding:'3px 10px',borderRadius:20,background:bg,color:color,whiteSpace:'nowrap'}}>{label}</span>
   );
 
-  const ExternalLink = () => (
-    <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:6,background:'#f1f5f9',color:'#2563eb',fontSize:14,cursor:'pointer'}}>↗</span>
+  const ExternalLink = ({ href }) => (
+    href ? (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:6,background:'#f1f5f9',color:'#2563eb',fontSize:14,cursor:'pointer',textDecoration:'none'}}
+      >↗</a>
+    ) : (
+      <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:6,background:'#f1f5f9',color:'#2563eb',fontSize:14,cursor:'pointer'}}>↗</span>
+    )
   );
 
   const ColHdr = ({ cols }) => (
@@ -537,7 +574,7 @@ function NewsTab({ name }) {
                 <span style={{fontSize:12,color:'#64748b'}}>{item.source}</span>
                 <div><CategoryPill label={item.category} color={item.categoryColor} bg={item.categoryBg}/></div>
                 <span style={{fontSize:12,color:'#475569',lineHeight:1.4,paddingRight:12}}>{item.relevance}</span>
-                <ExternalLink/>
+                <ExternalLink href={item.link}/>
               </div>
             ))}
           </>
@@ -618,7 +655,7 @@ export default function AccountOverviewPage() {
   return (
     <div className="animate-in">
       <button className="asi-back" onClick={()=>navigate(backPath)}>
-        <Icon name="arrow-right" size={14} color="#2563eb" style={{transform:'rotate(180deg)'}}/> {backLabel}
+        ← {backLabel}
       </button>
 
       {/* Bank Header */}
