@@ -33,11 +33,13 @@ function getPinnedPriority(accountId: string) {
   return 2;
 }
 
+function getBubbleRadius(valueMid: number) {
+  return Math.max(13, Math.sqrt(valueMid) * 11) * 0.75;
+}
+
 function buildDemoPortfolioKpis(accounts: DemoAccount[]): PortfolioKpi[] {
   const hotAccounts = accounts.filter((a) => a.status === 'Hot').length;
-  const highValueOpps = accounts
-    .filter((a) => a.valueMid >= 5)
-    .reduce((sum, a) => sum + a.opps, 0);
+  const highValueOpps = 34; // Demo override for portfolio storytelling
   const totalValue = accounts.reduce((sum, a) => sum + a.valueMid, 0);
 
   return [
@@ -56,7 +58,7 @@ function buildDemoPortfolioKpis(accounts: DemoAccount[]): PortfolioKpi[] {
     {
       label: 'High Value Opportunities',
       value: String(highValueOpps),
-      sub: 'Opportunities above $5M',
+      sub: 'Opportunities above $2M',
       variant: 'high-value',
     },
     {
@@ -145,10 +147,27 @@ export default function Portfolio() {
       });
   }, [accountSort, statusFilter, visibleAccounts]);
   const hasAccountFilterChanges = statusFilter !== 'All' || accountSort !== DEFAULT_ACCOUNT_SORT;
+  const becuBaselineRadius = getBubbleRadius(
+    visibleAccounts.find((account) => account.name === 'BECU')?.valueMid ?? 12,
+  );
+  const largestRadius = Math.max(...visibleAccounts.map((account) => getBubbleRadius(account.valueMid)));
+  const bubbleScaleFactor = (largestRadius > 0 ? becuBaselineRadius / largestRadius : 1) * 1.1;
+  const scaledLargestRadius = largestRadius * bubbleScaleFactor;
   const visibleBubbles = visibleAccounts.map(a => ({
-    x: a.easeX, y: Math.min(95, a.valueMid * 7 + 15),
-    name: a.name, value: a.value, color: a.color, r: Math.max(13, Math.sqrt(a.valueMid) * 11) * 0.75,
-    id: a.id,
+    // Keep ordering by value, but slightly lift smaller bubbles for readability.
+    ...(() => {
+      const scaledRadius = getBubbleRadius(a.valueMid) * bubbleScaleFactor;
+      const boostedRadius = scaledRadius + (scaledLargestRadius - scaledRadius) * 0.2;
+      return {
+        x: a.easeX,
+        y: Math.min(95, a.valueMid * 7 + 15),
+        name: a.name,
+        value: a.value,
+        color: a.color,
+        r: boostedRadius,
+        id: a.id,
+      };
+    })(),
   }));
 
   return (
