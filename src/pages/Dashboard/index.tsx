@@ -17,7 +17,7 @@ type AccountSortOption =
   | 'monitoring-latest'
   | 'monitoring-earliest';
 
-const DEFAULT_ACCOUNT_SORT: AccountSortOption = 'opportunities-desc';
+const DEFAULT_ACCOUNT_SORT: AccountSortOption = 'monitoring-latest';
 const ACCOUNT_STATUSES = ['All', 'Hot', 'Active', 'Monitor'];
 
 function getMonitoringStartTime(monStart: string) {
@@ -25,6 +25,12 @@ function getMonitoringStartTime(monStart: string) {
   if (!month || !year) return 0;
   const time = Date.parse(`${month} 1, ${year}`);
   return Number.isFinite(time) ? time : 0;
+}
+
+function getPinnedPriority(accountId: string) {
+  if (accountId === 'A002') return 0; // Synovus
+  if (accountId === 'A001') return 1; // Citizens
+  return 2;
 }
 
 function buildDemoPortfolioKpis(accounts: DemoAccount[]): PortfolioKpi[] {
@@ -118,6 +124,9 @@ export default function Portfolio() {
     return visibleAccounts
       .filter((account) => statusFilter === 'All' || account.status === statusFilter)
       .toSorted((a, b) => {
+        const pinnedDiff = getPinnedPriority(a.id) - getPinnedPriority(b.id);
+        if (pinnedDiff !== 0) return pinnedDiff;
+
         switch (accountSort) {
           case 'opportunities-asc':
             return a.opps - b.opps || a.name.localeCompare(b.name);

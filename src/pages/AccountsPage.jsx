@@ -6,19 +6,19 @@ import { getDemoAccountsSubset } from '../data/staticData';
 import './AccountsPage.css';
 
 const STATIC_ACCOUNTS = [
-  { id:'A002', name:'Synovus',     logo:'/banks/synovus.jpg',     sector:'Banking', summary:{ totalOpportunities:10, opportunityRange:'$19M–$65M',  stakeholdersCount:12 } },
-  { id:'A001', name:'Citizens',    logo:'/banks/citizens.png',    sector:'Banking', summary:{ totalOpportunities:8,  opportunityRange:'$6M–$12M',   stakeholdersCount:9  } },
+  { id:'A002', name:'Synovus',     logo:'/banks/synovus.jpg',     sector:'Banking', isHot:true, summary:{ totalOpportunities:10, opportunityRange:'$19M–$65M',  stakeholdersCount:12 } },
+  { id:'A001', name:'Citizens',    logo:'/banks/citizens.png',    sector:'Banking', isHot:true, summary:{ totalOpportunities:28, opportunityRange:'$36.5M–$117M', stakeholdersCount:9  } },
   { id:'A003', name:'BECU',        logo:'/banks/becu.png',        sector:'Banking', summary:{ totalOpportunities:10, opportunityRange:'$8M–$16M',   stakeholdersCount:11 } },
-  { id:'A004', name:'PNC',         logo:'/banks/pnc.png',         sector:'Banking', summary:{ totalOpportunities:7,  opportunityRange:'$4M–$9M',    stakeholdersCount:8  } },
-  { id:'A005', name:'US Bank',     logo:'/banks/usbank.png',      sector:'Banking', summary:{ totalOpportunities:6,  opportunityRange:'$3M–$7M',    stakeholdersCount:7  } },
-  { id:'A006', name:'M&T Bank',    logo:'/banks/mtb.png',         sector:'Banking', summary:{ totalOpportunities:5,  opportunityRange:'$3M–$6M',    stakeholdersCount:6  } },
-  { id:'A007', name:'Truist',      logo:'/banks/truist.png',      sector:'Banking', summary:{ totalOpportunities:4,  opportunityRange:'$2M–$5M',    stakeholdersCount:5  } },
-  { id:'A008', name:'Fifth Third', logo:'/banks/fifththird.png',  sector:'Banking', summary:{ totalOpportunities:3,  opportunityRange:'$1M–$3M',    stakeholdersCount:4  } },
+  { id:'A004', name:'PNC',         logo:'/banks/pnc.png',         sector:'Banking', summary:{ totalOpportunities:9,  opportunityRange:'$6M–$12M',   stakeholdersCount:8  } },
+  { id:'A005', name:'US Bank',     logo:'/banks/usbank.png',      sector:'Banking', summary:{ totalOpportunities:8,  opportunityRange:'$5M–$10M',   stakeholdersCount:7  } },
+  { id:'A006', name:'M&T Bank',    logo:'/banks/mtb.png',         sector:'Banking', summary:{ totalOpportunities:8,  opportunityRange:'$5M–$10M',   stakeholdersCount:6  } },
+  { id:'A007', name:'Truist',      logo:'/banks/truist.png',      sector:'Banking', summary:{ totalOpportunities:7,  opportunityRange:'$4M–$9M',    stakeholdersCount:5  } },
+  { id:'A008', name:'Fifth Third', logo:'/banks/fifththird.png',  sector:'Banking', summary:{ totalOpportunities:7,  opportunityRange:'$4M–$8M',    stakeholdersCount:4  } },
 ];
 
 function AccountCard({ account }) {
   const navigate = useNavigate();
-  const { id, name, summary } = account;
+  const { id, name, summary, isHot } = account;
   const accountOverviewPath = `/accounts/${id}?from=accounts`;
   const accountOpportunitiesPath = `/accounts/${id}?tab=Opportunities&from=accounts`;
 
@@ -37,6 +37,11 @@ function AccountCard({ account }) {
       role="button"
       aria-label={`View ${name} overview`}
     >
+      {isHot && (
+        <span className="account-card__hot-star" aria-label={`${name} is a hot account`}>
+          ★
+        </span>
+      )}
       <div className="account-card__body">
         <div className="account-card__header">
           <div className="account-card__identity">

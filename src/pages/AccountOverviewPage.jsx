@@ -19,9 +19,9 @@ import stakeholdersIcon from '../../logo/icons/stakeholders.svg';
 import userStarIcon from '../../logo/icons/user-star.svg';
 import teamIcon from '../../logo/icons/team.svg';
 import userPenIcon from '../../logo/icons/user-pen.svg';
-import { SYNOVUS_SIGNALS, SYNOVUS_ORG, SYNOVUS_NEWS, SYNOVUS_OPPORTUNITIES } from '../data/staticData';
+import { SYNOVUS_SIGNALS, SYNOVUS_ORG, SYNOVUS_NEWS } from '../data/staticData';
 import OpportunitiesContent from '../components/OpportunitiesContent';
-import { getAccountById } from '../data/mockData';
+import { getDemoOpportunityAccount } from '../data/demoOpportunityData';
 
 /* ─── Static account data ─────────────────────────────────────────── */
 const ACCOUNTS = {
@@ -234,10 +234,8 @@ function SignalsTab({ name }) {
 }
 
 /* ─── OPPORTUNITIES TAB ───────────────────────────────────────────── */
-function OpportunitiesTab({ accountId }) {
-  // Use the real account data from mockData (CSV-parsed) for Synovus
-  // Fall back gracefully for other accounts
-  const mockAccount = getAccountById('1') ?? getAccountById(accountId);
+function OpportunitiesTab({ accountId, accountName }) {
+  const mockAccount = getDemoOpportunityAccount(accountId, accountName);
   return (
     <div className="animate-in">
       <OpportunitiesContent account={mockAccount} isLoading={false} />
@@ -683,7 +681,7 @@ export default function AccountOverviewPage() {
       {/* Tab content */}
       {activeTab==='Overview'      && <OverviewTab acct={acct}/>}
       {activeTab==='Signals'       && <SignalsTab name={acct.name}/>}
-      {activeTab==='Opportunities' && <OpportunitiesTab accountId={accountId}/>}
+      {activeTab==='Opportunities' && <OpportunitiesTab accountId={accountId} accountName={acct.name} />}
       {activeTab==='Organization'  && <OrganizationTab name={acct.name}/>}
       {activeTab==='News & Events'  && <NewsTab name={acct.name}/>}
     </div>

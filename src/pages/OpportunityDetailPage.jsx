@@ -1,6 +1,19 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { getAccountById } from '../data/mockData';
+import { getDemoOpportunityAccount } from '../data/demoOpportunityData';
 import './OpportunityDetailPage.css';
+
+const ACCOUNT_ID_TO_NAME = {
+  A001: 'Citizens',
+  A002: 'Synovus',
+  A003: 'BECU',
+  A004: 'PNC',
+  A005: 'US Bank',
+  A006: 'M&T Bank',
+  A007: 'Truist',
+  A008: 'Fifth Third',
+  A009: 'Regions',
+  A010: 'KeyBank',
+};
 
 function DetailBlock({ label, children }) {
   return (
@@ -59,8 +72,8 @@ export default function OpportunityDetailPage() {
   const { accountId, opportunityId } = useParams();
   const navigate = useNavigate();
 
-  // Get static opportunity from mockData
-  const account = getAccountById('1') ?? getAccountById(accountId);
+  const accountName = ACCOUNT_ID_TO_NAME[accountId];
+  const account = getDemoOpportunityAccount(accountId, accountName);
   const opportunity = account?.opportunities?.find(o => o.id === opportunityId)
     ?? account?.opportunities?.[0];
 

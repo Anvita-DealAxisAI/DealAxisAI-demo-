@@ -13,14 +13,14 @@
 };
 
 export const PORTFOLIO_ACCOUNTS = [
-  { id:'A001', name:'Citizens',    opps:8,  value:'$9M',  valueMid:9,  capabilities:['Data','AI'],        monStart:'June 2026',   status:'Hot',     easeX:30, color:'#3b82f6' },
-  { id:'A002', name:'Synovus',     opps:9,  value:'$5M',  valueMid:5,  capabilities:['QE','AI'],          monStart:'July 2026',   status:'Hot',     easeX:55, color:'#f97316' },
-  { id:'A003', name:'BECU',        opps:10, value:'$12M', valueMid:12, capabilities:['Data','AI'],        monStart:'July 2026',   status:'Hot',     easeX:70, color:'#3b82f6' },
-  { id:'A004', name:'PNC',         opps:7,  value:'$6M',  valueMid:6,  capabilities:['Reg Rpt','Data'],   monStart:'June 2026',   status:'Active',  easeX:68, color:'#22c55e' },
-  { id:'A005', name:'US Bank',     opps:6,  value:'$4M',  valueMid:4,  capabilities:['Cloud','Infra'],    monStart:'May 2026',    status:'Active',  easeX:80, color:'#eab308' },
-  { id:'A006', name:'M&T Bank',    opps:5,  value:'$4M',  valueMid:4,  capabilities:['Core','Data'],      monStart:'June 2026',   status:'Active',  easeX:50, color:'#14b8a6' },
-  { id:'A007', name:'Truist',      opps:4,  value:'$3M',  valueMid:3,  capabilities:['QE','Digital'],     monStart:'July 2026',   status:'Monitor', easeX:75, color:'#ec4899' },
-  { id:'A008', name:'Fifth Third', opps:3,  value:'$2M',  valueMid:2,  capabilities:['Reg Rpt','Data'],   monStart:'June 2026',   status:'Monitor', easeX:50, color:'#3b82f6' },
+  { id:'A001', name:'Citizens',    opps:28, value:'$77M', valueMid:77, capabilities:['Data','AI'],        monStart:'June 2026',   status:'Hot',     easeX:30, color:'#3b82f6' },
+  { id:'A002', name:'Synovus',     opps:10, value:'$42M', valueMid:42, capabilities:['QE','AI'],          monStart:'July 2026',   status:'Hot',     easeX:55, color:'#f97316' },
+  { id:'A003', name:'BECU',        opps:10, value:'$12M', valueMid:12, capabilities:['Data','AI'],        monStart:'July 2026',   status:'Active',  easeX:70, color:'#3b82f6' },
+  { id:'A004', name:'PNC',         opps:9,  value:'$8M',  valueMid:8,  capabilities:['Reg Rpt','Data'],   monStart:'June 2026',   status:'Active',  easeX:68, color:'#22c55e' },
+  { id:'A005', name:'US Bank',     opps:8,  value:'$7M',  valueMid:7,  capabilities:['Cloud','Infra'],    monStart:'May 2026',    status:'Active',  easeX:80, color:'#eab308' },
+  { id:'A006', name:'M&T Bank',    opps:8,  value:'$7M',  valueMid:7,  capabilities:['Core','Data'],      monStart:'June 2026',   status:'Active',  easeX:50, color:'#14b8a6' },
+  { id:'A007', name:'Truist',      opps:7,  value:'$6M',  valueMid:6,  capabilities:['QE','Digital'],     monStart:'July 2026',   status:'Monitor', easeX:75, color:'#ec4899' },
+  { id:'A008', name:'Fifth Third', opps:7,  value:'$5M',  valueMid:5,  capabilities:['Reg Rpt','Data'],   monStart:'June 2026',   status:'Monitor', easeX:50, color:'#3b82f6' },
 ];
 
 // ΓöÇΓöÇ Experimental helper for demo1..demo10 accounts ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ

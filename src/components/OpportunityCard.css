@@ -208,6 +208,7 @@
   font-size: 13px;
   color: var(--color-text-primary);
   line-height: 1.6;
+  white-space: pre-line;
 }
 
 .opportunity-card__detail-list {
