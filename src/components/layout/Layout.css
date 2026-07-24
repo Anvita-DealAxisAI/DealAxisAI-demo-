@@ -19,14 +19,14 @@
 .app-brand__logo {
   width: 100%;
   height: auto;
-  max-height: 61px;
+  max-height: 36px;
   object-fit: contain;
   display: block;
 }
 
 .app-sidebar {
   width: 200px;
-  background: #001A41;
+  background: #0a1628;
   display: flex;
   flex-direction: column;
   padding: 20px 12px;
@@ -39,7 +39,7 @@
 }
 
 .app-topbar {
-  background: #001A41;
+  background: #0a1628;
   height: 52px;
   display: flex;
   align-items: center;
