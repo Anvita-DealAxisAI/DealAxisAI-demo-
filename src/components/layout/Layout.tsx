@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../store/AuthContext';
 import { useTheme } from '../../store/ThemeContext';
 import type { Theme } from '../../types';
-import logoUrl from '/accountsignal-logo.png';
+import logoUrl from '/AccountSignalAI-full-color-4.1.png';
 import './Layout.css';
 
 function NavIcon({ children }: { children: React.ReactNode }) {
@@ -82,8 +82,8 @@ export default function Layout({ children }: { children: ReactNode }) {
               style={({ isActive }) => ({
                 display:'flex', alignItems:'center', gap:10, padding:'9px 12px',
                 borderRadius:8, fontSize:13, fontWeight:500, textDecoration:'none',
-                color: isActive ? 'white' : 'rgba(255,255,255,0.6)',
-                background: isActive ? 'rgba(255,255,255,0.1)' : 'transparent',
+                color: isActive ? 'white' : 'rgba(255,255,255,0.75)',
+                background: isActive ? 'rgba(255,255,255,0.18)' : 'transparent',
                 transition:'all 0.15s',
               })}>
               {item.icon}{item.label}
@@ -91,7 +91,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           ))}
         </nav>
 
-        <p style={{ fontSize:10, color:'rgba(255,255,255,0.2)', padding:'12px 8px 0', marginTop:8, borderTop:'1px solid rgba(255,255,255,0.06)' }}>MVP v1.0</p>
+        <p style={{ fontSize:10, color:'rgba(255,255,255,0.45)', padding:'12px 8px 0', marginTop:8, borderTop:'1px solid rgba(255,255,255,0.2)' }}>MVP v1.0</p>
       </aside>
 
       {/* ── Main area ── */}

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../store/AuthContext';
 import { Icon } from '../../components/SvgIcons';
-import logoUrl from '/accountsignal-logo.png';
+import logoUrl from '/AccountSignalAI-full-color-4.1.png';
 
 export default function Login() {
   const [email, setEmail] = useState('');

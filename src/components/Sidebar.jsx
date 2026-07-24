@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import logoLightUrl from '../../logo/dealaxisAI Logo - Light background.png';
+import logoLightUrl from '/AccountSignalAI-full-color-4.1.png';
 import { MenuIcon, CloseIcon } from './icons/AppIcons';
 import './Sidebar.css';
 
@@ -22,7 +22,7 @@ export default function Sidebar({ items = [] }) {
         <NavLink to="/accounts" className="sidebar__logo-wrap" aria-label="Home">
           <img
             src={logoLightUrl}
-            alt="dealaxisAI"
+            alt="AccountSignal AI"
             className="sidebar__logo"
           />
         </NavLink>
