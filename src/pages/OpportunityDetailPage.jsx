@@ -1,19 +1,7 @@
+import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getDemoOpportunityAccount } from '../data/demoOpportunityData';
+import { fetchOpportunity } from '../api/client';
 import './OpportunityDetailPage.css';
-
-const ACCOUNT_ID_TO_NAME = {
-  A001: 'Citizens',
-  A002: 'Synovus',
-  A003: 'BECU',
-  A004: 'PNC',
-  A005: 'US Bank',
-  A006: 'M&T Bank',
-  A007: 'Truist',
-  A008: 'Fifth Third',
-  A009: 'Regions',
-  A010: 'KeyBank',
-};
 
 function DetailBlock({ label, children }) {
   return (
@@ -24,11 +12,11 @@ function DetailBlock({ label, children }) {
   );
 }
 
-function BulletList({ items }) {
+function BulletList({ items, className = '', itemClassName = '' }) {
   return (
-    <ul className="detail-list">
+    <ul className={`detail-list ${className}`.trim()}>
       {items.map((item, i) => (
-        <li key={i} className="detail-list__item">{item}</li>
+        <li key={i} className={`detail-list__item ${itemClassName}`.trim()}>{item}</li>
       ))}
     </ul>
   );
@@ -71,11 +59,36 @@ function TechStackGrid({ stack }) {
 export default function OpportunityDetailPage() {
   const { accountId, opportunityId } = useParams();
   const navigate = useNavigate();
+  const [opportunity, setOpportunity] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const accountName = ACCOUNT_ID_TO_NAME[accountId];
-  const account = getDemoOpportunityAccount(accountId, accountName);
-  const opportunity = account?.opportunities?.find(o => o.id === opportunityId)
-    ?? account?.opportunities?.[0];
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const { opportunity: row } = await fetchOpportunity(accountId, opportunityId);
+        if (!cancelled) setOpportunity(row ?? null);
+      } catch (err) {
+        console.error('Failed to load opportunity detail', err);
+        if (!cancelled) setOpportunity(null);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [accountId, opportunityId]);
+
+  if (isLoading) {
+    return (
+      <div className="detail-page">
+        <button className="detail-back-btn" onClick={() => navigate(-1)}>← Back</button>
+        <p>Loading opportunity...</p>
+      </div>
+    );
+  }
 
   if (!opportunity) {
     return (
@@ -89,8 +102,10 @@ export default function OpportunityDetailPage() {
   const {
     title, priority, opportunityType, dealSize, timeline, buyer,
     projectScope, businessDriver, technologyStack, buyerMap,
-    siEntryWedge, firstMeetingTheme, firstThirtyDays,
-    solutionTeam, keyIntegrationAreas,
+    siEntryWedge, rationale, firstMeetingTheme, firstThirtyDays,
+    capabilitiesToBring,
+    referenceArchitectureToPrepare,
+    deliveryAssetsOrAcceleratorsToPrepare,
   } = opportunity;
 
   return (
@@ -148,9 +163,11 @@ export default function OpportunityDetailPage() {
 
         {technologyStack && (
           <DetailBlock label="Technology Stack Intelligence">
-            {typeof technologyStack === 'object'
-              ? <TechStackGrid stack={technologyStack} />
-              : <p className="detail-text">{technologyStack}</p>}
+            {Array.isArray(technologyStack)
+              ? <BulletList items={technologyStack} />
+              : typeof technologyStack === 'object'
+                ? <TechStackGrid stack={technologyStack} />
+                : <p className="detail-text">{technologyStack}</p>}
           </DetailBlock>
         )}
 
@@ -160,14 +177,22 @@ export default function OpportunityDetailPage() {
           </DetailBlock>
         )}
 
-        {(siEntryWedge || firstMeetingTheme) && (
+        {(siEntryWedge || rationale || firstMeetingTheme || (firstThirtyDays && firstThirtyDays.length > 0)) && (
           <DetailBlock label="Entry Approach">
             <div className="detail-combined-quote">
               {siEntryWedge && (
                 <div className="detail-combined-quote__item">
                   <p className="detail-text">
-                    <span className="detail-block__label detail-block__label--subsection detail-block__label--inline">SI Entry Wedge :</span>
+                    <span className="detail-block__label detail-block__label--subsection detail-block__label--inline">Entry wedge :</span>
                     {siEntryWedge}
+                  </p>
+                </div>
+              )}
+              {rationale && (
+                <div className="detail-combined-quote__item">
+                  <p className="detail-text">
+                    <span className="detail-block__label detail-block__label--subsection detail-block__label--inline">Rationale :</span>
+                    {rationale}
                   </p>
                 </div>
               )}
@@ -179,25 +204,54 @@ export default function OpportunityDetailPage() {
                   </p>
                 </div>
               )}
+              {firstThirtyDays && firstThirtyDays.length > 0 && (
+                <div className="detail-combined-quote__item">
+                  <p className="detail-text">
+                    <span className="detail-block__label detail-block__label--subsection detail-block__label--inline">First 30 day action :</span>
+                    {firstThirtyDays.join(' | ')}
+                  </p>
+                </div>
+              )}
             </div>
           </DetailBlock>
         )}
 
-        {firstThirtyDays && firstThirtyDays.length > 0 && (
-          <DetailBlock label="First 30-Day Action">
-            <BulletList items={firstThirtyDays} />
-          </DetailBlock>
-        )}
-
-        {solutionTeam && (
+        {(capabilitiesToBring
+          || referenceArchitectureToPrepare
+          || deliveryAssetsOrAcceleratorsToPrepare) && (
           <DetailBlock label="Solution Team Preparation">
-            <p className="detail-text">{solutionTeam}</p>
-          </DetailBlock>
-        )}
-
-        {keyIntegrationAreas && (
-          <DetailBlock label="Key Integration Areas">
-            <p className="detail-text">{keyIntegrationAreas}</p>
+            <div className="solution-prep-grid">
+              {capabilitiesToBring?.length ? (
+                <div className="solution-prep-section">
+                  <p className="solution-prep-section__title">Capabilities to bring</p>
+                  <BulletList
+                    items={capabilitiesToBring}
+                    className="detail-list--compact"
+                    itemClassName="detail-list__item--compact"
+                  />
+                </div>
+              ) : null}
+              {referenceArchitectureToPrepare?.length ? (
+                <div className="solution-prep-section">
+                  <p className="solution-prep-section__title">Reference architecture to prepare</p>
+                  <BulletList
+                    items={referenceArchitectureToPrepare}
+                    className="detail-list--compact"
+                    itemClassName="detail-list__item--compact"
+                  />
+                </div>
+              ) : null}
+              {deliveryAssetsOrAcceleratorsToPrepare?.length ? (
+                <div className="solution-prep-section">
+                  <p className="solution-prep-section__title">Delivery assets or accelerators to prepare</p>
+                  <BulletList
+                    items={deliveryAssetsOrAcceleratorsToPrepare}
+                    className="detail-list--compact"
+                    itemClassName="detail-list__item--compact"
+                  />
+                </div>
+              ) : null}
+            </div>
           </DetailBlock>
         )}
 

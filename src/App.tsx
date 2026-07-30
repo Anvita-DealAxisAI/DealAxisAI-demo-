@@ -20,8 +20,23 @@ function ScrollToTop() {
 }
 
 function Protected({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  if (loading && !user) {
+    return null;
+  }
   return user ? <>{children}</> : <Navigate to="/login" replace />;
+}
+
+function LoginRoute() {
+  const { user, loading, workspaceLoading } = useAuth();
+  // Once signed in, go to the shell so sidebar stays visible while data loads.
+  if (user) {
+    return <Navigate to="/" replace />;
+  }
+  if (loading || workspaceLoading) {
+    return null;
+  }
+  return <Login />;
 }
 
 export default function App() {
@@ -36,7 +51,7 @@ export default function App() {
         <AuthProvider>
           <ScrollToTop />
           <Routes>
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<LoginRoute />} />
             <Route path="/" element={<Protected><Layout><Portfolio /></Layout></Protected>} />
             <Route path="/accounts" element={<Protected><Layout><AccountsPage /></Layout></Protected>} />
             <Route path="/accounts/:accountId" element={<Protected><Layout><AccountOverviewPage /></Layout></Protected>} />

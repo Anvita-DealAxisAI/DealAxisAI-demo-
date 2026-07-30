@@ -34,7 +34,7 @@ export default function PortfolioKpiCard({
 
   return (
     <div
-      className={`portfolio-kpi-card portfolio-kpi-card--${kpi.variant} animate-slide${interactive ? ' portfolio-kpi-card--clickable' : ''}`}
+      className={`portfolio-kpi-card portfolio-kpi-card--${kpi.variant}${interactive ? ' portfolio-kpi-card--clickable' : ''}`}
       style={style}
       onClick={onClick}
       onKeyDown={

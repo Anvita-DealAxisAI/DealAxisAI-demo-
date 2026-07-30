@@ -10,6 +10,7 @@
   transition: box-shadow 0.15s ease;
   outline: none;
   text-align: left;
+  overflow-anchor: none;
 }
 
 .opportunity-card:hover {
@@ -61,6 +62,24 @@
   color: var(--color-priority-high-text);
 }
 
+.opportunity-card__badge--critical {
+  background: var(--color-priority-high-bg);
+  color: var(--color-priority-high-text);
+  border: 1px solid #fca5a5;
+}
+
+.opportunity-card__badge--hot {
+  background: var(--color-priority-medium-orange-bg);
+  color: var(--color-priority-medium-orange-text);
+  border: 1px solid #fdba74;
+}
+
+.opportunity-card__badge--watchlist-priority {
+  background: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #d1d5db;
+}
+
 .opportunity-card__badge--medium-high {
   background: #fff4e6;
   color: #c2410c;
@@ -99,21 +118,21 @@
 }
 
 .opportunity-card__badge--type {
-  background: var(--color-bg-status-pill);
-  color: var(--color-text-link);
-  border: 1px solid #bfdbfe;
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #86efac;
 }
 
 .opportunity-card__badge--type-emerging {
   background: #eff6ff;
-  color: var(--color-text-link);
+  color: #1d4ed8;
   border: 1px solid #93c5fd;
 }
 
 .opportunity-card__badge--type-hypothesis {
-  background: #faf5ff;
-  color: #7c3aed;
-  border: 1px solid #d8b4fe;
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fdba74;
 }
 
 .opportunity-card__badge--type-watchlist {
@@ -168,6 +187,7 @@
   display: grid;
   grid-template-rows: 0fr;
   transition: grid-template-rows 0.28s ease;
+  scroll-margin-bottom: 16px;
 }
 
 .opportunity-card--expanded .opportunity-card__details {
@@ -208,7 +228,6 @@
   font-size: 13px;
   color: var(--color-text-primary);
   line-height: 1.6;
-  white-space: pre-line;
 }
 
 .opportunity-card__detail-list {

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { Theme } from '../types';
+import { isTheme } from './themeOptions';
 
 interface ThemeContextType {
   theme: Theme;
@@ -8,12 +9,16 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType>({ theme: 'light', setTheme: () => {} });
 
+function readStoredTheme(): Theme {
+  const stored = localStorage.getItem('dealaxis-theme');
+  return isTheme(stored) ? stored : 'light';
+}
+
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setThemeState] = useState<Theme>(() => {
-    return (localStorage.getItem('dealaxis-theme') as Theme) || 'light';
-  });
+  const [theme, setThemeState] = useState<Theme>(readStoredTheme);
 
   const setTheme = (t: Theme) => {
+    if (!isTheme(t)) return;
     setThemeState(t);
     localStorage.setItem('dealaxis-theme', t);
   };
@@ -21,9 +26,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const root = document.documentElement;
     root.classList.remove('theme-light', 'theme-dark', 'theme-corporate');
-    if (theme === 'dark') root.classList.add('theme-dark');
-    if (theme === 'corporate') root.classList.add('theme-corporate');
-    if (theme === 'light') root.classList.add('theme-light');
+    root.classList.add(`theme-${theme}`);
   }, [theme]);
 
   return <ThemeContext.Provider value={{ theme, setTheme }}>{children}</ThemeContext.Provider>;

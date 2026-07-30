@@ -1,26 +1,24 @@
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { OpportunitiesIcon, DealRangeIcon, StakeholdersIcon } from '../components/icons/AppIcons';
 import { BankLogo } from '../components/SvgIcons';
-import { useAuth } from '../store/AuthContext';
-import { getDemoAccountsSubset } from '../data/staticData';
+import { fetchAccountsList } from '../api/accounts';
+import hotAccountsIcon from '../../logo/icons/hot-accounts.svg';
 import './AccountsPage.css';
 
-const STATIC_ACCOUNTS = [
-  { id:'A002', name:'Synovus',     logo:'/banks/synovus.jpg',     sector:'Banking', isHot:true, summary:{ totalOpportunities:10, opportunityRange:'$19M–$65M',  stakeholdersCount:12 } },
-  { id:'A001', name:'Citizens',    logo:'/banks/citizens.png',    sector:'Banking', isHot:true, summary:{ totalOpportunities:28, opportunityRange:'$36.5M–$117M', stakeholdersCount:9  } },
-  { id:'A003', name:'BECU',        logo:'/banks/becu.png',        sector:'Banking', summary:{ totalOpportunities:10, opportunityRange:'$8M–$16M',   stakeholdersCount:11 } },
-  { id:'A004', name:'PNC',         logo:'/banks/pnc.png',         sector:'Banking', summary:{ totalOpportunities:9,  opportunityRange:'$6M–$12M',   stakeholdersCount:8  } },
-  { id:'A005', name:'US Bank',     logo:'/banks/usbank.png',      sector:'Banking', summary:{ totalOpportunities:8,  opportunityRange:'$5M–$10M',   stakeholdersCount:7  } },
-  { id:'A006', name:'M&T Bank',    logo:'/banks/mtb.png',         sector:'Banking', summary:{ totalOpportunities:8,  opportunityRange:'$5M–$10M',   stakeholdersCount:6  } },
-  { id:'A007', name:'Truist',      logo:'/banks/truist.png',      sector:'Banking', summary:{ totalOpportunities:7,  opportunityRange:'$4M–$9M',    stakeholdersCount:5  } },
-  { id:'A008', name:'Fifth Third', logo:'/banks/fifththird.png',  sector:'Banking', summary:{ totalOpportunities:7,  opportunityRange:'$4M–$8M',    stakeholdersCount:4  } },
-];
+function accountNumberSortKey(id) {
+  const value = String(id ?? '').trim();
+  const match = value.match(/(\d+)/);
+  if (!match) return Number.MAX_SAFE_INTEGER;
+  return Number.parseInt(match[1], 10);
+}
 
 function AccountCard({ account }) {
   const navigate = useNavigate();
-  const { id, name, summary, isHot } = account;
+  const { id, name, status, summary } = account;
   const accountOverviewPath = `/accounts/${id}?from=accounts`;
   const accountOpportunitiesPath = `/accounts/${id}?tab=Opportunities&from=accounts`;
+  const isHot = String(status ?? '').trim().toLowerCase() === 'hot';
 
   return (
     <article
@@ -37,11 +35,6 @@ function AccountCard({ account }) {
       role="button"
       aria-label={`View ${name} overview`}
     >
-      {isHot && (
-        <span className="account-card__hot-star" aria-label={`${name} is a hot account`}>
-          ★
-        </span>
-      )}
       <div className="account-card__body">
         <div className="account-card__header">
           <div className="account-card__identity">
@@ -52,6 +45,12 @@ function AccountCard({ account }) {
               <h2 className="account-card__name">{name}</h2>
             </div>
           </div>
+          {isHot ? (
+            <span className="account-card__hot-badge" aria-label="Hot account" title="Hot account">
+              <img src={hotAccountsIcon} alt="" className="account-card__hot-badge-icon" aria-hidden />
+              <span className="account-card__hot-badge-label">Hot</span>
+            </span>
+          ) : null}
         </div>
         <div className="account-card__stats">
           <div className="account-card__stat-chip account-card__stat-chip--green">
@@ -96,12 +95,45 @@ function AccountCard({ account }) {
 }
 
 export default function AccountsPage() {
-  const { user } = useAuth();
-  // Same experimental subset used on the Portfolio Overview page, so
-  // demo1..demo10 see a consistent set of subscribed banks everywhere.
-  // Official accounts (ajay@, demo@) are unaffected and always see all 10.
-  const visibleIds = new Set(getDemoAccountsSubset(user?.bankCount).map(a => a.id));
-  const visibleAccounts = STATIC_ACCOUNTS.filter(a => visibleIds.has(a.id));
+  const [accounts, setAccounts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const rows = await fetchAccountsList();
+        if (!cancelled) setAccounts(rows ?? []);
+      } catch (err) {
+        console.error('Failed to load accounts', err);
+        if (!cancelled) setAccounts([]);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const visibleAccounts = [...accounts]
+    .sort((a, b) => {
+      const aKey = accountNumberSortKey(a.id);
+      const bKey = accountNumberSortKey(b.id);
+      if (aKey !== bKey) return aKey - bKey;
+      return String(a.id ?? '').localeCompare(String(b.id ?? ''), undefined, { numeric: true });
+    })
+    .map((account) => ({
+      id: account.id,
+      name: account.name,
+      status: account.status,
+      summary: {
+        totalOpportunities: account.summary?.totalOpportunities ?? account.opportunities?.length ?? 0,
+        opportunityRange: account.summary?.opportunityRange ?? '—',
+        stakeholdersCount: account.summary?.stakeholdersCount ?? 0,
+      },
+    }));
 
   return (
     <div className="accounts-page animate-fade">
@@ -109,6 +141,7 @@ export default function AccountsPage() {
         <h1 className="page-header__title">Accounts</h1>
         <p className="page-header__subtitle">Select an account to explore its ranked revenue opportunities.</p>
       </header>
+      {isLoading ? <p className="account-page__loading">Loading accounts...</p> : null}
       <div className="accounts-page__grid">
         {visibleAccounts.map(account => (
           <AccountCard key={account.id} account={account} />

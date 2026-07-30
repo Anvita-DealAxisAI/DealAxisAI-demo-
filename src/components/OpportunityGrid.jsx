@@ -1,8 +1,15 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import OpportunityCard from './OpportunityCard';
 import './OpportunityGrid.css';
 
-const PRIORITY_ORDER = { High: 0, 'Medium-High': 1, Medium: 2, Low: 3 };
+const PRIORITY_ORDER = {
+  critical: 0,
+  hot: 1,
+  high: 2,
+  'medium-high': 3,
+  medium: 4,
+  low: 5,
+};
 const TYPE_ORDER = {
   'Confirmed Opportunity': 0,
   Confirmed: 0,
@@ -16,8 +23,8 @@ const TYPE_ORDER = {
 
 function sortOpportunities(opportunities) {
   return [...opportunities].sort((a, b) => {
-    const pa = PRIORITY_ORDER[a.priority] ?? 99;
-    const pb = PRIORITY_ORDER[b.priority] ?? 99;
+    const pa = PRIORITY_ORDER[String(a.priority ?? '').trim().toLowerCase()] ?? 99;
+    const pb = PRIORITY_ORDER[String(b.priority ?? '').trim().toLowerCase()] ?? 99;
     if (pa !== pb) return pa - pb;
 
     const ta = TYPE_ORDER[a.opportunityType] ?? 99;
@@ -51,11 +58,45 @@ function OpportunityCardSkeleton() {
 
 export default function OpportunityGrid({ opportunities = [], isLoading = false, accountId }) {
   const [expandedId, setExpandedId] = useState(null);
+  const pendingExpandIdRef = useRef(null);
+  const switchTimerRef = useRef(null);
   const sorted = useMemo(() => sortOpportunities(opportunities), [opportunities]);
 
   const handleToggle = (id) => {
-    setExpandedId((current) => (current === id ? null : id));
+    if (switchTimerRef.current) {
+      window.clearTimeout(switchTimerRef.current);
+      switchTimerRef.current = null;
+    }
+
+    if (expandedId === id) {
+      pendingExpandIdRef.current = null;
+      setExpandedId(null);
+      return;
+    }
+
+    if (!expandedId) {
+      pendingExpandIdRef.current = null;
+      setExpandedId(id);
+      return;
+    }
+
+    // Two-step switch: collapse current first, then expand target.
+    pendingExpandIdRef.current = id;
+    setExpandedId(null);
+    switchTimerRef.current = window.setTimeout(() => {
+      if (pendingExpandIdRef.current) {
+        setExpandedId(pendingExpandIdRef.current);
+      }
+      pendingExpandIdRef.current = null;
+      switchTimerRef.current = null;
+    }, 180);
   };
+
+  useEffect(() => () => {
+    if (switchTimerRef.current) {
+      window.clearTimeout(switchTimerRef.current);
+    }
+  }, []);
 
   if (isLoading) {
     return (

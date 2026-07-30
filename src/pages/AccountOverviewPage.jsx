@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Icon, BankLogo } from '../components/SvgIcons';
 import PortfolioKpiCard from '../components/PortfolioKpiCard';
@@ -19,28 +19,31 @@ import stakeholdersIcon from '../../logo/icons/stakeholders.svg';
 import userStarIcon from '../../logo/icons/user-star.svg';
 import teamIcon from '../../logo/icons/team.svg';
 import userPenIcon from '../../logo/icons/user-pen.svg';
-import { SYNOVUS_SIGNALS, SYNOVUS_ORG, SYNOVUS_NEWS } from '../data/staticData';
+import { SYNOVUS_ORG, SYNOVUS_OPPORTUNITIES } from '../data/staticData';
 import OpportunitiesContent from '../components/OpportunitiesContent';
-import { getDemoOpportunityAccount } from '../data/demoOpportunityData';
+import {
+  fetchAccountById,
+  fetchAccountNewsById,
+  fetchAccountOrganizationById,
+  fetchAccountSignalsById,
+} from '../api/accounts';
+import appLogoUrl from '../../logo/AccountSignalAI-full-color-4.1.png';
+import { generateAccountReportPdf } from '../utils/accountReportPdf';
 
 /* ─── Static account data ─────────────────────────────────────────── */
-const ACCOUNTS = {
-  A001: { name:'Citizens',    logo:'/banks/citizens.png',   sector:'Banking', color:'#16a34a' },
-  A002: { name:'Synovus',     logo:'/banks/synovus.jpg',    sector:'Banking', color:'#dc2626' },
-  A003: { name:'BECU',        logo:'/banks/becu.png',       sector:'Banking', color:'#1d4ed8' },
-  A004: { name:'PNC',         logo:'/banks/pnc.png',        sector:'Banking', color:'#ea580c' },
-  A005: { name:'US Bank',     logo:'/banks/usbank.png',     sector:'Banking', color:'#dc2626' },
-  A006: { name:'M&T Bank',    logo:'/banks/mtb.png',        sector:'Banking', color:'#0f766e' },
-  A007: { name:'Truist',      logo:'/banks/truist.png',     sector:'Banking', color:'#7c3aed' },
-  A008: { name:'Fifth Third', logo:'/banks/fifththird.png', sector:'Banking', color:'#1d4ed8' },
-  A009: { name:'Regions',     logo:'/banks/regions.png',    sector:'Banking', color:'#16a34a' },
-  A010: { name:'KeyBank',     logo:'/banks/keybank.png',    sector:'Banking', color:'#dc2626' },
-};
-
 const TABS = ['Overview','Signals','Opportunities','Organization','News & Events'];
 
 /* ─── OVERVIEW TAB ────────────────────────────────────────────────── */
 function OverviewTab({ acct }) {
+  const aboutText = acct.about ?? '—';
+  const productsText = acct.products ?? '—';
+  const servicesText = acct.services ?? '—';
+  const strategyText = acct.businessStrategy ?? '—';
+  const retailBankText = acct.retailBank ?? '—';
+  const commercialBankText = acct.commercialBank ?? '—';
+  const wealthBankText = acct.wealthBank ?? '—';
+  const competitiveRows = Array.isArray(acct.competitiveLandscape) ? acct.competitiveLandscape : [];
+
   return (
     <div className="animate-in">
       {/* Info cards */}
@@ -49,19 +52,19 @@ function OverviewTab({ acct }) {
           {
             label: 'About Bank',
             variant: 'accounts',
-            sub: `${acct.name} is a regional financial-services organization focused on relationship-led banking across retail, commercial and wealth segments.`,
+            sub: aboutText,
           },
           {
             label: 'Products',
             variant: 'opportunity-value',
             icon: briefcaseIcon,
-            sub: 'Consumer and commercial lending, treasury management, payments, mortgages, digital banking, wealth and advisory services.',
+            sub: productsText,
           },
           {
             label: 'Services',
             variant: 'high-value',
             icon: monitorCogIcon,
-            sub: 'Retail banking, commercial banking, treasury, payments, private banking, wealth advisory, branch and digital servicing.',
+            sub: servicesText,
           },
         ].map((kpi, i) => (
           <PortfolioKpiCard
@@ -77,10 +80,10 @@ function OverviewTab({ acct }) {
         <h3 style={{fontSize:16,fontWeight:600,color:'#0f172a',marginBottom:12}}>Key Financials</h3>
         <div className="asi-financials">
           {[
-            { label:'Asset Size',       value:'$60B+', icon: piggyBankIcon,  bg:'#fdf2f8', iconSize: 21 },
-            { label:'Revenue',          value:'$2.3B', icon: revenueIcon,    bg:'#f0fdf4' },
-            { label:'NIM',              value:'3.2%',  icon: percentIcon,    bg:'#fef9c3' },
-            { label:'Efficiency Ratio', value:'61%',   icon: zapIcon,        bg:'#f5f3ff' },
+            { label:'Asset Size',       value:acct.assetSize ?? '—',        icon: piggyBankIcon,  bg:'#fdf2f8', iconSize: 21 },
+            { label:'Revenue',          value:acct.revenue ?? '—',          icon: revenueIcon,    bg:'#f0fdf4' },
+            { label:'NIM',              value:acct.nim ?? '—',              icon: percentIcon,    bg:'#fef9c3' },
+            { label:'Efficiency Ratio', value:acct.efficiencyRatio ?? '—',  icon: zapIcon,        bg:'#f5f3ff' },
           ].map(f=>(
             <div key={f.label} className="asi-financial">
               <div className="asi-financial__icon" style={{background:f.bg}}>
@@ -100,7 +103,7 @@ function OverviewTab({ acct }) {
         <div className="asi-strategy__icon"><img src={businessStrategyIcon} alt="" width={24} height={24} aria-hidden /></div>
         <div>
           <h3 className="asi-strategy__title">Business Strategy</h3>
-          <p className="asi-strategy__text">{acct.name} is committed to disciplined growth through deep client relationships and strategic market focus. The bank invests in digital modernization to enhance customer experience and operational efficiency while expanding relationship-based commercial banking and wealth management capabilities. {acct.name} prioritizes strong credit quality, risk management, and profitable growth to deliver sustainable shareholder value.</p>
+          <p className="asi-strategy__text">{strategyText}</p>
         </div>
       </div>
 
@@ -116,17 +119,12 @@ function OverviewTab({ acct }) {
               <th style={{ textAlign: 'center', fontSize: '12px', textTransform: 'none', letterSpacing: 'normal' }}>Efficiency Ratio</th>
             </tr></thead>
             <tbody>
-              {[
-                {name:'Regions',     asset:'$152B',rev:'$7.5B', eff:'60%'},
-                {name:'Truist',      asset:'$545B',rev:'$20.1B',eff:'62%'},
-                {name:'Fifth Third', asset:'$214B',rev:'$7.8B', eff:'59%'},
-                {name:'KeyBank',     asset:'$187B',rev:'$6.7B', eff:'63%'},
-              ].map(r=>(
-                <tr key={r.name}>
-                  <td><div style={{display:'flex',alignItems:'center',gap:10}}><BankLogo name={r.name} size={28}/><span style={{fontWeight:500}}>{r.name}</span></div></td>
-                  <td style={{textAlign:'center'}}>{r.asset}</td>
-                  <td style={{textAlign:'center'}}>{r.rev}</td>
-                  <td style={{textAlign:'center'}}>{r.eff}</td>
+              {(competitiveRows.length ? competitiveRows : [{ bankName: '—', assetSize: '—', revenue: '—', efficiencyRatio: '—' }]).map((r)=>(
+                <tr key={`${r.bankName}-${r.assetSize}-${r.revenue}-${r.efficiencyRatio}`}>
+                  <td><div style={{display:'flex',alignItems:'center',gap:10}}><BankLogo name={r.bankName} size={28}/><span style={{fontWeight:500}}>{r.bankName}</span></div></td>
+                  <td style={{textAlign:'center'}}>{r.assetSize}</td>
+                  <td style={{textAlign:'center'}}>{r.revenue}</td>
+                  <td style={{textAlign:'center'}}>{r.efficiencyRatio}</td>
                 </tr>
               ))}
             </tbody>
@@ -138,11 +136,11 @@ function OverviewTab({ acct }) {
       <div className="asi-info-grid">
         {[
           { title:'Retail Bank',       icon: shoppingCartIcon,   color:'blue',  bg:'#eff6ff',
-            text:'Focused on deepening digital engagement, growing core deposits, optimizing branch and channel mix, and enhancing customer experience to drive loyalty and lifetime value.' },
+            text: retailBankText },
           { title:'Commercial Bank',   icon: commercialBankIcon, color:'green', bg:'#f0fdf4',
-            text:'Driving commercial lending growth, expanding treasury and payments solutions, strengthening middle-market relationships, and maintaining strong credit quality and risk discipline.' },
+            text: commercialBankText },
           { title:'Wealth Bank',       icon: walletIcon,         color:'purple',bg:'#f5f3ff',
-            text:'Growing advisory assets, acquiring affluent clients, delivering comprehensive portfolio services, and leveraging integrated relationship coverage across the enterprise.' },
+            text: wealthBankText },
         ].map(c=>(
           <div key={c.title} className={`asi-info-card asi-info-card--${c.color}`}>
             <div className="asi-info-card__head">
@@ -158,6 +156,22 @@ function OverviewTab({ acct }) {
 }
 
 /* ─── SIGNALS TAB ─────────────────────────────────────────────────── */
+const SIG_STYLE_BY_TITLE = [
+  { match: /growth strategy/i, color: 'blue', icon: 'trend' },
+  { match: /operational efficiency/i, color: 'green', icon: 'gear' },
+  { match: /profitability/i, color: 'purple', icon: 'people' },
+  { match: /loan growth/i, color: 'orange', icon: 'brief' },
+  { match: /deposit growth/i, color: 'purple', icon: 'person' },
+  { match: /technology/i, color: 'teal', icon: 'cloud' },
+];
+const SIG_STYLE_FALLBACK = [
+  { color: 'blue', icon: 'trend' },
+  { color: 'green', icon: 'gear' },
+  { color: 'purple', icon: 'people' },
+  { color: 'orange', icon: 'brief' },
+  { color: 'teal', icon: 'person' },
+  { color: 'blue', icon: 'cloud' },
+];
 const SIG_ICON_ASSETS = {
   trend: commercialBankIcon,
   gear: integrationsIcon,
@@ -174,80 +188,183 @@ const SIG_COLORS = {
   teal:   {border:'#0891b2',bg:'#ecfeff',ic:'#0891b2'},
 };
 
-function SignalsTab({ name }) {
+function resolveSignalStyle(title, index) {
+  const matched = SIG_STYLE_BY_TITLE.find((entry) => entry.match.test(title));
+  if (matched) return matched;
+  return SIG_STYLE_FALLBACK[index % SIG_STYLE_FALLBACK.length];
+}
+
+function SignalsTab({ accountId }) {
+  const [businessSummary, setBusinessSummary] = React.useState(null);
+  const [cards, setCards] = React.useState([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [error, setError] = React.useState('');
+
+  React.useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      if (!accountId) {
+        setBusinessSummary(null);
+        setCards([]);
+        setIsLoading(false);
+        return;
+      }
+      setIsLoading(true);
+      setError('');
+      try {
+        const data = await fetchAccountSignalsById(accountId);
+        if (!cancelled) {
+          setBusinessSummary(data.businessSummary);
+          setCards(data.cards);
+        }
+      } catch (err) {
+        console.error('Failed to load account signals', err);
+        if (!cancelled) {
+          setBusinessSummary(null);
+          setCards([]);
+          setError(err?.message || 'Failed to load signals');
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [accountId]);
+
+  if (isLoading) {
+    return <div className="animate-in" style={{ color: '#64748b', fontSize: 13 }}>Loading signals…</div>;
+  }
+
+  if (error) {
+    return <div className="animate-in" style={{ color: '#b91c1c', fontSize: 13 }}>{error}</div>;
+  }
+
   return (
     <div className="animate-in">
-      {/* Business Summary */}
-      <div
-        className="asi-summary-card"
-        style={{
-          marginBottom: 24,
-          background: 'linear-gradient(135deg, rgba(96, 176, 232, 0.03) 0%, rgba(37, 99, 235, 0.06) 35%, rgba(0, 89, 207, 0.09) 70%, rgba(0, 89, 207, 0.1) 100%)',
-        }}
-      >
+      {businessSummary ? (
         <div
+          className="asi-summary-card"
           style={{
-            width: 50,
-            height: 50,
-            borderRadius: 12,
-            background: '#ffffff',
-            border: '1px solid rgba(37, 99, 235, 0.18)',
-            boxShadow: '0 1px 3px rgba(15, 23, 42, 0.08)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
+            marginBottom: 24,
+            background: 'linear-gradient(135deg, rgba(96, 176, 232, 0.03) 0%, rgba(37, 99, 235, 0.06) 35%, rgba(0, 89, 207, 0.09) 70%, rgba(0, 89, 207, 0.1) 100%)',
           }}
         >
-          <img src={fileTextIcon} alt="" width={26} height={26} aria-hidden style={{ display: 'block' }} />
+          <div
+            style={{
+              width: 50,
+              height: 50,
+              borderRadius: 12,
+              background: '#ffffff',
+              border: '1px solid rgba(37, 99, 235, 0.18)',
+              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.08)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <img src={fileTextIcon} alt="" width={26} height={26} aria-hidden style={{ display: 'block' }} />
+          </div>
+          <div>
+            <h3 style={{fontSize:16,fontWeight:600,color:'#0f172a',marginBottom:6}}>Business Summary</h3>
+            <p style={{fontSize:13,color:'#334155',lineHeight:1.7}}>{businessSummary}</p>
+          </div>
         </div>
-        <div>
-          <h3 style={{fontSize:16,fontWeight:600,color:'#0f172a',marginBottom:6}}>Business Summary</h3>
-          <p style={{fontSize:13,color:'#334155',lineHeight:1.7}}>{name} is executing a disciplined growth strategy focused on deepening client relationships, expanding commercial and wealth capabilities, and optimizing the deposit franchise. The bank is investing in digital capabilities, simplifying operations, and modernizing core platforms to improve efficiency, enhance client experience, and drive sustainable shareholder value across the Southeast.</p>
-        </div>
-      </div>
+      ) : null}
 
-      {/* Signal Inventory */}
       <h3 style={{fontSize:16,fontWeight:600,color:'#0f172a',marginBottom:14}}>Signal Inventory</h3>
-      <div className="asi-signal-grid">
-        {SYNOVUS_SIGNALS.map(sig=>{
-          const col = SIG_COLORS[sig.color] || SIG_COLORS.blue;
-          const iconSrc = SIG_ICON_ASSETS[sig.icon] || integrationsIcon;
-          const relBg = sig.relevance==='High relevance'?'#f0fdf4':sig.relevance==='Active'?'#f5f3ff':'#f8fafc';
-          const relColor = sig.relevance==='High relevance'?'#16a34a':sig.relevance==='Active'?'#7c3aed':'#64748b';
-          return (
-            <div key={sig.id} className={`asi-signal-card asi-signal-card--${sig.color}`}>
-              <div className="asi-signal-card__head">
-                <div className="asi-signal-card__icon" style={{background:col.bg}}>
-                  <img src={iconSrc} alt="" width={20} height={20} aria-hidden />
+      {cards.length === 0 ? (
+        <p style={{ fontSize: 13, color: '#64748b' }}>No signal cards available for this account.</p>
+      ) : (
+        <div className={`asi-signal-grid asi-signal-grid--count-${Math.min(cards.length, 6)}`}>
+          {cards.map((card, index) => {
+            const style = resolveSignalStyle(card.title, index);
+            const col = SIG_COLORS[style.color] || SIG_COLORS.blue;
+            const iconSrc = SIG_ICON_ASSETS[style.icon] || integrationsIcon;
+            return (
+              <div key={card.id} className={`asi-signal-card asi-signal-card--${style.color}`}>
+                <div className="asi-signal-card__head">
+                  <div className="asi-signal-card__icon" style={{background:col.bg}}>
+                    <img src={iconSrc} alt="" width={20} height={20} aria-hidden />
+                  </div>
                 </div>
-                <span style={{fontSize:11,fontWeight:600,padding:'3px 10px',borderRadius:20,background:relBg,color:relColor,whiteSpace:'nowrap'}}>{sig.relevance}</span>
+                <h4 className="asi-signal-card__title">{card.title}</h4>
+                <p className="asi-signal-card__desc">{card.text}</p>
               </div>
-              <h4 className="asi-signal-card__title">{sig.title}</h4>
-              <p className="asi-signal-card__desc">{sig.desc}</p>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
 
 /* ─── OPPORTUNITIES TAB ───────────────────────────────────────────── */
-function OpportunitiesTab({ accountId, accountName }) {
-  const mockAccount = getDemoOpportunityAccount(accountId, accountName);
+function OpportunitiesTab({ account }) {
   return (
     <div className="animate-in">
-      <OpportunitiesContent account={mockAccount} isLoading={false} />
+      <OpportunitiesContent account={account} isLoading={!account} />
     </div>
   );
 }
 
 /* ─── ORGANIZATION TAB ────────────────────────────────────────────── */
-function OrganizationTab({ name }) {
+const EMPTY_ORG = {
+  kpis: {
+    totalStakeholders: 0,
+    executiveLeaders: 0,
+    technologyLeaders: 0,
+    opportunityOwners: 0,
+  },
+  tabs: [
+    { key: 'executive_leadership', label: 'Executive Leadership', icon: 'people', people: [], viewAllLabel: 'View All Executive Leadership (0)' },
+    { key: 'technology_leadership', label: 'Technology Leadership', icon: 'trend', people: [], viewAllLabel: 'View All Technology Leadership (0)' },
+    { key: 'business_leadership', label: 'Business Leadership', icon: 'bank', people: [], viewAllLabel: 'View All Business Leadership (0)' },
+    { key: 'opportunity_owners', label: 'Opportunity Owners', icon: 'revenue', people: [], viewAllLabel: 'View All Opportunity Owners (0)' },
+  ],
+};
+
+function OrganizationTab({ accountId, name }) {
   const [activeOrgTab, setActiveOrgTab] = React.useState(0);
   const [expandedOpp, setExpandedOpp] = React.useState(null);
-  const tab = SYNOVUS_ORG.tabs[activeOrgTab];
+  const [orgData, setOrgData] = React.useState(EMPTY_ORG);
+  const [isLoadingOrg, setIsLoadingOrg] = React.useState(true);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      if (!accountId) {
+        setOrgData(EMPTY_ORG);
+        setIsLoadingOrg(false);
+        return;
+      }
+      setIsLoadingOrg(true);
+      try {
+        const org = await fetchAccountOrganizationById(accountId);
+        if (!cancelled) {
+          setOrgData({
+            kpis: org?.kpis ?? EMPTY_ORG.kpis,
+            tabs: Array.isArray(org?.tabs) && org.tabs.length > 0 ? org.tabs : EMPTY_ORG.tabs,
+          });
+          setActiveOrgTab(0);
+        }
+      } catch (err) {
+        console.error('Failed to load organization', err);
+        if (!cancelled) setOrgData(EMPTY_ORG);
+      } finally {
+        if (!cancelled) setIsLoadingOrg(false);
+      }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [accountId]);
+
+  const tab = orgData.tabs[activeOrgTab] ?? orgData.tabs[0];
 
   const stars = (n) => Array.from({length:5}, (_, i) => (
     <span key={i} style={{color: i < n ? '#f59e0b' : '#e2e8f0', fontSize:15}}>★</span>
@@ -256,7 +373,7 @@ function OrganizationTab({ name }) {
   const kpis = [
     {
       label:'Total Stakeholders',
-      value:SYNOVUS_ORG.kpis.totalStakeholders,
+      value:orgData.kpis.totalStakeholders,
       sub:'Across all functions',
       icon: stakeholdersIcon,
       color:'#eff6ff',
@@ -264,23 +381,23 @@ function OrganizationTab({ name }) {
     },
     {
       label:'Executive Leaders',
-      value:SYNOVUS_ORG.kpis.executiveLeaders,
+      value:orgData.kpis.executiveLeaders,
       sub:'CxO / SVP / EVP',
       icon: userStarIcon,
       color:'#f0fdf4',
       gradient:'linear-gradient(135deg, rgba(204, 251, 196, 0.03) 0%, rgba(130, 209, 115, 0.06) 35%, rgba(36, 158, 70, 0.09) 70%, rgba(36, 158, 70, 0.1) 100%)',
     },
     {
-      label:'Function Leaders',
-      value:SYNOVUS_ORG.kpis.functionLeaders,
-      sub:'Directors and above',
+      label:'Technology Leaders',
+      value:orgData.kpis.technologyLeaders,
+      sub:'Technology leadership',
       icon: userPenIcon,
       color:'#faf5ff',
       gradient:'linear-gradient(135deg, rgba(237, 233, 254, 0.03) 0%, rgba(196, 181, 253, 0.06) 35%, rgba(139, 92, 246, 0.09) 70%, rgba(109, 40, 217, 0.1) 100%)',
     },
     {
       label:'Opportunity Owners',
-      value:SYNOVUS_ORG.kpis.opportunityOwners,
+      value:orgData.kpis.opportunityOwners,
       sub:'Mapped to opportunities',
       icon: teamIcon,
       color:'#fff7ed',
@@ -289,12 +406,13 @@ function OrganizationTab({ name }) {
   ];
 
   const engagementColor = (e) => e==='Very High' ? '#16a34a' : e==='High' ? '#2563eb' : '#94a3b8';
+  const showStaticOpportunityOwners = Boolean(name?.toLowerCase().includes('synovus'));
 
   return (
     <div className="animate-in">
 
       {/* Subtitle line */}
-      <p style={{fontSize:13,color:'#64748b',marginBottom:16}}>Key decision makers and influencers across {name} Bank</p>
+      <p style={{fontSize:13,color:'#64748b',marginBottom:16}}>Key decision makers and influencers across {name}</p>
 
       {/* 4 KPI cards */}
       <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16,marginBottom:24}}>
@@ -304,7 +422,7 @@ function OrganizationTab({ name }) {
               <img src={k.icon} alt="" width={24} height={24} aria-hidden />
             </div>
             <div>
-              <p style={{fontSize:26,fontWeight:700,color:'#0f172a',lineHeight:1}}>{k.value}</p>
+              <p style={{fontSize:26,fontWeight:700,color:'#0f172a',lineHeight:1}}>{isLoadingOrg ? '—' : k.value}</p>
               <p style={{fontSize:13,fontWeight:600,color:'#0f172a',marginTop:4}}>{k.label}</p>
               <p style={{fontSize:12,color:'#64748b',marginTop:2}}>{k.sub}</p>
             </div>
@@ -314,10 +432,10 @@ function OrganizationTab({ name }) {
 
       {/* Main stakeholder card */}
       <div style={{background:'white',borderRadius:12,boxShadow:'var(--card-shadow)',overflow:'hidden',marginBottom:24}}>
-        {/* Tab bar */}
+        {/* Tab bar — leadership_type pivot */}
         <div style={{display:'flex',borderBottom:'1px solid #e2e8f0',padding:'0 20px',gap:0}}>
-          {SYNOVUS_ORG.tabs.map((t, idx) => (
-            <button key={t.label} onClick={() => setActiveOrgTab(idx)} style={{
+          {orgData.tabs.map((t, idx) => (
+            <button key={t.key || t.label} onClick={() => setActiveOrgTab(idx)} style={{
               display:'flex',alignItems:'center',gap:8,padding:'14px 20px',fontSize:13,fontWeight:500,
               color: activeOrgTab===idx ? '#2563eb' : '#64748b',
               background:'none',border:'none',cursor:'pointer',
@@ -336,8 +454,14 @@ function OrganizationTab({ name }) {
           ))}
         </div>
         {/* Rows */}
-        {tab.people.map((p, i) => (
-          <div key={p.name} style={{
+        {isLoadingOrg && (
+          <div style={{padding:'28px 20px',textAlign:'center',fontSize:13,color:'#64748b'}}>Loading organization…</div>
+        )}
+        {!isLoadingOrg && (tab?.people ?? []).length === 0 && (
+          <div style={{padding:'28px 20px',textAlign:'center',fontSize:13,color:'#64748b'}}>No stakeholders mapped for this leadership type yet.</div>
+        )}
+        {!isLoadingOrg && (tab?.people ?? []).map((p, i) => (
+          <div key={p.id || `${p.name}-${i}`} style={{
             display:'grid',gridTemplateColumns:'240px 210px 170px 1fr 110px 100px',
             alignItems:'center',padding:'14px 20px',
             borderBottom: i < tab.people.length - 1 ? '1px solid #f1f5f9' : 'none',
@@ -353,22 +477,19 @@ function OrganizationTab({ name }) {
             <span style={{fontSize:13,color:'#475569',lineHeight:1.4}}>{p.title}</span>
             <span style={{fontSize:13,color:'#64748b'}}>{p.function}</span>
             <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>
-              {p.focus.map(a => (
-                <span key={a} style={{fontSize:11,padding:'2px 8px',borderRadius:20,background:'#eff6ff',color:'#2563eb',fontWeight:500,whiteSpace:'nowrap'}}>{a}</span>
+              {(p.focus ?? []).map(a => (
+                <span key={a} style={{fontSize:11,padding:'2px 8px',borderRadius:20,background:'#eff6ff',color:'#2563eb',fontWeight:500}}>{a}</span>
               ))}
-              {p.extraFocus > 0 && <span style={{fontSize:11,padding:'2px 8px',borderRadius:20,background:'#f1f5f9',color:'#64748b'}}>+{p.extraFocus}</span>}
             </div>
             <span style={{fontSize:14,fontWeight:600,color:'#0f172a',textAlign:'center',display:'block'}}>{p.opps}</span>
             <div>{stars(p.stars)}</div>
           </div>
         ))}
-        {/* View All link */}
-        <div style={{padding:'14px 20px',borderTop:'1px solid #f1f5f9',textAlign:'center'}}>
-          <span style={{fontSize:13,fontWeight:500,color:'#2563eb',cursor:'pointer'}}>{tab.viewAllLabel} →</span>
-        </div>
       </div>
 
-      {/* Top Opportunity Owners */}
+      {/* Top Opportunity Owners — static Synovus enrichment until opp-owner mapping is modeled */}
+      {showStaticOpportunityOwners && (
+        <>
       <div style={{marginBottom:12}}>
         <h3 style={{fontSize:15,fontWeight:600,color:'#0f172a',margin:0}}>Top Opportunity Owners</h3>
       </div>
@@ -487,6 +608,8 @@ function OrganizationTab({ name }) {
           );
         })}
       </div>
+        </>
+      )}
     </div>
   );
 }
@@ -494,15 +617,93 @@ function OrganizationTab({ name }) {
 
 
 /* ─── NEWS TAB ────────────────────────────────────────────────────── */
-const NEWS_ICONS = { bank:'bank', mobile:'mobile', people:'people', payment:'payment', shield:'shield', globe:'globe', calendar:'calendar', people2:'people2' };
-const REG_TAG_STYLES = {
-  'Regulatory':     {bg:'#eff6ff',color:'#2563eb'},
-  'Watchlist':      {bg:'#fef9c3',color:'#854d0e'},
-  'High relevance': {bg:'#f0fdf4',color:'#16a34a'},
+const CATEGORY_STYLES = {
+  bank_announcement: { label: 'Bank Announcement', color: '#ea580c', bg: '#fff7ed' },
+  earnings_update: { label: 'Earnings Update', color: '#7c3aed', bg: '#f5f3ff' },
+  leadership_change: { label: 'Leadership Change', color: '#2563eb', bg: '#eff6ff' },
+  regulatory_risk: { label: 'Regulatory / Risk', color: '#dc2626', bg: '#fef2f2' },
+  technology_vendor: { label: 'Technology / Vendor', color: '#0891b2', bg: '#ecfeff' },
+  banking_regulation: { label: 'Banking Regulation', color: '#16a34a', bg: '#f0fdf4' },
+  ai_in_banking: { label: 'AI in Banking', color: '#7c3aed', bg: '#f5f3ff' },
+  payments_modernization: { label: 'Payments Modernization', color: '#7c3aed', bg: '#f5f3ff' },
+  fraud_aml: { label: 'Fraud / AML', color: '#dc2626', bg: '#fef2f2' },
+  core_digital_banking: { label: 'Core / Digital Banking', color: '#ea580c', bg: '#fff7ed' },
+  wealthtech: { label: 'Wealthtech', color: '#2563eb', bg: '#eff6ff' },
+  risk_compliance_event: { label: 'Risk / Compliance', color: '#dc2626', bg: '#fef2f2' },
+  fintech_event: { label: 'Fintech', color: '#0891b2', bg: '#ecfeff' },
+  wealthtech_event: { label: 'Wealthtech', color: '#7c3aed', bg: '#f5f3ff' },
+  banking_conference: { label: 'Banking', color: '#16a34a', bg: '#f0fdf4' },
+  payments_event: { label: 'Payments', color: '#0891b2', bg: '#ecfeff' },
+  ai_data_banking_event: { label: 'AI / Data', color: '#7c3aed', bg: '#f5f3ff' },
 };
 
-function NewsTab({ name }) {
-  const [activeNewsTab, setActiveNewsTab] = React.useState(0);
+function formatNewsCategory(category) {
+  if (!category) return { label: '—', color: '#64748b', bg: '#f1f5f9' };
+  const known = CATEGORY_STYLES[category];
+  if (known) return known;
+  return {
+    label: String(category).replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+    color: '#475569',
+    bg: '#f1f5f9',
+  };
+}
+
+function formatNewsDate(value) {
+  if (!value) return '—';
+  const date = new Date(`${String(value).slice(0, 10)}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
+function formatEventDateRange(startDate, endDate) {
+  if (!startDate && !endDate) return '—';
+  if (!endDate || startDate === endDate) return formatNewsDate(startDate);
+  const start = formatNewsDate(startDate);
+  const end = formatNewsDate(endDate);
+  if (start === '—' || end === '—') return start !== '—' ? start : end;
+  const startParts = start.split(' ');
+  const endParts = end.split(' ');
+  if (startParts[0] === endParts[0] && startParts[2] === endParts[2]) {
+    return `${startParts[0]} ${startParts[1].replace(',', '')} – ${endParts[1]} ${endParts[2]}`;
+  }
+  return `${start} – ${end}`;
+}
+
+function formatPipeList(value) {
+  if (!value) return '—';
+  return String(value).split('|').map((part) => part.trim()).filter(Boolean).join(', ');
+}
+
+function NewsTab({ accountId }) {
+  const [activeNewsTab, setActiveNewsTab] = useState(0);
+  const [newsData, setNewsData] = useState({ bankNews: [], industryUpdates: [], upcomingEvents: [] });
+  const [isLoadingNews, setIsLoadingNews] = useState(true);
+  const [newsError, setNewsError] = useState('');
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      if (!accountId) return;
+      setIsLoadingNews(true);
+      setNewsError('');
+      try {
+        const data = await fetchAccountNewsById(accountId);
+        if (!cancelled) setNewsData(data);
+      } catch (err) {
+        console.error('Failed to load account news', err);
+        if (!cancelled) {
+          setNewsData({ bankNews: [], industryUpdates: [], upcomingEvents: [] });
+          setNewsError(err?.message || 'Failed to load news');
+        }
+      } finally {
+        if (!cancelled) setIsLoadingNews(false);
+      }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [accountId]);
 
   const newsTabs = [
     { label:'Bank News',        icon:'bank'    },
@@ -510,9 +711,14 @@ function NewsTab({ name }) {
     { label:'Upcoming Events',  icon:'calendar'},
   ];
 
-  const CategoryPill = ({ label, color, bg }) => (
-    <span style={{display:'inline-block',fontSize:11,fontWeight:600,padding:'3px 10px',borderRadius:20,background:bg,color:color,whiteSpace:'nowrap'}}>{label}</span>
-  );
+  const CategoryPill = ({ category }) => {
+    const style = formatNewsCategory(category);
+    return (
+      <span style={{display:'inline-block',fontSize:11,fontWeight:600,padding:'3px 10px',borderRadius:20,background:style.bg,color:style.color,whiteSpace:'nowrap'}}>
+        {style.label}
+      </span>
+    );
+  };
 
   const ExternalLink = ({ href }) => (
     href ? (
@@ -523,7 +729,7 @@ function NewsTab({ name }) {
         style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:6,background:'#f1f5f9',color:'#2563eb',fontSize:14,cursor:'pointer',textDecoration:'none'}}
       >↗</a>
     ) : (
-      <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:6,background:'#f1f5f9',color:'#2563eb',fontSize:14,cursor:'pointer'}}>↗</span>
+      <span style={{display:'inline-flex',alignItems:'center',justifyContent:'center',width:28,height:28,borderRadius:6,background:'#f1f5f9',color:'#94a3b8',fontSize:14}}>—</span>
     )
   );
 
@@ -535,9 +741,14 @@ function NewsTab({ name }) {
     </div>
   );
 
+  const EmptyState = ({ label }) => (
+    <div style={{padding:'28px 20px',fontSize:13,color:'#64748b'}}>
+      {isLoadingNews ? 'Loading…' : newsError || `No ${label} available for this account.`}
+    </div>
+  );
+
   return (
     <div className="animate-in">
-      {/* Tab bar — same style as Organization tab */}
       <div style={{background:'white',borderRadius:12,boxShadow:'var(--card-shadow)',overflow:'hidden'}}>
         <div style={{display:'flex',borderBottom:'1px solid #e2e8f0',padding:'0 20px'}}>
           {newsTabs.map((t, idx) => (
@@ -554,77 +765,83 @@ function NewsTab({ name }) {
           ))}
         </div>
 
-        {/* ── Bank News ── */}
         {activeNewsTab === 0 && (
           <>
             <ColHdr cols={[
               {label:'Title',w:'2fr'},{label:'Date',w:'100px'},{label:'Source',w:'130px'},
               {label:'Category',w:'150px'},{label:'Relevance to Sales',w:'2fr'},{label:'Link',w:'60px'}
             ]}/>
-            {SYNOVUS_NEWS.bankNews.map((item,i) => (
-              <div key={item.title} style={{
+            {!isLoadingNews && newsData.bankNews.length === 0 ? (
+              <EmptyState label="bank news" />
+            ) : newsData.bankNews.map((item,i) => (
+              <div key={item.news_item_id || item.id || item.title} style={{
                 display:'grid',gridTemplateColumns:'2fr 100px 130px 150px 2fr 60px',
                 alignItems:'center',padding:'14px 20px',
-                borderBottom: i < SYNOVUS_NEWS.bankNews.length-1 ? '1px solid #f1f5f9' : 'none',
+                borderBottom: i < newsData.bankNews.length-1 ? '1px solid #f1f5f9' : 'none',
               }}>
                 <span style={{fontSize:13,fontWeight:500,color:'#0f172a',lineHeight:1.4,paddingRight:12}}>{item.title}</span>
-                <span style={{fontSize:12,color:'#64748b'}}>{item.date}</span>
-                <span style={{fontSize:12,color:'#64748b'}}>{item.source}</span>
-                <div><CategoryPill label={item.category} color={item.categoryColor} bg={item.categoryBg}/></div>
-                <span style={{fontSize:12,color:'#475569',lineHeight:1.4,paddingRight:12}}>{item.relevance}</span>
-                <ExternalLink href={item.link}/>
+                <span style={{fontSize:12,color:'#64748b'}}>{formatNewsDate(item.published_at)}</span>
+                <span style={{fontSize:12,color:'#64748b'}}>{item.source || '—'}</span>
+                <div><CategoryPill category={item.category}/></div>
+                <span style={{fontSize:12,color:'#475569',lineHeight:1.4,paddingRight:12}}>{item.sales_relevance || item.relevance || '—'}</span>
+                <ExternalLink href={item.source_url}/>
               </div>
             ))}
+            {isLoadingNews && <EmptyState label="bank news" />}
           </>
         )}
 
-        {/* ── Industry Updates ── */}
         {activeNewsTab === 1 && (
           <>
             <ColHdr cols={[
               {label:'Title',w:'2fr'},{label:'Date',w:'90px'},{label:'Source',w:'120px'},
               {label:'Category',w:'160px'},{label:'Summary',w:'2fr'},{label:'Affected Domains',w:'180px'},{label:'Why it Matters',w:'1.5fr'}
             ]}/>
-            {SYNOVUS_NEWS.industryUpdates.map((item,i) => (
-              <div key={item.title} style={{
+            {!isLoadingNews && newsData.industryUpdates.length === 0 ? (
+              <EmptyState label="industry updates" />
+            ) : newsData.industryUpdates.map((item,i) => (
+              <div key={item.news_item_id || item.id || item.title} style={{
                 display:'grid',gridTemplateColumns:'2fr 90px 120px 160px 2fr 180px 1.5fr',
                 alignItems:'start',padding:'14px 20px',
-                borderBottom: i < SYNOVUS_NEWS.industryUpdates.length-1 ? '1px solid #f1f5f9' : 'none',
+                borderBottom: i < newsData.industryUpdates.length-1 ? '1px solid #f1f5f9' : 'none',
               }}>
                 <span style={{fontSize:13,fontWeight:500,color:'#0f172a',lineHeight:1.4,paddingRight:12}}>{item.title}</span>
-                <span style={{fontSize:12,color:'#64748b',paddingTop:2}}>{item.date}</span>
-                <span style={{fontSize:12,color:'#64748b',paddingTop:2}}>{item.source}</span>
-                <div style={{paddingTop:2}}><CategoryPill label={item.category} color={item.categoryColor} bg={item.categoryBg}/></div>
-                <span style={{fontSize:12,color:'#475569',lineHeight:1.4,paddingRight:12}}>{item.summary}</span>
-                <span style={{fontSize:12,color:'#64748b',lineHeight:1.4,paddingRight:12}}>{item.affectedDomains}</span>
-                <span style={{fontSize:12,color:'#475569',lineHeight:1.4}}>{item.whyMatters}</span>
+                <span style={{fontSize:12,color:'#64748b',paddingTop:2}}>{formatNewsDate(item.published_at)}</span>
+                <span style={{fontSize:12,color:'#64748b',paddingTop:2}}>{item.source || '—'}</span>
+                <div style={{paddingTop:2}}><CategoryPill category={item.category}/></div>
+                <span style={{fontSize:12,color:'#475569',lineHeight:1.4,paddingRight:12}}>{item.summary || '—'}</span>
+                <span style={{fontSize:12,color:'#64748b',lineHeight:1.4,paddingRight:12}}>{formatPipeList(item.affected_business_domains)}</span>
+                <span style={{fontSize:12,color:'#475569',lineHeight:1.4}}>{item.why_it_matters || '—'}</span>
               </div>
             ))}
+            {isLoadingNews && <EmptyState label="industry updates" />}
           </>
         )}
 
-        {/* ── Upcoming Events ── */}
         {activeNewsTab === 2 && (
           <>
             <ColHdr cols={[
-              {label:'Event Name',w:'2fr'},{label:'Date',w:'130px'},{label:'Location',w:'160px'},
-              {label:'Category',w:'180px'},{label:'Audience',w:'2fr'},{label:'Why Relevant',w:'1.8fr'},{label:'Website',w:'70px'}
+              {label:'Event Name',w:'2fr'},{label:'Date',w:'130px'},{label:'Location',w:'120px'},
+              {label:'Category',w:'150px'},{label:'Audience',w:'2fr'},{label:'Why Relevant',w:'1.8fr'},{label:'Website',w:'70px'}
             ]}/>
-            {SYNOVUS_NEWS.upcomingEvents.map((ev,i) => (
-              <div key={ev.name} style={{
-                display:'grid',gridTemplateColumns:'2fr 130px 160px 180px 2fr 1.8fr 70px',
+            {!isLoadingNews && newsData.upcomingEvents.length === 0 ? (
+              <EmptyState label="upcoming events" />
+            ) : newsData.upcomingEvents.map((ev,i) => (
+              <div key={ev.news_item_id || ev.id || ev.title} style={{
+                display:'grid',gridTemplateColumns:'2fr 130px 120px 150px 2fr 1.8fr 70px',
                 alignItems:'start',padding:'14px 20px',
-                borderBottom: i < SYNOVUS_NEWS.upcomingEvents.length-1 ? '1px solid #f1f5f9' : 'none',
+                borderBottom: i < newsData.upcomingEvents.length-1 ? '1px solid #f1f5f9' : 'none',
               }}>
-                <span style={{fontSize:13,fontWeight:500,color:'#0f172a',lineHeight:1.4,paddingRight:12}}>{ev.name}</span>
-                <span style={{fontSize:12,color:'#64748b',paddingTop:2}}>{ev.date}</span>
-                <span style={{fontSize:12,color:'#64748b',paddingTop:2,paddingRight:16}}>{ev.location}</span>
-                <div style={{paddingTop:2}}><CategoryPill label={ev.category} color={ev.categoryColor} bg={ev.categoryBg}/></div>
-                <span style={{fontSize:12,color:'#475569',lineHeight:1.4,paddingRight:12}}>{ev.audience}</span>
-                <span style={{fontSize:12,color:'#475569',lineHeight:1.4,paddingRight:12}}>{ev.whyRelevant}</span>
-                <ExternalLink href={ev.website}/>
+                <span style={{fontSize:13,fontWeight:500,color:'#0f172a',lineHeight:1.4,paddingRight:12}}>{ev.title}</span>
+                <span style={{fontSize:12,color:'#64748b',paddingTop:2}}>{formatEventDateRange(ev.start_date, ev.end_date)}</span>
+                <span style={{fontSize:12,color:'#64748b',paddingTop:2}}>{ev.location || '—'}</span>
+                <div style={{paddingTop:2}}><CategoryPill category={ev.category}/></div>
+                <span style={{fontSize:12,color:'#475569',lineHeight:1.4,paddingRight:12}}>{formatPipeList(ev.primary_audience)}</span>
+                <span style={{fontSize:12,color:'#475569',lineHeight:1.4,paddingRight:12}}>{ev.why_relevant || '—'}</span>
+                <ExternalLink href={ev.website || ev.source_url}/>
               </div>
             ))}
+            {isLoadingNews && <EmptyState label="upcoming events" />}
           </>
         )}
       </div>
@@ -635,6 +852,9 @@ function NewsTab({ name }) {
 export default function AccountOverviewPage() {
   const { accountId } = useParams();
   const navigate = useNavigate();
+  const [accountData, setAccountData] = useState(null);
+  const [isLoadingAccount, setIsLoadingAccount] = useState(true);
+  const [isDownloadingReport, setIsDownloadingReport] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
   const fromParam = searchParams.get('from');
@@ -648,7 +868,97 @@ export default function AccountOverviewPage() {
   const backLabel = fromParam === 'accounts' ? 'Back to Accounts' : 'Back to Portfolio';
   const backPath  = fromParam === 'accounts' ? '/accounts' : '/';
 
-  const acct = ACCOUNTS[accountId] || ACCOUNTS['A002'];
+  const handleDownloadReport = async () => {
+    if (!accountId || isDownloadingReport) return;
+    setIsDownloadingReport(true);
+    try {
+      const account = realAccount ?? (await fetchAccountById(accountId));
+      if (!account) return;
+      const [signals, organization, news] = await Promise.all([
+        fetchAccountSignalsById(accountId),
+        fetchAccountOrganizationById(accountId),
+        fetchAccountNewsById(accountId),
+      ]);
+      await generateAccountReportPdf({
+        account,
+        signals,
+        organization,
+        news,
+        logoUrl: appLogoUrl,
+      });
+    } catch (err) {
+      console.error('Failed to download account report', err);
+      window.alert('Unable to generate report PDF right now. Please try again.');
+    } finally {
+      setIsDownloadingReport(false);
+    }
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+    setIsLoadingAccount(true);
+    setAccountData(null);
+
+    const load = async () => {
+      if (!accountId) {
+        if (!cancelled) {
+          setAccountData(null);
+          setIsLoadingAccount(false);
+        }
+        return;
+      }
+      try {
+        const account = await fetchAccountById(accountId);
+        if (!cancelled) setAccountData(account ?? null);
+      } catch (err) {
+        console.error('Failed to load account detail', err);
+        if (!cancelled) setAccountData(null);
+      } finally {
+        if (!cancelled) setIsLoadingAccount(false);
+      }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [accountId]);
+
+  // Never show a previously viewed bank while the next account is loading.
+  const realAccount =
+    accountData && String(accountData.id) === String(accountId) ? accountData : null;
+  const acct = realAccount
+    ? {
+        id: realAccount.id,
+        name: realAccount.name,
+        about: realAccount.about,
+        products: realAccount.products,
+        services: realAccount.services,
+        assetSize: realAccount.assetSize,
+        revenue: realAccount.revenue,
+        nim: realAccount.nim,
+        efficiencyRatio: realAccount.efficiencyRatio,
+        businessStrategy: realAccount.businessStrategy,
+        retailBank: realAccount.retailBank,
+        commercialBank: realAccount.commercialBank,
+        wealthBank: realAccount.wealthBank,
+        competitiveLandscape: realAccount.competitiveLandscape,
+      }
+    : {
+        id: accountId,
+        name: isLoadingAccount ? 'Loading…' : 'Account',
+        about: null,
+        products: null,
+        services: null,
+        assetSize: null,
+        revenue: null,
+        nim: null,
+        efficiencyRatio: null,
+        businessStrategy: null,
+        retailBank: null,
+        commercialBank: null,
+        wealthBank: null,
+        competitiveLandscape: [],
+      };
 
   return (
     <div className="animate-in">
@@ -662,12 +972,31 @@ export default function AccountOverviewPage() {
         <div>
           <h1 className="asi-bank-header__name">{acct.name} {activeTab === 'Overview' ? 'Overview' : activeTab}</h1>
           <p className="asi-bank-header__sub">
+            {isLoadingAccount && 'Loading account data... '}
             {activeTab==='Overview' && 'Strategic account overview for portfolio review and expansion planning.'}
             {activeTab==='Signals' && 'Business and technology signals shaping account priorities and GTM timing.'}
             {activeTab==='Opportunities' && 'Ranked revenue plays derived from outside-in business, technology and stakeholder signals.'}
             {activeTab==='Organization' && 'Organization structure and leadership hierarchy shaping account access and buying influence.'}
             {activeTab==='News & Events' && 'Market, regulatory, company, thought-leadership, and event signals relevant to account strategy.'}
           </p>
+        </div>
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+          <button
+            onClick={handleDownloadReport}
+            disabled={isDownloadingReport || isLoadingAccount || !accountId}
+            style={{
+              border: '1px solid #cbd5e1',
+              background: isDownloadingReport ? '#f8fafc' : '#ffffff',
+              color: '#0f172a',
+              borderRadius: 10,
+              padding: '10px 14px',
+              fontSize: 12,
+              fontWeight: 600,
+              cursor: isDownloadingReport ? 'default' : 'pointer',
+            }}
+          >
+            {isDownloadingReport ? 'Preparing PDF...' : 'Download PDF Report'}
+          </button>
         </div>
       </div>
 
@@ -680,10 +1009,10 @@ export default function AccountOverviewPage() {
 
       {/* Tab content */}
       {activeTab==='Overview'      && <OverviewTab acct={acct}/>}
-      {activeTab==='Signals'       && <SignalsTab name={acct.name}/>}
-      {activeTab==='Opportunities' && <OpportunitiesTab accountId={accountId} accountName={acct.name} />}
-      {activeTab==='Organization'  && <OrganizationTab name={acct.name}/>}
-      {activeTab==='News & Events'  && <NewsTab name={acct.name}/>}
+      {activeTab==='Signals'       && <SignalsTab accountId={accountId}/>}
+      {activeTab==='Opportunities' && <OpportunitiesTab account={realAccount}/>}
+      {activeTab==='Organization'  && <OrganizationTab accountId={accountId} name={acct.name}/>}
+      {activeTab==='News & Events'  && <NewsTab accountId={acct.id}/>}
     </div>
   );
 }

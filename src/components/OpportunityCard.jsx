@@ -2,18 +2,24 @@ import { useNavigate } from 'react-router-dom';
 import './OpportunityCard.css';
 
 function priorityClass(priority) {
-  if (priority === 'High') return 'opportunity-card__badge--high';
-  if (priority === 'Medium-High') return 'opportunity-card__badge--medium-high';
-  if (priority === 'Medium') return 'opportunity-card__badge--medium-orange';
+  const key = String(priority ?? '').trim().toLowerCase();
+  if (key === 'critical') return 'opportunity-card__badge--critical';
+  if (key === 'hot') return 'opportunity-card__badge--hot';
+  if (key === 'high') return 'opportunity-card__badge--hot';
+  if (key === 'medium-high') return 'opportunity-card__badge--medium-high';
+  if (key === 'medium') return 'opportunity-card__badge--medium-orange';
+  if (key === 'watchlist') return 'opportunity-card__badge--watchlist-priority';
   return '';
 }
 
 function typeBadgeClass(opportunityType) {
   if (opportunityType === 'Emerging') return 'opportunity-card__badge--type-emerging';
   if (opportunityType === 'Strategic Hypothesis') return 'opportunity-card__badge--type-hypothesis';
+  if (opportunityType === 'Strategic Hypothesis Opportunity') return 'opportunity-card__badge--type-hypothesis';
   if (
     opportunityType === 'Strategic Hypothesis / Watchlist'
     || opportunityType === 'Watchlist'
+    || opportunityType === 'Watchlist Opportunity'
   ) return 'opportunity-card__badge--type-watchlist';
   if (opportunityType === 'Confirmed Opportunity' || opportunityType === 'Confirmed') {
     return 'opportunity-card__badge--type';
@@ -35,6 +41,7 @@ export default function OpportunityCard({
     id,
     title,
     priority,
+    opportunityClassification,
     opportunityType,
     dealSize,
     timeline,
@@ -63,7 +70,7 @@ export default function OpportunityCard({
 
   // Tech stack preview: confirmed platforms only
   const techPreview =
-    technologyStack && typeof technologyStack === 'object'
+    technologyStack && typeof technologyStack === 'object' && !Array.isArray(technologyStack)
       ? technologyStack.confirmed
       : technologyStack;
 
@@ -73,7 +80,11 @@ export default function OpportunityCard({
       items: Array.isArray(projectScope) ? projectScope : projectScope ? [projectScope] : [],
     },
     { label: 'Business driver', value: businessDriver },
-    { label: 'Technology stack', value: techPreview },
+    {
+      label: 'Technology stack',
+      items: Array.isArray(techPreview) ? techPreview : undefined,
+      value: Array.isArray(techPreview) ? undefined : techPreview,
+    },
   ];
 
   return (
@@ -95,9 +106,9 @@ export default function OpportunityCard({
                 {priority}
               </span>
             )}
-            {opportunityType && !showTypeAsLabel && (
-              <span className={`opportunity-card__badge ${typeBadgeClass(opportunityType)}`}>
-                {opportunityType}
+            {(opportunityClassification || opportunityType) && !showTypeAsLabel && (
+              <span className={`opportunity-card__badge ${typeBadgeClass(opportunityClassification || opportunityType)}`}>
+                {opportunityClassification || opportunityType}
               </span>
             )}
           </div>

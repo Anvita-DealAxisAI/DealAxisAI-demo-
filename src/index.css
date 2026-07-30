@@ -260,17 +260,81 @@ input, textarea, [contenteditable="true"] {
 .asi-table tr:last-child td { border-bottom: none; }
 .asi-table tr:hover td { background: #f8fafc; }
 
-/* Signals */
-.asi-signal-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+/* Signals — count-aware layouts so rows always fill the available width */
+.asi-signal-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, 1fr);
+}
+.asi-signal-grid--count-1 {
+  grid-template-columns: 1fr;
+}
+.asi-signal-grid--count-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.asi-signal-grid--count-3,
+.asi-signal-grid--count-6 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.asi-signal-grid--count-4 {
+  grid-template-columns: repeat(2, 1fr);
+}
+/* 5: 3 on top, 2 below stretching to full width */
+.asi-signal-grid--count-5 {
+  grid-template-columns: repeat(6, 1fr);
+}
+.asi-signal-grid--count-5 > .asi-signal-card:nth-child(-n + 3) {
+  grid-column: span 2;
+}
+.asi-signal-grid--count-5 > .asi-signal-card:nth-child(n + 4) {
+  grid-column: span 3;
+}
+
+@media (max-width: 900px) {
+  .asi-signal-grid--count-3,
+  .asi-signal-grid--count-6 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .asi-signal-grid--count-5 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .asi-signal-grid--count-5 > .asi-signal-card:nth-child(-n + 3),
+  .asi-signal-grid--count-5 > .asi-signal-card:nth-child(n + 4) {
+    grid-column: auto;
+  }
+  .asi-signal-grid--count-5 > .asi-signal-card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .asi-signal-grid,
+  .asi-signal-grid--count-1,
+  .asi-signal-grid--count-2,
+  .asi-signal-grid--count-3,
+  .asi-signal-grid--count-4,
+  .asi-signal-grid--count-5,
+  .asi-signal-grid--count-6 {
+    grid-template-columns: 1fr;
+  }
+  .asi-signal-grid--count-5 > .asi-signal-card:nth-child(-n + 3),
+  .asi-signal-grid--count-5 > .asi-signal-card:nth-child(n + 4),
+  .asi-signal-grid--count-5 > .asi-signal-card:last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+}
+
 .asi-signal-card {
   background: white; border-radius: var(--radius);
   padding: 20px; box-shadow: var(--card-shadow);
-  display: flex; flex-direction: column; gap: 10px;
+  display: flex; flex-direction: column; align-items: stretch;
+  justify-content: flex-start; gap: 10px;
+  min-width: 0; height: 100%;
 }
-.asi-signal-card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.asi-signal-card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; flex-shrink: 0; }
 .asi-signal-card__icon { width: 40px; height: 40px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.asi-signal-card__title { font-size: 14px; font-weight: 600; color: var(--text-primary); flex: 1; }
-.asi-signal-card__desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; flex: 1; }
+.asi-signal-card__title { font-size: 14px; font-weight: 600; color: var(--text-primary); flex: 0 0 auto; margin: 0; }
+.asi-signal-card__desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; flex: 0 0 auto; margin: 0; }
 
 /* Opportunity cards */
 .asi-opp-card {

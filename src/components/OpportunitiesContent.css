@@ -4,11 +4,6 @@
   gap: 20px;
 }
 
-.opps-content__chart {
-  margin-bottom: 4px;
-  width: 100%;
-}
-
 .opps-content__stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

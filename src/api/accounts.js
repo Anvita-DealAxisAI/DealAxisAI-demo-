@@ -1,17 +1,31 @@
-import { fetchAccount, fetchAccounts, fetchPortfolio } from './client.js';
 import { buildSummaryStats } from '../data/mockData.js';
+import {
+  getStaticPortfolioAccounts,
+  getStaticAccountById,
+  getStaticClientCapabilities,
+  getStaticSignals,
+  getStaticOrganization,
+  getStaticNews,
+} from './staticDemoAccounts.js';
 
 export { buildSummaryStats };
 
-/**
- * Fetch one bank's landscape: summary stats + opportunities.
- */
+function currentBankCount() {
+  try {
+    const raw = localStorage.getItem('asi-user');
+    if (!raw) return undefined;
+    const user = JSON.parse(raw);
+    return user?.bankCount;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function fetchAccountLandscape(accountId) {
-  const { account } = await fetchAccount(accountId);
+  const account = getStaticAccountById(accountId, currentBankCount());
   if (!account) {
     return { account: null, stats: [], opportunities: [] };
   }
-
   return {
     account: { id: account.id, name: account.name },
     stats: buildSummaryStats(account.summary),
@@ -20,16 +34,28 @@ export async function fetchAccountLandscape(accountId) {
 }
 
 export async function fetchAccountsList() {
-  const { accounts } = await fetchAccounts();
-  return accounts;
+  return getStaticPortfolioAccounts(currentBankCount());
 }
 
 export async function fetchPortfolioAccounts() {
-  const { accounts } = await fetchPortfolio();
-  return accounts;
+  return {
+    accounts: getStaticPortfolioAccounts(currentBankCount()),
+    clientCapabilities: getStaticClientCapabilities(),
+  };
 }
 
 export async function fetchAccountById(accountId) {
-  const { account } = await fetchAccount(accountId);
-  return account;
+  return getStaticAccountById(accountId, currentBankCount());
+}
+
+export async function fetchAccountNewsById(accountId) {
+  return getStaticNews(accountId);
+}
+
+export async function fetchAccountSignalsById(accountId) {
+  return getStaticSignals(accountId);
+}
+
+export async function fetchAccountOrganizationById(accountId) {
+  return getStaticOrganization(accountId);
 }

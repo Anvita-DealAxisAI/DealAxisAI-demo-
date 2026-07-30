@@ -19,7 +19,6 @@
 .account-card {
   container-type: inline-size;
   container-name: account-card;
-  position: relative;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -33,18 +32,6 @@
   text-align: left;
   min-width: 0;
   width: 100%;
-}
-
-.account-card__hot-star {
-  position: absolute;
-  top: clamp(10px, 3.5cqi, 14px);
-  right: clamp(10px, 3.5cqi, 14px);
-  color: #dc2626;
-  opacity: 0.7;
-  font-size: clamp(20px, 7cqi, 28px);
-  line-height: 1;
-  text-shadow: 0 2px 6px rgba(220, 38, 38, 0.18);
-  pointer-events: none;
 }
 
 .account-card:hover {
@@ -71,6 +58,31 @@
   justify-content: space-between;
   gap: clamp(8px, 3cqi, 12px);
   min-width: 0;
+}
+
+.account-card__hot-badge {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: #fef2f2;
+  color: #ef4444;
+  line-height: 1;
+  justify-content: center;
+}
+
+.account-card__hot-badge-icon {
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+
+.account-card__hot-badge-label {
+  font-size: clamp(10px, 3cqi, 12px);
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .account-card__identity {

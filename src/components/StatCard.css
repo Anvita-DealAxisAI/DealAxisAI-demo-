@@ -16,7 +16,7 @@
     rgba(37, 99, 235, 0.06) 35%,
     rgba(0, 89, 207, 0.09) 70%,
     rgba(0, 89, 207, 0.1) 100%
-  );
+  ) !important;
 }
 
 .stat-card--green {
@@ -26,7 +26,7 @@
     rgba(130, 209, 115, 0.06) 35%,
     rgba(36, 158, 70, 0.09) 70%,
     rgba(36, 158, 70, 0.1) 100%
-  );
+  ) !important;
 }
 
 .stat-card--purple {
@@ -36,7 +36,7 @@
     rgba(196, 181, 253, 0.06) 35%,
     rgba(139, 92, 246, 0.09) 70%,
     rgba(109, 40, 217, 0.1) 100%
-  );
+  ) !important;
 }
 
 .stat-card--orange {
@@ -46,8 +46,9 @@
     rgba(253, 186, 116, 0.06) 35%,
     rgba(249, 115, 22, 0.09) 70%,
     rgba(234, 88, 12, 0.1) 100%
-  );
+  ) !important;
 }
+
 
 .stat-card__inset {
   background: #ffffff;

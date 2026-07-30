@@ -1,4 +1,4 @@
-#001A41  — Primary navy (text)
+#001A41  — Primary navy 
 #0059CF  — Primary blue
 #00A3AD  — Teal
 #249E46  — Primary green

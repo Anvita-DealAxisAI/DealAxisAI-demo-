@@ -22,19 +22,21 @@
 
 .portfolio-matrix__body {
   display: flex;
-  gap: clamp(16px, 2.4vw, 24px);
-  flex-wrap: wrap;
+  gap: clamp(20px, 2.8vw, 32px);
+  flex-wrap: nowrap;
   align-items: flex-start;
 }
 
 .portfolio-matrix__chart {
-  flex: 1 1 320px;
+  flex: 1 1 auto;
   min-width: 0;
 }
 
 .portfolio-matrix__legend {
-  width: 190px;
-  flex: 0 0 190px;
+  width: 210px;
+  flex: 0 0 210px;
+  padding-top: 8px;
+  overflow: visible;
 }
 
 .portfolio-table-wrap {
@@ -64,7 +66,11 @@
   color: #2563eb;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 960px) {
+  .portfolio-matrix__body {
+    flex-wrap: wrap;
+  }
+
   .portfolio-matrix__legend {
     width: 100%;
     flex: 1 1 100%;

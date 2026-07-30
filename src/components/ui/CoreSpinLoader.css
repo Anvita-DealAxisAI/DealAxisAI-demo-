@@ -1,0 +1,170 @@
+.core-spin-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  min-height: 200px;
+}
+
+.core-spin-loader--panel {
+  flex: 1;
+  width: 100%;
+  min-height: calc(100vh - 52px);
+  background: #ffffff;
+}
+
+.core-spin-loader--fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.core-spin-loader__orbit {
+  position: relative;
+  width: 88px;
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Soft multi-brand glow */
+.core-spin-loader__glow {
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(96, 176, 232, 0.45), transparent 55%),
+    radial-gradient(circle at 70% 70%, rgba(0, 163, 173, 0.35), transparent 55%),
+    radial-gradient(circle at 50% 50%, rgba(0, 89, 207, 0.2), transparent 65%);
+  filter: blur(12px);
+  animation: core-spin-pulse 2s ease-in-out infinite;
+}
+
+/* Light blue dashed outer ring — #60B0E8 */
+.core-spin-loader__ring-dashed {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  border: 2px dashed #60B0E8;
+  opacity: 0.95;
+  animation: core-spin 10s linear infinite;
+}
+
+/* Primary blue main arc — #0059CF */
+.core-spin-loader__ring-main {
+  position: absolute;
+  inset: 5px;
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  border-top-color: #0059CF;
+  border-right-color: #0059CF;
+  box-shadow: 0 0 10px rgba(0, 89, 207, 0.55);
+  animation: core-spin 2s linear infinite;
+}
+
+/* Bright blue reverse arc — #2563EB */
+.core-spin-loader__ring-reverse {
+  position: absolute;
+  inset: 14px;
+  border-radius: 9999px;
+  border: 3px solid transparent;
+  border-bottom-color: #2563EB;
+  border-left-color: #2563EB;
+  box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+  animation: core-spin-reverse 3s linear infinite;
+}
+
+/* Teal inner ring — #00A3AD */
+.core-spin-loader__ring-inner {
+  position: absolute;
+  inset: 24px;
+  border-radius: 9999px;
+  border: 2.5px solid transparent;
+  border-left-color: #00A3AD;
+  border-top-color: #00A3AD;
+  box-shadow: 0 0 8px rgba(0, 163, 173, 0.55);
+  animation: core-spin 1.2s ease-in-out infinite;
+}
+
+/* Orbital dots: light blue + teal */
+.core-spin-loader__dot-orbit {
+  position: absolute;
+  inset: 0;
+  animation: core-spin 4s linear infinite;
+}
+
+.core-spin-loader__dot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 7px;
+  height: 7px;
+  margin-left: -3.5px;
+  border-radius: 9999px;
+  background: #60B0E8;
+  box-shadow: 0 0 8px rgba(96, 176, 232, 1);
+}
+
+.core-spin-loader__dot-orbit--teal {
+  animation: core-spin-reverse 5s linear infinite;
+}
+
+.core-spin-loader__dot--teal {
+  top: auto;
+  bottom: 8px;
+  background: #00A3AD;
+  box-shadow: 0 0 8px rgba(0, 163, 173, 1);
+}
+
+/* Navy center core — #001A41 */
+.core-spin-loader__core {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: #001A41;
+  box-shadow:
+    0 0 0 3px rgba(0, 89, 207, 0.25),
+    0 0 10px rgba(0, 26, 65, 0.45);
+  animation: core-spin-pulse 2s ease-in-out infinite;
+}
+
+.core-spin-loader__text-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 32px;
+}
+
+.core-spin-loader__text {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #001A41;
+  animation: core-spin-fade 0.5s ease;
+}
+
+@keyframes core-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes core-spin-reverse {
+  to { transform: rotate(-360deg); }
+}
+
+@keyframes core-spin-pulse {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
+}
+
+@keyframes core-spin-fade {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}

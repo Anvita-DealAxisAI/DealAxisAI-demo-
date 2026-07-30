@@ -1,51 +1,195 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef, type MouseEvent, type KeyboardEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { toPng } from 'html-to-image';
 import { Icon, BankLogo } from '../../components/SvgIcons';
 import PortfolioKpiCard, { type PortfolioKpi } from '../../components/PortfolioKpiCard';
 import hotAccountsIcon from '../../../logo/icons/hot-accounts.svg';
-import { PORTFOLIO_ACCOUNTS, getDemoAccountsSubset } from '../../data/staticData';
-import { useAuth } from '../../store/AuthContext';
+import { fetchPortfolioAccounts } from '../../api/accounts';
+import { fetchWorkspace } from '../../api/client';
+import {
+  MATRIX_CAPABILITY_COLORS,
+  buildPrioritizationMatrix,
+  getTopAccountCapabilities,
+  totalValueToY,
+  bubbleRadiusFromValue,
+} from '../../utils/prioritizationMatrix';
 import './Portfolio.css';
 
-type DemoAccount = (typeof PORTFOLIO_ACCOUNTS)[number];
+type RealAccount = {
+  id: string;
+  name: string;
+  status?: string | null;
+  capabilities?: string | null;
+  updatedAt?: string | null;
+  summary?: {
+    totalOpportunities?: number;
+    opportunityRange?: string;
+    topServiceLineThemes?: string;
+  };
+  opportunities?: Array<{
+    title?: string;
+    priority?: string;
+    dealSize?: string | null;
+    capabilities?: string[] | string | null;
+  }>;
+  matrixLayout?: {
+    easeX: number;
+    matrixY: number;
+    valueMid: number;
+    color: string;
+    valueLabel: string;
+  };
+};
+
+type PortfolioAccountRow = {
+  id: string;
+  name: string;
+  opps: number;
+  value: string;
+  valueMid: number;
+  minValue: number;
+  capabilities: string[];
+  updatedAtLabel: string;
+  updatedAtTime: number;
+  status: 'Hot' | 'Active' | 'Monitor';
+};
+
 type AccountSortOption =
   | 'opportunities-desc'
   | 'opportunities-asc'
   | 'value-desc'
   | 'value-asc'
-  | 'monitoring-latest'
-  | 'monitoring-earliest';
+  | 'updated-latest'
+  | 'updated-earliest';
 
-const DEFAULT_ACCOUNT_SORT: AccountSortOption = 'monitoring-latest';
+const DEFAULT_ACCOUNT_SORT: AccountSortOption = 'opportunities-desc';
 const ACCOUNT_STATUSES = ['All', 'Hot', 'Active', 'Monitor'];
 
-function getMonitoringStartTime(monStart: string) {
-  const [month, year] = monStart.trim().split(/\s+/);
-  if (!month || !year) return 0;
-  const time = Date.parse(`${month} 1, ${year}`);
+function getUpdatedAtTime(updatedAt: string | null | undefined) {
+  if (!updatedAt) return 0;
+  const time = Date.parse(updatedAt);
   return Number.isFinite(time) ? time : 0;
 }
 
-function getPinnedPriority(accountId: string) {
-  if (accountId === 'A002') return 0; // Synovus
-  if (accountId === 'A001') return 1; // Citizens
-  return 2;
+function formatUpdatedAt(updatedAt: string | null | undefined) {
+  const time = getUpdatedAtTime(updatedAt);
+  if (!time) return '—';
+  return new Date(time).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
 }
 
-function getBubbleRadius(valueMid: number) {
-  return Math.max(13, Math.sqrt(valueMid) * 11) * 0.75;
+function parseRangeValues(rangeText: string | undefined) {
+  if (!rangeText) return [];
+  const numericMatches = rangeText.match(/(\d+(?:\.\d+)?)\s*M/gi);
+  if (!numericMatches?.length) return [];
+  return numericMatches
+    .map((match) => Number(match.replace(/[^0-9.]/g, '')))
+    .filter((value) => Number.isFinite(value));
 }
 
-function buildDemoPortfolioKpis(accounts: DemoAccount[]): PortfolioKpi[] {
-  const hotAccounts = accounts.filter((a) => a.status === 'Hot').length;
-  const highValueOpps = 34; // Demo override for portfolio storytelling
-  const totalValue = accounts.reduce((sum, a) => sum + a.valueMid, 0);
+function parseRangeMidpoint(rangeText: string | undefined) {
+  const values = parseRangeValues(rangeText);
+  if (!values.length) return 0;
+  if (values.length === 1) return values[0];
+  return (Math.min(...values) + Math.max(...values)) / 2;
+}
+
+function parseRangeMin(rangeText: string | undefined) {
+  const values = parseRangeValues(rangeText);
+  if (!values.length) return 0;
+  return Math.min(...values);
+}
+
+function parseAmountToMillions(raw: string | undefined | null) {
+  if (!raw) return 0;
+  const normalized = raw.replace(/,/g, '').trim();
+  const match = normalized.match(/(\d+(?:\.\d+)?)\s*([kmb])?/i);
+  if (!match) return 0;
+
+  const value = Number(match[1]);
+  if (!Number.isFinite(value)) return 0;
+  const unit = (match[2] ?? 'm').toLowerCase();
+  if (unit === 'b') return value * 1000;
+  if (unit === 'k') return value / 1000;
+  return value;
+}
+
+function includesTwoMillionOrMore(dealSize: string | undefined | null) {
+  if (!dealSize) return false;
+  const parts = dealSize.split(/[–-]/);
+  const minValue = parseAmountToMillions(parts[0] ?? null);
+  const maxValue = parseAmountToMillions(parts[1] ?? parts[0] ?? null);
+  return maxValue >= 2 && maxValue >= minValue;
+}
+
+function formatMidpointValue(midpoint: number) {
+  if (!midpoint) return '$0M';
+  const rounded = Number.isInteger(midpoint) ? String(midpoint) : midpoint.toFixed(1).replace(/\.0$/, '');
+  return `$${rounded}M`;
+}
+
+function deriveStatus(account: RealAccount): 'Hot' | 'Active' | 'Monitor' {
+  const explicitStatus = String(account.status ?? '').trim().toLowerCase();
+  if (explicitStatus === 'hot') return 'Hot';
+  if (explicitStatus === 'active') return 'Active';
+  if (explicitStatus === 'monitor') return 'Monitor';
+
+  const priorities = (account.opportunities ?? []).map((opportunity) => opportunity.priority?.toLowerCase());
+  if (priorities.some((priority) => priority === 'high' || priority === 'medium-high')) return 'Hot';
+  if (priorities.some((priority) => priority === 'medium')) return 'Active';
+  return 'Monitor';
+}
+
+function buildPortfolioRows(accounts: RealAccount[]): PortfolioAccountRow[] {
+  return accounts.map((account) => {
+    const valueMid = parseRangeMidpoint(account.summary?.opportunityRange);
+    const minValue = parseRangeMin(account.summary?.opportunityRange);
+    return {
+      id: account.id,
+      name: account.name,
+      opps: account.summary?.totalOpportunities ?? account.opportunities?.length ?? 0,
+      value: account.summary?.opportunityRange ?? formatMidpointValue(valueMid),
+      valueMid,
+      minValue,
+      capabilities: getTopAccountCapabilities(account, 4),
+      updatedAtLabel: formatUpdatedAt(account.updatedAt),
+      updatedAtTime: getUpdatedAtTime(account.updatedAt),
+      status: deriveStatus(account),
+    };
+  });
+}
+
+function buildPortfolioKpis(
+  accountRows: PortfolioAccountRow[],
+  rawAccounts: RealAccount[],
+  isLoading: boolean,
+): PortfolioKpi[] {
+  if (isLoading) {
+    return [
+      { label: 'Accounts', value: '...', sub: 'Strategic accounts tracked', variant: 'accounts' },
+      { label: 'Hot Accounts', value: '...', sub: 'Accounts requiring focus', variant: 'hot' },
+      { label: 'High Value Opportunities', value: '...', sub: 'Oppurtunities above $2M', variant: 'high-value' },
+      { label: 'Opportunity Value', value: '...', sub: 'Estimated portfolio value', variant: 'opportunity-value' },
+    ];
+  }
+
+  const hotAccounts = accountRows.filter((a) => a.status === 'Hot').length;
+  const highValueOpps = rawAccounts.reduce((sum, account) => {
+    const accountHighValueCount = (account.opportunities ?? []).filter(
+      (opportunity) => includesTwoMillionOrMore(opportunity.dealSize),
+    ).length;
+    return sum + accountHighValueCount;
+  }, 0);
+  const totalValue = accountRows.reduce((sum, a) => sum + a.minValue, 0);
 
   return [
     {
       label: 'Accounts',
-      value: String(accounts.length),
+      value: String(accountRows.length),
       sub: 'Strategic accounts tracked',
       variant: 'accounts',
     },
@@ -58,12 +202,12 @@ function buildDemoPortfolioKpis(accounts: DemoAccount[]): PortfolioKpi[] {
     {
       label: 'High Value Opportunities',
       value: String(highValueOpps),
-      sub: 'Opportunities above $2M',
+      sub: 'Oppurtunities above $2M',
       variant: 'high-value',
     },
     {
       label: 'Opportunity Value',
-      value: `$${totalValue}M`,
+      value: `$${totalValue}M +`,
       sub: 'Estimated portfolio value',
       variant: 'opportunity-value',
     },
@@ -92,86 +236,218 @@ const STATUS_CLASS: Record<string,string> = { Hot:'asi-badge--hot', Active:'asi-
 // Bubble shape converter — used per-render via visibleBubbles below
 
 const CustomDot = (props: any) => {
-  const { cx, cy, payload } = props;
-  const navigate = useNavigate();
-  const placeLabelLeft = payload?.name === 'M&T Bank' || payload?.name === 'Truist';
-  const labelX = placeLabelLeft ? cx - payload.r - 4 : cx + payload.r + 4;
+  const { cx, cy, payload, onNavigate } = props;
+  const accountId = payload?.accountId ?? payload?.id;
+  const labelSide = payload?.labelSide ?? ((payload?.x ?? 0) > 70 ? 'left' : 'right');
+  const labelOffsetY = payload?.labelOffsetY ?? 0;
+  const placeLabelLeft = labelSide === 'left';
+  const labelX = placeLabelLeft ? cx - payload.r - 6 : cx + payload.r + 6;
   const labelAnchor = placeLabelLeft ? 'end' : 'start';
+  const labelY = cy + labelOffsetY;
+
+  const goToAccount = (event: MouseEvent | KeyboardEvent) => {
+    event.stopPropagation();
+    if (!accountId) return;
+    onNavigate(`/accounts/${accountId}?tab=Opportunities`);
+  };
+
   return (
     <g
-      onClick={() => navigate(`/accounts/${payload.id}?tab=Opportunities`)}
-      style={{ cursor: 'pointer' }}
+      role="link"
+      tabIndex={0}
+      aria-label={payload?.name ? `Open ${payload.name} opportunities` : 'Open account opportunities'}
+      onClick={goToAccount}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          goToAccount(event);
+        }
+      }}
+      style={{ cursor: accountId ? 'pointer' : 'default' }}
     >
-      <circle cx={cx} cy={cy} r={payload.r} fill={payload.color} fillOpacity={0.82} />
-      <text x={labelX} y={cy - 3} textAnchor={labelAnchor} fontSize={11} fontWeight={600} fill="#0f172a" fontFamily="Inter">{payload.name}</text>
-      <text x={labelX} y={cy + 11} textAnchor={labelAnchor} fontSize={11} fill="#64748b" fontFamily="Inter">{payload.value}</text>
+      <circle cx={cx} cy={cy} r={payload.r} fill={payload.color} fillOpacity={0.85} stroke="#fff" strokeWidth={1.5} />
+      <text x={labelX} y={labelY - 3} textAnchor={labelAnchor} fontSize={11} fontWeight={600} fill="#0f172a" fontFamily="Inter">{payload.name}</text>
+      <text x={labelX} y={labelY + 11} textAnchor={labelAnchor} fontSize={11} fill="#64748b" fontFamily="Inter">{payload.value}</text>
     </g>
   );
 };
 
 export default function Portfolio() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [capFilter, setCapFilter] = useState('All Capabilities');
+  const [accounts, setAccounts] = useState<RealAccount[]>([]);
+  const [clientCapabilities, setClientCapabilities] = useState<string[]>([]);
+  const [workspaceStatus, setWorkspaceStatus] = useState<'pending_setup' | 'active' | null>(null);
+  const [workspaceName, setWorkspaceName] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('All');
   const [accountSort, setAccountSort] = useState<AccountSortOption>(DEFAULT_ACCOUNT_SORT);
+  const [isDownloadingMatrix, setIsDownloadingMatrix] = useState(false);
+  const matrixExportRef = useRef<HTMLDivElement | null>(null);
   const today = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
 
-  // Experimental: demo1..demo10 accounts see a subset of banks (1-8) to
-  // preview how the Prioritization Matrix looks with fewer/more accounts.
-  // Official accounts (ajay@, demo@) are unaffected and always see all 10.
-  const visibleAccounts = getDemoAccountsSubset(user?.bankCount);
-  const portfolioKpis = useMemo(() => buildDemoPortfolioKpis(visibleAccounts), [visibleAccounts]);
-  const accountPortfolioRows = useMemo(() => {
-    return visibleAccounts
-      .filter((account) => statusFilter === 'All' || account.status === statusFilter)
-      .toSorted((a, b) => {
-        const pinnedDiff = getPinnedPriority(a.id) - getPinnedPriority(b.id);
-        if (pinnedDiff !== 0) return pinnedDiff;
+  const handleDownloadMatrix = async () => {
+    if (!matrixExportRef.current || isDownloadingMatrix) return;
+    setIsDownloadingMatrix(true);
+    try {
+      const dataUrl = await toPng(matrixExportRef.current, {
+        cacheBust: true,
+        pixelRatio: 2,
+        backgroundColor: '#ffffff',
+        filter: (node) => {
+          if (!(node instanceof HTMLElement)) return true;
+          return node.dataset.noExport !== 'true';
+        },
+      });
+      const link = document.createElement('a');
+      link.href = dataUrl;
+      link.download = 'prioritization-matrix.png';
+      link.click();
+    } catch (error) {
+      console.error('Failed to download prioritization matrix image', error);
+      window.alert('Unable to download matrix image right now. Please try again.');
+    } finally {
+      setIsDownloadingMatrix(false);
+    }
+  };
 
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const [payload, workspacePayload] = await Promise.all([
+          fetchPortfolioAccounts(),
+          fetchWorkspace().catch(() => null),
+        ]);
+        if (!cancelled) {
+          setAccounts((payload?.accounts ?? []) as RealAccount[]);
+          setClientCapabilities(payload?.clientCapabilities ?? []);
+          const workspace = workspacePayload?.workspace;
+          setWorkspaceStatus(workspace?.status ?? null);
+          setWorkspaceName(workspace?.clientName ?? '');
+        }
+      } catch (err) {
+        console.error('Failed to load portfolio accounts', err);
+        if (!cancelled) {
+          setAccounts([]);
+          setClientCapabilities([]);
+          setWorkspaceStatus(null);
+          setWorkspaceName('');
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    };
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const visibleAccounts = useMemo(
+    () => buildPortfolioRows(accounts),
+    [accounts]
+  );
+  const matrixRows = useMemo(
+    () => buildPrioritizationMatrix(accounts, clientCapabilities, deriveStatus),
+    [accounts, clientCapabilities],
+  );
+  const portfolioKpis = useMemo(
+    () => buildPortfolioKpis(visibleAccounts, accounts, isLoading),
+    [visibleAccounts, accounts, isLoading],
+  );
+  const accountPortfolioRows = useMemo(() => {
+    return [...visibleAccounts]
+      .filter((account) => statusFilter === 'All' || account.status === statusFilter)
+      .sort((a, b) => {
         switch (accountSort) {
           case 'opportunities-asc':
-            return a.opps - b.opps || a.name.localeCompare(b.name);
+            return a.opps - b.opps || (a.name ?? '').localeCompare(b.name ?? '');
           case 'value-desc':
-            return b.valueMid - a.valueMid || a.name.localeCompare(b.name);
+            return b.valueMid - a.valueMid || (a.name ?? '').localeCompare(b.name ?? '');
           case 'value-asc':
-            return a.valueMid - b.valueMid || a.name.localeCompare(b.name);
-          case 'monitoring-latest':
-            return getMonitoringStartTime(b.monStart) - getMonitoringStartTime(a.monStart) || a.name.localeCompare(b.name);
-          case 'monitoring-earliest':
-            return getMonitoringStartTime(a.monStart) - getMonitoringStartTime(b.monStart) || a.name.localeCompare(b.name);
+            return a.valueMid - b.valueMid || (a.name ?? '').localeCompare(b.name ?? '');
+          case 'updated-latest':
+            return b.updatedAtTime - a.updatedAtTime || (a.name ?? '').localeCompare(b.name ?? '');
+          case 'updated-earliest':
+            return a.updatedAtTime - b.updatedAtTime || (a.name ?? '').localeCompare(b.name ?? '');
           case 'opportunities-desc':
           default:
-            return b.opps - a.opps || a.name.localeCompare(b.name);
+            return b.opps - a.opps || (a.name ?? '').localeCompare(b.name ?? '');
         }
       });
   }, [accountSort, statusFilter, visibleAccounts]);
   const hasAccountFilterChanges = statusFilter !== 'All' || accountSort !== DEFAULT_ACCOUNT_SORT;
-  const becuBaselineRadius = getBubbleRadius(
-    visibleAccounts.find((account) => account.name === 'BECU')?.valueMid ?? 12,
-  );
-  const largestRadius = Math.max(...visibleAccounts.map((account) => getBubbleRadius(account.valueMid)));
-  const bubbleScaleFactor = (largestRadius > 0 ? becuBaselineRadius / largestRadius : 1) * 1.1;
-  const scaledLargestRadius = largestRadius * bubbleScaleFactor;
-  const visibleBubbles = visibleAccounts.map(a => ({
-    // Keep ordering by value, but slightly lift smaller bubbles for readability.
-    ...(() => {
-      const scaledRadius = getBubbleRadius(a.valueMid) * bubbleScaleFactor;
-      const boostedRadius = scaledRadius + (scaledLargestRadius - scaledRadius) * 0.2;
+  const visibleBubbles = useMemo(() => {
+    const layoutById = new Map(
+      accounts
+        .filter((account) => account.matrixLayout)
+        .map((account) => [account.id, account.matrixLayout!]),
+    );
+
+    const bubbles = matrixRows.map((row) => {
+      const layout = layoutById.get(row.id);
+      const valueMid = layout?.valueMid ?? row.totalValue;
+      const x = layout?.easeX ?? row.easeX;
+      const y = layout?.matrixY ?? totalValueToY(valueMid);
       return {
-        x: a.easeX,
-        y: Math.min(95, a.valueMid * 7 + 15),
-        name: a.name,
-        value: a.value,
-        color: a.color,
-        r: boostedRadius,
-        id: a.id,
+        x,
+        y,
+        name: row.name,
+        value: layout?.valueLabel ?? row.valueLabel,
+        color: layout?.color ?? row.color,
+        r: Math.max(10, bubbleRadiusFromValue(valueMid)),
+        accountId: row.id,
+        opportunityCount: row.opportunityCount,
+        weightedEase: layout ? Math.max(0, Math.min(100, 100 - layout.easeX)) : row.weightedEase,
+        dominantCapability: row.dominantCapabilityLabel,
+        topCapabilities: row.topCapabilities,
+        highestValueOpportunity: row.highestValueOpportunity,
+        status: row.status,
+        labelSide: x >= 55 ? 'left' : 'right' as 'left' | 'right',
+        labelOffsetY: 0,
       };
-    })(),
-  }));
+    });
+
+    // Keep bubble centers from sitting on top of each other.
+    for (let pass = 0; pass < 6; pass += 1) {
+      for (let i = 0; i < bubbles.length; i += 1) {
+        for (let j = i + 1; j < bubbles.length; j += 1) {
+          const a = bubbles[i];
+          const b = bubbles[j];
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const dist = Math.hypot(dx, dy) || 0.01;
+          const minDist = 16;
+          if (dist >= minDist) continue;
+          const push = (minDist - dist) / 2;
+          const ux = dx / dist;
+          const uy = dy / dist;
+          a.x = Math.max(8, Math.min(92, a.x - ux * push));
+          a.y = Math.max(8, Math.min(92, a.y - uy * push));
+          b.x = Math.max(8, Math.min(92, b.x + ux * push));
+          b.y = Math.max(8, Math.min(92, b.y + uy * push));
+        }
+      }
+    }
+
+    // Alternate label sides and stagger vertically when still close.
+    const sorted = [...bubbles].sort((a, b) => a.y - b.y || a.x - b.x);
+    sorted.forEach((bubble, index) => {
+      bubble.labelSide = bubble.x >= 55 ? 'left' : 'right';
+      if (index > 0) {
+        const prev = sorted[index - 1];
+        if (Math.abs(bubble.x - prev.x) < 22 && Math.abs(bubble.y - prev.y) < 14) {
+          bubble.labelSide = prev.labelSide === 'left' ? 'right' : 'left';
+          bubble.labelOffsetY = prev.labelOffsetY === 0 ? 14 : -14;
+        }
+      }
+    });
+
+    return bubbles;
+  }, [accounts, matrixRows]);
 
   return (
-    <div className="animate-in portfolio-page">
+    <div className="portfolio-page">
       {/* Header */}
       <div className="portfolio-page__header">
         <div>
@@ -189,87 +465,134 @@ export default function Portfolio() {
             key={kpi.label}
             kpi={kpi}
             onClick={kpi.variant === 'accounts' ? () => navigate('/accounts') : undefined}
-            style={{ animationDelay: `${i * 60}ms`, animationFillMode: 'both' }}
           />
         ))}
       </div>
+      {!isLoading && workspaceStatus === 'pending_setup' && accounts.length === 0 && (
+        <div className="asi-card" style={{ padding: 18, marginBottom: 24, borderColor: '#bfdbfe', background: '#f8fbff' }}>
+          <h3 style={{ fontSize: 15, fontWeight: 700, color: '#1d4ed8', margin: '0 0 6px' }}>
+            Your data is being prepared
+          </h3>
+          <p style={{ fontSize: 13, color: '#334155', margin: 0 }}>
+            Data sync in progress{workspaceName ? ` for ${workspaceName}` : ''}. You can invite your team from Settings while provisioning completes.
+          </p>
+        </div>
+      )}
 
       {/* Prioritization Matrix */}
-      <div className="asi-card" style={{padding:24,marginBottom:24}}>
-        <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:16}}>
-          <div>
-            <div style={{display:'flex',alignItems:'center',gap:8}}>
-              <h2 style={{fontSize:17,fontWeight:600,color:'#0f172a'}}>Prioritization Matrix</h2>
-              <Icon name="info" size={16} color="#94a3b8"/>
-            </div>
-            <p style={{fontSize:13,color:'#64748b',marginTop:2}}>Opportunity Value vs Ease of Entry across accounts. Bubble size represents opportunity value.</p>
-          </div>
-          <select value={capFilter} onChange={e=>setCapFilter(e.target.value)}
-            style={{fontSize:12,padding:'7px 12px',borderRadius:8,border:'1px solid #e2e8f0',background:'white',color:'#0f172a',outline:'none',cursor:'pointer'}}>
-            <option>All Capabilities</option>
-            {['Data & AI','Quality Engineering','Reg Reporting','Core Modernization','Cybersecurity','Cloud & Infra','Digital Experience'].map(c=><option key={c}>{c}</option>)}
-          </select>
+      <div ref={matrixExportRef} className="asi-card" style={{padding:24,marginBottom:24}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
+          <h2 style={{fontSize:17,fontWeight:600,color:'#0f172a',margin:0}}>Prioritization Matrix</h2>
+          <button
+            type="button"
+            className="asi-btn asi-btn--outline asi-btn--sm"
+            onClick={handleDownloadMatrix}
+            disabled={isDownloadingMatrix}
+            aria-label="Download prioritization matrix image"
+            data-no-export="true"
+          >
+            Download PNG
+          </button>
         </div>
-        <div className="portfolio-matrix__body">
-          <div className="portfolio-matrix__chart">
+        <div
+          style={{
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
+            borderRadius: 12,
+            padding: '16px 16px 14px',
+          }}
+        >
+          <div className="portfolio-matrix__body">
+            <div className="portfolio-matrix__chart">
             {/* Y-axis labels */}
-            <div style={{display:'flex',gap:0}}>
+              <div style={{display:'flex',gap:0}}>
               {/* Vertical "Opportunity Value" label */}
-              <div style={{display:'flex',alignItems:'center',justifyContent:'center',width:24,marginRight:4}}>
-                <span style={{
-                  fontSize:11, fontWeight:700, color:'#0f172a',
-                  writingMode:'vertical-rl', transform:'rotate(180deg)',
-                  whiteSpace:'nowrap', letterSpacing:'0.03em',
-                }}>Opportunity Value ($)</span>
-              </div>
-              <div style={{width:64,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingBottom:44,paddingTop:10}}>
-                {['15M+', '5M-15M', '<5M'].map((range) => (
-                  <div key={range} style={{textAlign:'right',paddingRight:8}}>
-                    <p style={{fontSize:11,fontWeight:600,color:'#64748b',margin:0,whiteSpace:'nowrap'}}>{range}</p>
-                  </div>
-                ))}
-              </div>
-              <div style={{flex:1}}>
-                <ResponsiveContainer width="100%" height={320}>
-                  <ScatterChart margin={{top:16,right:90,bottom:24,left:24}}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9"/>
-                    <XAxis type="number" dataKey="x" domain={[-12,112]} hide/>
-                    <YAxis type="number" dataKey="y" domain={[-12,112]} hide/>
-                    <Tooltip cursor={false} content={({active,payload})=>{
-                      if(!active||!payload?.length) return null;
-                      const d=payload[0].payload;
-                      return <div className="asi-card" style={{padding:'10px 14px',fontSize:12}}><p style={{fontWeight:600,color:'#0f172a',margin:'0 0 2px'}}>{d.name}</p><p style={{color:'#2563eb',fontWeight:600,margin:0}}>{d.value}</p></div>;
-                    }}/>
-                    <Scatter data={visibleBubbles} shape={CustomDot}/>
-                  </ScatterChart>
-                </ResponsiveContainer>
-                {/* X-axis labels */}
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',paddingLeft:0,marginTop:-8}}>
-                  {['Easy', 'Medium', 'Hard'].map((label) => (
-                    <div key={label} style={{textAlign:'center'}}>
-                      <p style={{fontSize:12,fontWeight:700,color:'#64748b',margin:0}}>{label}</p>
+                <div style={{display:'flex',alignItems:'center',justifyContent:'center',width:24,marginRight:4}}>
+                  <span style={{
+                    fontSize:11, fontWeight:700, color:'#0f172a',
+                    writingMode:'vertical-rl', transform:'rotate(180deg)',
+                    whiteSpace:'nowrap', letterSpacing:'0.03em',
+                  }}>Opportunity Value ($)</span>
+                </div>
+                <div style={{width:72,display:'flex',flexDirection:'column',justifyContent:'space-between',paddingBottom:48,paddingTop:12}}>
+                  {['100M+', '80-100M', '60-80M', '40-60M', '20-40M', '0-20M'].map((range) => (
+                    <div key={range} style={{textAlign:'right',paddingRight:8}}>
+                      <p style={{fontSize:11,fontWeight:600,color:'#64748b',margin:0,whiteSpace:'nowrap'}}>{range}</p>
                     </div>
                   ))}
                 </div>
-                <p style={{textAlign:'center',fontSize:11,fontWeight:700,color:'#0f172a',marginTop:4}}>Ease of Entry</p>
+                <div style={{flex:1, minWidth: 0}}>
+                  <ResponsiveContainer width="100%" height={400}>
+                    <ScatterChart margin={{top:28,right:120,bottom:32,left:12}}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0"/>
+                      <XAxis type="number" dataKey="x" domain={[0,100]} hide/>
+                      <YAxis type="number" dataKey="y" domain={[0,100]} hide/>
+                      <Tooltip cursor={false} content={({active,payload})=>{
+                        if(!active||!payload?.length) return null;
+                        const d=payload[0].payload;
+                        return (
+                          <div className="asi-card" style={{padding:'10px 14px',fontSize:12,maxWidth:260}}>
+                            <p style={{fontWeight:600,color:'#0f172a',margin:'0 0 6px'}}>{d.name}</p>
+                            <p style={{color:'#64748b',margin:'0 0 2px'}}>Opportunities: <span style={{color:'#0f172a',fontWeight:600}}>{d.opportunityCount}</span></p>
+                            <p style={{color:'#64748b',margin:'0 0 2px'}}>Total value: <span style={{color:'#2563eb',fontWeight:600}}>{d.value}</span></p>
+                            <p style={{color:'#64748b',margin:'0 0 2px'}}>Ease match: <span style={{color:'#0f172a',fontWeight:600}}>{Math.round(d.weightedEase)}%</span></p>
+                            <p style={{color:'#64748b',margin:'0 0 2px'}}>Dominant: <span style={{color:'#0f172a',fontWeight:600}}>{d.dominantCapability}</span></p>
+                            {d.topCapabilities?.length ? (
+                              <p style={{color:'#64748b',margin:'0 0 2px'}}>Top caps: <span style={{color:'#0f172a'}}>{d.topCapabilities.join(', ')}</span></p>
+                            ) : null}
+                            {d.highestValueOpportunity ? (
+                              <p style={{color:'#64748b',margin:'0 0 2px'}}>Highest: <span style={{color:'#0f172a'}}>{d.highestValueOpportunity.title} ({d.highestValueOpportunity.value})</span></p>
+                            ) : null}
+                            <p style={{color:'#64748b',margin:0}}>Status: <span style={{color:'#0f172a',fontWeight:600}}>{d.status}</span></p>
+                          </div>
+                        );
+                      }}/>
+                      <Scatter
+                        data={visibleBubbles}
+                        isAnimationActive={false}
+                        shape={(props: any) => <CustomDot {...props} onNavigate={navigate} />}
+                        onClick={(data: any) => {
+                          const accountId = data?.payload?.accountId ?? data?.accountId;
+                          if (!accountId) return;
+                          navigate(`/accounts/${accountId}?tab=Opportunities`);
+                        }}
+                      />
+                    </ScatterChart>
+                  </ResponsiveContainer>
+                  {/* X-axis labels */}
+                  <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',paddingLeft:0,marginTop:-8}}>
+                    {['Easy', 'Medium', 'Hard'].map((label) => (
+                      <div key={label} style={{textAlign:'center'}}>
+                        <p style={{fontSize:12,fontWeight:700,color:'#64748b',margin:0}}>{label}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <p style={{textAlign:'center',fontSize:11,fontWeight:700,color:'#0f172a',marginTop:4}}>Ease of Entry</p>
+                </div>
               </div>
             </div>
-          </div>
-          {/* Legend */}
-          <div className="portfolio-matrix__legend">
-            <p style={{fontSize:12,fontWeight:600,color:'#0f172a',marginBottom:12}}>Capabilities</p>
-            {[
-              {c:'#3b82f6',l:'Data & AI'},     {c:'#f97316',l:'Quality Engineering'},
-              {c:'#22c55e',l:'Reg Reporting'},   {c:'#8b5cf6',l:'Core Modernization'},
-              {c:'#14b8a6',l:'Cybersecurity'},   {c:'#eab308',l:'Cloud & Infra'},
-              {c:'#ec4899',l:'Digital Experience'},{c:'#94a3b8',l:'Other'},
-            ].map(cap=>(
-              <div key={cap.l} style={{display:'flex',alignItems:'center',gap:8,marginBottom:7}}>
-                <div style={{width:11,height:11,borderRadius:'50%',background:cap.c,flexShrink:0}}/>
-                <span style={{fontSize:12,color:'#64748b'}}>{cap.l}</span>
-              </div>
-            ))}
-            <p style={{fontSize:11,color:'#94a3b8',marginTop:12,fontStyle:'italic'}}>Bubble size = Opportunity Value</p>
+            {/* Legend */}
+            <div className="portfolio-matrix__legend">
+              <p style={{fontSize:12,fontWeight:600,color:'#0f172a',marginBottom:12}}>Capabilities</p>
+              {[
+                {c: MATRIX_CAPABILITY_COLORS.Data, l: 'Data'},
+                {c: MATRIX_CAPABILITY_COLORS.AI, l: 'AI'},
+                {c: MATRIX_CAPABILITY_COLORS.QE, l: 'Quality Engineering'},
+                {c: MATRIX_CAPABILITY_COLORS['Reg Rpt'], l: 'Reg Reporting'},
+                {c: MATRIX_CAPABILITY_COLORS.AML, l: 'AML / Financial Crime'},
+                {c: MATRIX_CAPABILITY_COLORS.Core, l: 'Core Modernization'},
+                {c: MATRIX_CAPABILITY_COLORS.Cybersecurity, l: 'Cybersecurity'},
+                {c: MATRIX_CAPABILITY_COLORS.Cloud, l: 'Cloud & Infra'},
+                {c: MATRIX_CAPABILITY_COLORS.Digital, l: 'Digital Experience'},
+                {c: MATRIX_CAPABILITY_COLORS.Other, l: 'Other'},
+              ].map(cap=>(
+                <div key={cap.l} style={{display:'flex',alignItems:'center',gap:8,marginBottom:7}}>
+                  <div style={{width:11,height:11,borderRadius:'50%',background:cap.c,flexShrink:0}}/>
+                  <span style={{fontSize:12,color:'#64748b'}}>{cap.l}</span>
+                </div>
+              ))}
+              <p style={{fontSize:11,color:'#94a3b8',marginTop:12,fontStyle:'italic'}}>Bubble size = Opportunity Value</p>
+            </div>
           </div>
         </div>
       </div>
@@ -300,8 +623,8 @@ export default function Portfolio() {
                 <option value="opportunities-asc">Opportunities: Low to High</option>
                 <option value="value-desc">Opportunity Value: High to Low</option>
                 <option value="value-asc">Opportunity Value: Low to High</option>
-                <option value="monitoring-latest">Monitoring Started: Newest</option>
-                <option value="monitoring-earliest">Monitoring Started: Oldest First</option>
+                <option value="updated-latest">Updated At: Newest</option>
+                <option value="updated-earliest">Updated At: Oldest First</option>
               </select>
             </label>
             {hasAccountFilterChanges && (
@@ -324,7 +647,7 @@ export default function Portfolio() {
               <th style={{textAlign:'center'}}>Opportunities</th>
               <th style={{textAlign:'center'}}>Opportunity Value</th>
               <th>Capabilities</th>
-              <th style={{textAlign:'center'}}>Monitoring Started</th>
+              <th style={{textAlign:'center'}}>Updated At</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -364,11 +687,11 @@ export default function Portfolio() {
                   </button>
                 </td>
                 <td>
-                  {a.capabilities.map(c=>(
+                  {a.capabilities.length ? a.capabilities.map(c=>(
                     <span key={c} className="asi-cap-chip" style={{background:CAP_COLORS[c]||'#f1f5f9',color:CAP_TEXT[c]||'#475569'}}>{c}</span>
-                  ))}
+                  )) : <span style={{color:'#94a3b8'}}>—</span>}
                 </td>
-                <td style={{textAlign:'center',color:'#64748b'}}>{a.monStart}</td>
+                <td style={{textAlign:'center',color:'#64748b'}}>{a.updatedAtLabel}</td>
                 <td>
                   <span className={`asi-badge ${STATUS_CLASS[a.status]}`} style={{display:'inline-flex',alignItems:'center',gap:4}}>
                     {STATUS_ICON[a.status as keyof typeof STATUS_ICON]}

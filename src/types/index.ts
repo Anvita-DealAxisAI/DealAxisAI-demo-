@@ -1,4 +1,4 @@
-export type Theme = 'light' | 'dark' | 'corporate';
+export type Theme = 'light' | 'corporate';
 
 export interface Account {
   id: string;
