@@ -25,6 +25,15 @@ const ACCOUNT_ID_MAP = {
 // ── Rich detail overlay (keyed by opportunity_id as string) ───────────────
 const opportunityDetails = {
   synovus_opp_enterprise_change_001: {
+    title: 'Merger Conversion Assurance & Client Experience Command Center',
+    projectScope: [
+      'Map conversion dependencies across core, digital, branch, treasury, reporting, operations.',
+      'Validate deposit products, accounts, balances, rates, fees, statements, notices accurately.',
+      'Test customer journeys across digital access, payments, servicing, treasury workflows.',
+      'Define reconciliation controls, readiness dashboards, mock conversions, command-center hypercare support.',
+    ],
+    businessDriver:
+      'Executive mandate is to protect client trust, deposit stability, operational continuity, and brand reputation by preventing conversion errors across account mapping, rates, fees, statements, digital access, branches, treasury, and reporting.',
     buyerMap: [
       { role: 'Business owner',        contact: 'Integration Office / COO / business-line conversion leads' },
       { role: 'Technology owner',      contact: 'CIO / CTO / core conversion leader' },
@@ -33,15 +42,23 @@ const opportunityDetails = {
       { role: 'Operations owner',      contact: 'Branch ops / customer care / back office' },
       { role: 'Budget owner',          contact: 'Integration Office / CIO / COO' },
     ],
-    siEntryWedge:      'March 2027 conversion readiness and client-experience risk assessment.',
-    firstMeetingTheme: 'How do we protect client experience and operational stability during system and brand conversion?',
+    siEntryWedge: 'Merger conversion risk and client experience assurance review',
+    firstMeetingTheme:
+      '“How are you protecting customer experience, deposit accuracy, and operational continuity through the 2027 conversion?”\n\nDiscovery hook:\n“Which customer journeys, product mappings, and downstream integrations create the highest risk during conversion?”',
     firstThirtyDays: [
-      'Run a conversion-risk heatmap across core, digital, treasury, branch, lending, data, and servicing.',
-      'Identify top 20 client-impact failure points.',
-      'Define mock-conversion test model and readiness dashboard.',
+      'Conversion risk assessment, high-risk journey map, data/product mapping validation plan, reconciliation model, readiness dashboard prototype',
+      'Expansion path: Mock conversion testing, reconciliation factory, branch/customer-care readiness, cutover command center, post-conversion stabilization',
+    ],
+    solutionElements: [
+      'Merger conversion advisory: Conversion risk assessment, dependency mapping, operating model, governance, readiness plan.',
+      'Core/deposit conversion validation: Product mapping, account attribute validation, balance/rate/fee reconciliation, statement and notice validation.',
+      'Digital and channel assurance: Core-to-digital, core-to-branch, core-to-treasury, and core-to-customer-care testing.',
+      'Data reconciliation factory: Automated reconciliation, exception workflows, control totals, data-quality dashboards, audit evidence.',
+      'Command center and executive dashboards: Go/no-go readiness, defect severity, customer-impact scoring, conversion runbook, production readiness.',
+      'Post-conversion stabilization: Hypercare, defect triage, customer-impact monitoring, branch/call-center issue management.',
     ],
     solutionTeam:
-      'Bring merger-conversion PMO, banking core conversion, data migration, testing, digital assurance, and change-management leads. Prepare a reference architecture for conversion assurance: source systems, data migration, reconciliation, regression testing, defect triage, cutover command center, and post-conversion stabilization. Prepare assets for test strategy, data reconciliation, branch readiness, and customer-impact monitoring.',
+      'Merger conversion advisory, core/deposit conversion validation, digital and channel assurance, data reconciliation factory, command center and executive dashboards, and post-conversion stabilization.',
     keyIntegrationAreas:
       'Core-to-digital, core-to-treasury, core-to-reporting, customer/account data, branch/ATM, identity, alerts, statements, servicing.',
   },
@@ -278,11 +295,11 @@ const accountOverviews = {
       {
         rank: 1, confidence: 5, salesReadiness: 'High', priority: 'High',
         dealMidpoint: 10,
-        title: 'Merger Systems Conversion and Client Experience Assurance',
+        title: 'Merger Conversion Assurance & Client Experience Command Center',
         why: 'Strongest public evidence, clear timeline, high SI fit, low vendor-claim risk',
-        entryWedge: 'Conversion readiness / CX risk diagnostic',
+        entryWedge: 'Merger conversion risk and client experience assurance review',
         firstBuyer: 'Integration Office / CIO / COO',
-        meetingTheme: 'De-risking early-2027 conversion without client disruption',
+        meetingTheme: 'Protecting customer experience, deposit accuracy, and operational continuity through the 2027 conversion',
       },
       {
         rank: 2, confidence: 4, salesReadiness: 'High', priority: 'High',
@@ -431,10 +448,24 @@ function mapAccountId(rawAccountId) {
   return ACCOUNT_ID_MAP[rawAccountId] ?? rawAccountId;
 }
 
+function parsePipeOrNewlineList(raw) {
+  if (!raw) return [];
+  const text = String(raw).trim();
+  if (!text) return [];
+  if (text.includes(' | ')) {
+    return text.split(' | ').map((item) => item.trim()).filter(Boolean);
+  }
+  const lines = text.split(/\n+/).map((item) => item.trim()).filter(Boolean);
+  return lines.length ? lines : [text];
+}
+
 function buildOpportunity(row) {
   const id = row.opportunity_id;
   const details = opportunityDetails[id] ?? {};
   const buyerMap = buildBuyerMap(row);
+  const csvFirstMeeting = row.first_meeting_theme?.trim() || null;
+  const csvFirst30 = parsePipeOrNewlineList(row.first_30_day_action);
+  const csvSolutionElements = parsePipeOrNewlineList(row.solution_elements);
 
   return {
     id,
@@ -462,9 +493,23 @@ function buildOpportunity(row) {
 
     buyerMap: buyerMap.length ? buyerMap : undefined,
     siEntryWedge: row.entry_wedge || null,
+    firstMeetingTheme: csvFirstMeeting,
+    firstThirtyDays: csvFirst30.length ? csvFirst30 : undefined,
+    solutionElements: csvSolutionElements.length ? csvSolutionElements : undefined,
 
-    // Rich detail fields from JS overlay (first meeting theme, 30-day plan, etc.)
+    // Rich detail fields from JS overlay (buyer map extras, etc.)
+    // CSV values above win unless overlay explicitly overrides them.
     ...details,
+    // Re-apply CSV content so the CTS demo update sheet remains source of truth.
+    ...(csvFirstMeeting ? { firstMeetingTheme: csvFirstMeeting } : {}),
+    ...(csvFirst30.length ? { firstThirtyDays: csvFirst30 } : {}),
+    ...(csvSolutionElements.length ? { solutionElements: csvSolutionElements } : {}),
+    ...(row.opportunity_title ? { title: row.opportunity_title } : {}),
+    ...(row.business_driver ? { businessDriver: row.business_driver } : {}),
+    ...(row.entry_wedge ? { siEntryWedge: row.entry_wedge } : {}),
+    ...(row.specific_project_scope
+      ? { projectScope: parsePythonList(row.specific_project_scope) }
+      : {}),
   };
 }
 

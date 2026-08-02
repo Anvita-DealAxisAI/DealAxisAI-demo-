@@ -43,7 +43,7 @@ const bankData: Record<string, any> = {
       total: 4, range: '$8M-$15M', themes: '—', stakeholders: 12,
       list: [
         {
-          title: 'Merger Systems Conversion and Client Experience Assurance',
+          title: 'Merger Conversion Assurance & Client Experience Command Center',
           priority: 'High', status: 'Confirmed',
           dealSize: '$5M-$15M', timeline: '2026 through early 2027 with stabilization after conversion', buyer: 'Future MVP',
           projectScope: ['Conversion readiness assessment across core, digital, treasury, lending, branch, reporting, identity, and customer-servicing touchpoints.', 'Independent test assurance, mock-conversion support, defect governance, and cutover command-center support.', 'Client-experience assurance across account access, payments, statements, alerts, authentication, and servicing.', 'Branch and field-readiness playbooks, training support, and post-conversion stabilization.'],

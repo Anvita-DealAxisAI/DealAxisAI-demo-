@@ -823,10 +823,13 @@ function withExecutiveMandateDrivers(account) {
     const title = String(opp?.title ?? '').toLowerCase();
     const first = 'Executive Mandate:';
 
-    if (title.includes('conversion')) {
-      return `${first} De-risk the merger conversion with zero customer disruption across core, digital, and branch journeys.`;
+    if (
+      title.includes('command center')
+      || (title.includes('merger') && title.includes('conversion'))
+    ) {
+      return 'Executive mandate is to protect client trust, deposit stability, operational continuity, and brand reputation by preventing conversion errors across account mapping, rates, fees, statements, digital access, branches, treasury, and reporting.';
     }
-    if (title.includes('deposit') || title.includes('core')) {
+    if (title.includes('deposit') || title.includes('fis') || title.includes('core')) {
       return `${first} Protect balance, product, and statement integrity during core and deposit cutover activities.`;
     }
     if (title.includes('treasury') || title.includes('payment')) {

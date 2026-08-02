@@ -104,7 +104,7 @@ export const SYNOVUS_ORG = {
   topOpportunityOwners: [
     {
       rank:1, priority:'High', type:'Confirmed',
-      title:'Merger Systems Conversion and Client Experience Assurance',
+      title:'Merger Conversion Assurance & Client Experience Command Center',
       complexity:5, complexityLabel:'High', timeline:'Q1 2026 – Q1 2027', budgetVisibility:'High', strategicImportance:'Critical', buyerLens:'Conversion Risk',
       owners:[{i:'VR',bg:'#3b82f6'},{i:'BH',bg:'#22c55e'},{i:'DC',bg:'#16a34a'}], extraOwners:3,
       executiveSponsor:{ initials:'VR', bg:'#3b82f6', badge:'CIO', name:'Vikram Ramani', title:'Chief Information Officer', function:'Enterprise Technology' },
@@ -268,12 +268,12 @@ export const SYNOVUS_ORG = {
 export const SYNOVUS_OPPORTUNITIES = [
   {
     id:'O001', rank:1, priority:'High', type:'Confirmed',
-    title:'Merger Systems Conversion and Client Experience Assurance',
+    title:'Merger Conversion Assurance & Client Experience Command Center',
     dealSize:'$5M–$15M',
     timeline:'2026 through early 2027 with stabilization after conversion',
     buyer:'Future MVP',
-    projectScope:'Conversion readiness assessment across core, digital, treasury, lending, branch, reporting, identity, and customer-servicing touchpoints. Independent test assurance, mock-conversion support, defect governance, and cutover command-center support.',
-    businessDriver:'Executive mandate, CX protection, operational risk reduction. The public conversion timeline makes this the clearest near-term SI wedge.',
+    projectScope:'Map conversion dependencies across core, digital, branch, treasury, reporting, operations. Validate deposit products, accounts, balances, rates, fees, statements, notices accurately. Test customer journeys across digital access, payments, servicing, treasury workflows. Define reconciliation controls, readiness dashboards, mock conversions, command-center hypercare support.',
+    businessDriver:'Executive mandate is to protect client trust, deposit stability, operational continuity, and brand reputation by preventing conversion errors across account mapping, rates, fees, statements, digital access, branches, treasury, and reporting.',
     techStack:'FIS core signal, My Synovus, Synovus Gateway, nCino.',
     techConfirmed:'FIS core signal, My Synovus, Synovus Gateway, nCino.',
     techInferred:'Core conversion, deposits, digital banking, treasury/payments, branch/teller, IAM, data reconciliation, testing, ITSM/command center.',
@@ -287,10 +287,10 @@ export const SYNOVUS_OPPORTUNITIES = [
       { role:'Operations owner',     owner:'Branch ops / customer care / back office' },
       { role:'Budget owner',         owner:'Integration Office / CIO / COO' },
     ],
-    siWedge:'"March 2027 conversion readiness and client-experience risk assessment."',
-    firstMeeting:'"How do we protect client experience and operational stability during system and brand conversion?"',
-    first30Days:['Run a conversion-risk heatmap across core, digital, treasury, branch, lending, data, and servicing.','Identify top 20 client-impact failure points.','Define mock-conversion test model and readiness dashboard.'],
-    solutionTeam:'Bring merger-conversion PMO, banking core conversion, data migration, testing, digital assurance, and change-management leads. Prepare a reference architecture for conversion assurance: source systems, data migration, reconciliation, regression testing, defect triage, cutover command center, and post-conversion stabilization. Prepare assets for test strategy, data reconciliation, branch readiness, and customer-impact monitoring.',
+    siWedge:'Merger conversion risk and client experience assurance review',
+    firstMeeting:'“How are you protecting customer experience, deposit accuracy, and operational continuity through the 2027 conversion?” Discovery hook: “Which customer journeys, product mappings, and downstream integrations create the highest risk during conversion?”',
+    first30Days:['Conversion risk assessment, high-risk journey map, data/product mapping validation plan, reconciliation model, readiness dashboard prototype','Expansion path: Mock conversion testing, reconciliation factory, branch/customer-care readiness, cutover command center, post-conversion stabilization'],
+    solutionTeam:'Merger conversion advisory; Core/deposit conversion validation; Digital and channel assurance; Data reconciliation factory; Command center and executive dashboards; Post-conversion stabilization.',
     keyIntegration:'Core-to-digital, core-to-treasury, core-to-reporting, customer/account data, branch/ATM, identity, alerts, statements, servicing.',
   },
   {

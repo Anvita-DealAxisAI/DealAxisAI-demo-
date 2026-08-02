@@ -103,10 +103,18 @@ export default function OpportunityDetailPage() {
     title, priority, opportunityType, dealSize, timeline, buyer,
     projectScope, businessDriver, technologyStack, buyerMap,
     siEntryWedge, rationale, firstMeetingTheme, firstThirtyDays,
+    solutionElements,
+    solutionTeam,
     capabilitiesToBring,
     referenceArchitectureToPrepare,
     deliveryAssetsOrAcceleratorsToPrepare,
   } = opportunity;
+
+  const solutionItems = Array.isArray(solutionElements) && solutionElements.length
+    ? solutionElements
+    : typeof solutionTeam === 'string' && solutionTeam.trim()
+      ? solutionTeam.split(/;\s*|\.\s+/).map((item) => item.trim()).filter(Boolean)
+      : [];
 
   return (
     <div className="detail-page">
@@ -198,7 +206,7 @@ export default function OpportunityDetailPage() {
               )}
               {firstMeetingTheme && (
                 <div className="detail-combined-quote__item">
-                  <p className="detail-text">
+                  <p className="detail-text" style={{ whiteSpace: 'pre-line' }}>
                     <span className="detail-block__label detail-block__label--subsection detail-block__label--inline">First Meeting Theme :</span>
                     {firstMeetingTheme}
                   </p>
@@ -206,13 +214,19 @@ export default function OpportunityDetailPage() {
               )}
               {firstThirtyDays && firstThirtyDays.length > 0 && (
                 <div className="detail-combined-quote__item">
-                  <p className="detail-text">
+                  <p className="detail-text" style={{ whiteSpace: 'pre-line' }}>
                     <span className="detail-block__label detail-block__label--subsection detail-block__label--inline">First 30 day action :</span>
-                    {firstThirtyDays.join(' | ')}
+                    {firstThirtyDays.join('\n')}
                   </p>
                 </div>
               )}
             </div>
+          </DetailBlock>
+        )}
+
+        {solutionItems.length > 0 && (
+          <DetailBlock label="Solution Elements">
+            <BulletList items={solutionItems} />
           </DetailBlock>
         )}
 
