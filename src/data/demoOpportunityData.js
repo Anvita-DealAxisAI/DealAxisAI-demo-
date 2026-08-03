@@ -861,6 +861,19 @@ function withExecutiveMandateDrivers(account) {
   };
 
   const opportunities = account.opportunities.map((opp, index) => {
+    const existing = String(opp?.businessDriver ?? '').trim();
+    const shortLabels = new Set([
+      'executive mandate',
+      'growth / expansion',
+      'growth/expansion',
+      'cost pressure',
+      'risk reduction',
+      'improve cx',
+    ]);
+    // Keep long-form CSV/demo drivers instead of overwriting with generic templates.
+    if (existing && existing.length > 60 && !shortLabels.has(existing.toLowerCase())) {
+      return opp;
+    }
     return {
       ...opp,
       businessDriver: buildSynovusDriverText(opp, index),

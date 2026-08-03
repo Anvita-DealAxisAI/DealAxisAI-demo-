@@ -63,6 +63,15 @@ const opportunityDetails = {
       'Core-to-digital, core-to-treasury, core-to-reporting, customer/account data, branch/ATM, identity, alerts, statements, servicing.',
   },
   synovus_opp_core_banking_002: {
+    title: 'FIS Core & Deposit Conversion Readiness Assessment',
+    projectScope: [
+      'Assess core/deposit dependencies across channels, operations, treasury, and reporting.',
+      'Validate account, product, balance, rate, fee, and statement mapping.',
+      'Test core integrations with digital, branch, treasury, and reporting platforms.',
+      'Establish reconciliation controls, readiness dashboards, and mock-conversion governance.',
+    ],
+    businessDriver:
+      'Merger conversion creates high customer-impact risk across deposit accounts, product mapping, balances, rates, fees, statements, digital access, branch servicing, treasury workflows, and reporting. The bank needs conversion readiness, reconciliation controls, and production assurance before full transition.',
     buyerMap: [
       { role: 'Business owner',        contact: 'Deposit operations / retail banking / operations' },
       { role: 'Technology owner',      contact: 'Core banking technology / CIO organization' },
@@ -71,12 +80,11 @@ const opportunityDetails = {
       { role: 'Operations owner',      contact: 'Back office / branch ops' },
       { role: 'Budget owner',          contact: 'CIO / Integration Office / COO' },
     ],
-    siEntryWedge:      'FIS core and deposit conversion risk review.',
-    firstMeetingTheme: 'Deposit conversion accuracy, customer-impact controls, and downstream integration readiness.',
+    siEntryWedge: 'FIS core and deposit conversion readiness review.',
+    firstMeetingTheme:
+      '“How are you validating deposit conversion accuracy, customer-impact controls, and downstream integration readiness before the 2027 transition?”',
     firstThirtyDays: [
-      'Map deposit conversion dependencies.',
-      'Identify high-risk product/account mapping scenarios.',
-      'Define reconciliation and mock-conversion validation model.',
+      'Map deposit conversion dependencies, identify high-risk product/account scenarios, and define reconciliation and mock-conversion validation model.',
     ],
     solutionTeam:
       'Bring core banking, deposit operations, data migration, QA automation, and reconciliation experts. Prepare deposit-conversion validation framework and sample control dashboard. Prepare test scenarios for account balances, fees, statements, interest, alerts, digital visibility, and reporting.',
@@ -176,6 +184,15 @@ const opportunityDetails = {
       'Enterprise knowledge repositories, document stores, data platform, identity/access controls, monitoring/logging, workflow/case platforms.',
   },
   synovus_opp_lending_004: {
+    title: 'Commercial Lending Workflow Optimization on nCino',
+    projectScope: [
+      'Assess nCino workflows across intake, underwriting, approvals, closing, booking.',
+      'Identify banker, credit, documentation, and operations handoff leakage points.',
+      'Review core, document, reporting, and credit analytics data integrations.',
+      'Support UAT, release testing, adoption, and banker enablement.',
+    ],
+    businessDriver:
+      'Reduce commercial lending cycle time, banker friction, and credit-operations leakage by optimizing nCino workflows across intake, underwriting, approvals, documentation, closing, booking, reporting, and downstream integration points.',
     buyerMap: [
       { role: 'Business owner',          contact: 'Commercial Banking / CIB / Specialty Lending' },
       { role: 'Technology owner',        contact: 'Commercial platforms / lending technology' },
@@ -184,15 +201,21 @@ const opportunityDetails = {
       { role: 'Operations owner',        contact: 'Credit operations / loan operations' },
       { role: 'Budget owner',            contact: 'Commercial banking / credit / CIO' },
     ],
-    siEntryWedge:      'nCino adoption, workflow, and credit-operations effectiveness review.',
-    firstMeetingTheme: 'Reducing commercial lending friction while protecting credit discipline.',
+    siEntryWedge: 'nCino workflow, adoption, and credit-operations effectiveness review.',
+    firstMeetingTheme:
+      '“How are you reducing commercial lending cycle time while protecting credit discipline and banker productivity?”',
     firstThirtyDays: [
-      'Map current nCino workflows and leakage points.',
-      'Identify high-friction handoffs across banker, credit, docs, closing, and booking.',
-      'Define quick-win workflow, data-quality, and adoption improvements.',
+      'Map current nCino workflows, identify high-friction handoffs, quantify cycle-time leakage, and define quick-win workflow, data-quality, and adoption improvements.',
+    ],
+    solutionElements: [
+      'Align nCino/Salesforce, commercial lending, credit-ops, data, integration, and QA SMEs.',
+      'Prepare discovery on workflow friction, cycle time, handoffs, adoption, and data quality.',
+      'Review integrations across core, documents, reporting, servicing, and credit analytics.',
+      'Bring accelerators: workflow diagnostic, leakage heatmap, UAT model, adoption dashboard.',
+      'Define 30-day output: findings, quick wins, remediation backlog, roadmap.',
     ],
     solutionTeam:
-      'Bring nCino, commercial lending, credit workflow, Salesforce-adjacent architecture, testing, and data-quality specialists. Prepare CLOS reference architecture: CRM/RM intake, borrower data, credit decisioning, docs, core booking, reporting. Prepare sample metrics: cycle time, touch time, rework, exceptions, missing docs, approval bottlenecks.',
+      'Align nCino/Salesforce, commercial lending, credit-ops, data, integration, and QA SMEs. Prepare discovery on workflow friction, cycle time, handoffs, adoption, and data quality.',
     keyIntegrationAreas:
       'nCino, core, customer/account data, document systems, reporting, collateral, covenant, portfolio monitoring.',
   },
@@ -304,11 +327,11 @@ const accountOverviews = {
       {
         rank: 2, confidence: 4, salesReadiness: 'High', priority: 'High',
         dealMidpoint: 6.5,
-        title: 'FIS Core and Deposit Conversion Readiness',
+        title: 'FIS Core & Deposit Conversion Readiness Assessment',
         why: 'Core/deposit accuracy is foundational to conversion',
-        entryWedge: 'FIS core and deposit reconciliation review',
+        entryWedge: 'FIS core and deposit conversion readiness review.',
         firstBuyer: 'Core banking tech / deposit ops',
-        meetingTheme: 'Deposit conversion accuracy and downstream controls',
+        meetingTheme: 'Validating deposit conversion accuracy and downstream integration readiness before the 2027 transition',
       },
       {
         rank: 3, confidence: 5, salesReadiness: 'High', priority: 'High',
@@ -322,11 +345,11 @@ const accountOverviews = {
       {
         rank: 4, confidence: 5, salesReadiness: 'High', priority: 'High',
         dealMidpoint: 3.25,
-        title: 'Commercial Lending and nCino Workflow Optimization',
+        title: 'Commercial Lending Workflow Optimization on nCino',
         why: 'Confirmed nCino signal plus commercial growth relevance',
-        entryWedge: 'nCino workflow/adoption review',
+        entryWedge: 'nCino workflow, adoption, and credit-operations effectiveness review.',
         firstBuyer: 'Commercial / credit / CIO',
-        meetingTheme: 'Reducing lending friction while protecting credit discipline',
+        meetingTheme: 'Reducing commercial lending cycle time while protecting credit discipline and banker productivity',
       },
       {
         rank: 5, confidence: 5, salesReadiness: 'High', priority: 'High',
