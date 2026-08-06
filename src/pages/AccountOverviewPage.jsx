@@ -19,6 +19,7 @@ import stakeholdersIcon from '../../logo/icons/stakeholders.svg';
 import userStarIcon from '../../logo/icons/user-star.svg';
 import teamIcon from '../../logo/icons/team.svg';
 import userPenIcon from '../../logo/icons/user-pen.svg';
+import brainIcon from '../../logo/icons/brain.svg';
 import { SYNOVUS_ORG, SYNOVUS_OPPORTUNITIES } from '../data/staticData';
 import OpportunitiesContent from '../components/OpportunitiesContent';
 import {
@@ -32,6 +33,163 @@ import { generateAccountReportPdf } from '../utils/accountReportPdf';
 
 /* ─── Static account data ─────────────────────────────────────────── */
 const TABS = ['Overview','Signals','Opportunities','Organization','News & Events'];
+
+const SYNOVUS_LINKEDIN_BY_NAME = Object.freeze({
+  'kevin blair': 'https://www.linkedin.com/in/kevin-blair-849a767/',
+  'vikram ramani': 'https://www.linkedin.com/in/vikramramani/',
+  'shellie creson': 'https://www.linkedin.com/in/shellie-creson-9467495/',
+  'jennifer spinks upshaw': 'https://www.linkedin.com/in/jennifer-spinks-upshaw-8622859/',
+  'dana sanders': 'https://www.linkedin.com/in/dana-sanders-75764b196/',
+  'charissa sumerlin': 'https://www.linkedin.com/in/charissa-sumerlin-7138636/',
+  'gloria c banks crcm cerp': 'https://www.linkedin.com/in/gloria-c-banks-crcm-cerp-a3b71050/',
+  'adam archer': 'https://www.linkedin.com/in/adam-archer-7b20305/',
+  'sanjeev jha': 'https://www.linkedin.com/in/sanjeev--jha/',
+  'santosh kokate': 'https://www.linkedin.com/in/santoshkokate/',
+  'casey toops': 'https://www.linkedin.com/in/caseytoops/',
+  'kevin d johnson': 'https://www.linkedin.com/in/k3vindjohnson/',
+  'branden hillis': 'https://www.linkedin.com/in/branden-hillis-271418a/',
+  'jason olson': 'https://www.linkedin.com/in/agbdf2002/',
+  'rob bankston': 'https://www.linkedin.com/in/rob-bankston-45b2a614/',
+  'michael robertson': 'https://www.linkedin.com/in/michael-robertson-11a642114/',
+  'keith thomas': 'https://www.linkedin.com/in/keith-thomas-73890410/',
+  'femi o': 'https://www.linkedin.com/in/femionafowokan/',
+  'jeff nicolosi': 'https://www.linkedin.com/in/jeff-nicolosi-8aa31610/',
+  'david correa': 'https://www.linkedin.com/in/david-correa-664a9a4/',
+  'jeffrey beisler snell ph d ctp phr shrm cp': 'https://www.linkedin.com/in/jeffrey-beisler-snell-ph-d-ctp-phr-shrm-cp-51894084/',
+  'chris dodson': 'https://www.linkedin.com/in/chris-dodson-47259113/',
+  'julian cornett': 'https://www.linkedin.com/in/juliancornett/',
+  'christine antonson': 'https://www.linkedin.com/in/antonson/',
+  'gopinath devarajan': 'https://www.linkedin.com/in/gopidev/',
+  'grace clark': 'https://www.linkedin.com/in/grace-clark-211bb352/',
+  'katherine hamilton': 'https://www.linkedin.com/in/katherinehamilton90/',
+  'michaela p': 'https://www.linkedin.com/in/michaelapettway/',
+  'sathish madanagopalan': 'https://www.linkedin.com/in/sathish-madan/',
+  'sue j nelson crcm amlp': 'https://www.linkedin.com/in/sue-j-nelson-crcm-amlp-132a517/',
+});
+
+const SYNOVUS_OPP_OWNER_ENRICHMENT_BY_NAME = Object.freeze({
+  'kevin blair': {
+    executivePriority: [
+      'Enterprise leadership',
+      'Merger integration oversight',
+      'Systems and brand conversion readiness',
+      'Commercial treasury and ERP workflow',
+      'Enterprise data and reporting controls',
+    ],
+    whyItMatters:
+      'Selected for Executive Leadership relevance and executive seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.',
+    relatedOpportunities: [
+      'march_2027_systems_brand_and_client_experience_conversion_readiness',
+      'commercial_treasury_and_erp_connected_workflow_expansion',
+      'enterprise_data_finance_and_regulatory_control_alignment',
+      'financial_crime_fraud_scams_disputes_readiness',
+    ],
+  },
+  'vikram ramani': {
+    executivePriority: [
+      'Enterprise technology strategy',
+      'Technology modernization',
+      'Systems and brand conversion readiness',
+    ],
+    whyItMatters:
+      'Selected for Technology relevance and executive seniority. Mapped to 2 identified opportunities through Step 3/4 buying-center evidence.',
+    relatedOpportunities: [
+      'march_2027_systems_brand_and_client_experience_conversion_readiness',
+      'integration_operating_model_change_and_workforce_enablement',
+    ],
+  },
+  'branden hillis': {
+    executivePriority: [
+      'Integration management',
+      'Operating model readiness',
+      'Cross-functional conversion orchestration',
+    ],
+    whyItMatters:
+      'Selected for Integration Management relevance and SVP/VP seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.',
+    relatedOpportunities: [
+      'march_2027_systems_brand_and_client_experience_conversion_readiness',
+      'commercial_treasury_and_erp_connected_workflow_expansion',
+      'integration_operating_model_change_and_workforce_enablement',
+      'cyber_identity_resilience_and_conversion_controls',
+    ],
+  },
+});
+
+const SYNOVUS_RELATED_OPP_TITLE_ALIASES = Object.freeze({
+  // Supabase rank labels -> demo opportunity titles shown in UI
+  'march 2027 systems brand and client experience conversion readiness': [
+    'Merger Conversion Assurance & Client Experience Command Center',
+    'FIS Core & Deposit Conversion Readiness Assessment',
+  ],
+  'commercial treasury and erp connected workflow expansion': [
+    'Treasury Payments and Synovus Gateway Enablement',
+    'Commercial Lending Workflow Optimization on nCino',
+  ],
+  'digital and branch channel conversion continuity': [
+    'Digital Banking Continuity and Customer Migration Readiness',
+  ],
+  // Explicitly remove this from demo mappings
+  'integration operating model change and workforce enablement': [],
+  'enterprise data finance and regulatory control alignment': [
+    'Merger Conversion Assurance & Client Experience Command Center',
+    'FIS Core & Deposit Conversion Readiness Assessment',
+  ],
+  'cyber identity resilience and conversion controls': [
+    'Cybersecurity IAM and Conversion Resilience',
+  ],
+  'financial crime fraud scams disputes readiness': [
+    'Fraud AI/ML and Payment-Risk Controls',
+  ],
+  'aml bsa sanctions control and case management readiness': [
+    'Fraud AI/ML and Payment-Risk Controls',
+  ],
+  'ai enabled operating leverage and productivity execution readiness': [
+    'Governed AI Productivity and Knowledge Enablement',
+  ],
+  'application rationalization supplier optimization and managed services simplification': [
+    'Application Rationalization and Vendor Optimization Assessment',
+  ],
+});
+
+function normalizeStakeholderName(value) {
+  return String(value ?? '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function getStakeholderLinkedInUrl(accountName, stakeholderName) {
+  if (!accountName || !/synovus/i.test(accountName)) return null;
+  return SYNOVUS_LINKEDIN_BY_NAME[normalizeStakeholderName(stakeholderName)] ?? null;
+}
+
+function LinkedInIconLink({ url, stakeholderName }) {
+  if (!url) return null;
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      title={`Open ${stakeholderName} LinkedIn profile`}
+      aria-label={`Open ${stakeholderName} LinkedIn profile`}
+      style={{
+        width: 16,
+        height: 16,
+        borderRadius: 4,
+        background: '#0A66C2',
+        color: '#ffffff',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        textDecoration: 'none',
+        flexShrink: 0,
+      }}
+      onClick={(event) => event.stopPropagation()}
+    >
+      <span style={{ fontSize: 9, fontWeight: 700, lineHeight: 1 }}>in</span>
+    </a>
+  );
+}
 
 /* ─── OVERVIEW TAB ────────────────────────────────────────────────── */
 function OverviewTab({ acct }) {
@@ -242,9 +400,180 @@ function SignalsTab({ accountId }) {
     return <div className="animate-in" style={{ color: '#b91c1c', fontSize: 13 }}>{error}</div>;
   }
 
+  const summaryHeading =
+    businessSummary && typeof businessSummary === 'object'
+      ? String(businessSummary.heading ?? '').trim()
+      : '';
+  const summaryPoints =
+    businessSummary && typeof businessSummary === 'object' && Array.isArray(businessSummary.points)
+      ? businessSummary.points.map((point) => String(point ?? '').trim()).filter(Boolean)
+      : [];
+  const summaryText =
+    typeof businessSummary === 'string'
+      ? businessSummary
+      : '';
+  const operatingPriorities =
+    businessSummary && typeof businessSummary === 'object' && Array.isArray(businessSummary.operatingPriorities)
+      ? businessSummary.operatingPriorities.map((item) => String(item ?? '').trim()).filter(Boolean)
+      : [];
+  const postureStatements =
+    businessSummary && typeof businessSummary === 'object' && Array.isArray(businessSummary.postureStatements)
+      ? businessSummary.postureStatements.map((item) => String(item ?? '').trim()).filter(Boolean)
+      : [];
+  const confidenceLabel =
+    businessSummary && typeof businessSummary === 'object'
+      ? String(businessSummary.confidence ?? '').trim()
+      : '';
+  const confidenceTone = (() => {
+    const normalized = confidenceLabel.toLowerCase();
+    // 180° scale: 0–60 Low, 60–120 Medium, 120–180 High.
+    // Needle points to each segment midpoint.
+    if (normalized.includes('very high')) return { label: 'Very High', bucket: 'high', meterDegree: 165, color: '#15803d' };
+    if (normalized.includes('high')) return { label: 'High', bucket: 'high', meterDegree: 150, color: '#16a34a' };
+    if (normalized.includes('medium')) return { label: 'Medium', bucket: 'medium', meterDegree: 90, color: '#ca8a04' };
+    if (normalized.includes('low')) return { label: 'Low', bucket: 'low', meterDegree: 30, color: '#f97316' };
+    return { label: confidenceLabel || 'High', bucket: 'high', meterDegree: 150, color: '#16a34a' };
+  })();
+  const confidenceNeedleDeg = -180 + confidenceTone.meterDegree;
+  const verticalBoxSections =
+    businessSummary && typeof businessSummary === 'object' && Array.isArray(businessSummary.verticalBoxSections)
+      ? businessSummary.verticalBoxSections
+        .map((section) => ({
+          heading: String(section?.heading ?? '').trim(),
+          text: String(section?.text ?? '').trim(),
+        }))
+        .filter((section) => section.heading || section.text)
+      : [];
+  const hasStructuredSummary = Boolean(
+    summaryHeading
+    || summaryPoints.length > 0
+    || operatingPriorities.length > 0
+    || postureStatements.length > 0
+    || verticalBoxSections.length > 0
+    || confidenceLabel,
+  );
+
   return (
     <div className="animate-in">
-      {businessSummary ? (
+      {businessSummary && hasStructuredSummary ? (
+        <div
+          className="asi-signals-bento"
+          style={{
+            marginBottom: 24,
+            background: 'linear-gradient(135deg, rgba(96, 176, 232, 0.03) 0%, rgba(37, 99, 235, 0.06) 35%, rgba(0, 89, 207, 0.09) 70%, rgba(0, 89, 207, 0.1) 100%)',
+          }}
+        >
+          <div className="asi-signals-bento__left-column">
+            <article className="asi-signals-bento__card asi-signals-bento__card--primary">
+              <div className="asi-signals-bento__header">
+                <div
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 12,
+                    background: '#ffffff',
+                    border: '1px solid rgba(37, 99, 235, 0.18)',
+                    boxShadow: '0 1px 3px rgba(15, 23, 42, 0.08)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  <img src={fileTextIcon} alt="" width={16} height={16} aria-hidden style={{ display: 'block' }} />
+                </div>
+                <h3 style={{fontSize:16,fontWeight:600,color:'#0f172a',margin:0}}>
+                  {summaryHeading || 'Executive Account summary'}
+                </h3>
+              </div>
+              {summaryPoints.length > 0 ? (
+                <ul className="asi-chic-list asi-chic-list--executive-summary">
+                  {summaryPoints.map((point, index) => (
+                    <li className="asi-chic-list__item" key={`${index}-${point.slice(0, 24)}`}>{point}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p style={{fontSize:13,color:'#334155',lineHeight:1.7,margin:0}}>{summaryText}</p>
+              )}
+            </article>
+            <article className="asi-signals-bento__card asi-signals-bento__card--tertiary">
+              <div className="asi-signals-bento__header">
+                <div
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 12,
+                    background: '#ffffff',
+                    border: '1px solid rgba(37, 99, 235, 0.18)',
+                    boxShadow: '0 1px 3px rgba(15, 23, 42, 0.08)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  <img src={brainIcon} alt="" width={16} height={16} aria-hidden style={{ display: 'block' }} />
+                </div>
+                <h4 className="asi-signals-bento__side-title" style={{ margin: 0 }}>Strategic Posture</h4>
+              </div>
+              <ul className="asi-chic-list asi-chic-list--tight">
+                {postureStatements.map((item, index) => (
+                  <li className="asi-chic-list__item" key={`posture-left-${index}-${item.slice(0, 24)}`}>{item}</li>
+                ))}
+              </ul>
+            </article>
+          </div>
+          <div className="asi-signals-bento__right-column">
+            <div className="asi-signals-bento__right-top-grid">
+              <article className="asi-signals-bento__card asi-signals-bento__mini-card">
+                <h4 className="asi-signals-bento__side-title">Operating Priorities</h4>
+                <ul className="asi-chic-list asi-chic-list--tight">
+                  {operatingPriorities.map((item, index) => (
+                    <li className="asi-chic-list__item" key={`op-${index}-${item.slice(0, 24)}`}>{item}</li>
+                  ))}
+                </ul>
+              </article>
+              <article className="asi-signals-bento__card asi-signals-bento__mini-card asi-signals-bento__mini-card--meter">
+                <h4 className="asi-signals-bento__side-title" style={{ margin: 0 }}>
+                  Confidence Meter : <span className="asi-confidence-meter__title-value" style={{ color: confidenceTone.color }}>{confidenceTone.label}</span>
+                </h4>
+                <div className="asi-confidence-meter" role="img" aria-label={`Confidence level ${confidenceTone.label}`}>
+                  <div className="asi-confidence-meter__arc" />
+                  <div className="asi-confidence-meter__needle-wrap">
+                    <div
+                      className="asi-confidence-meter__needle"
+                      style={{ transform: `rotate(${confidenceNeedleDeg}deg)` }}
+                    />
+                  </div>
+                  <div className="asi-confidence-meter__hub" />
+                </div>
+                <div className="asi-confidence-meter__scale" aria-hidden>
+                  <span className={`asi-confidence-meter__tick${confidenceTone.bucket === 'low' ? ' active' : ''}`}>Low</span>
+                  <span className={`asi-confidence-meter__tick${confidenceTone.bucket === 'medium' ? ' active' : ''}`}>Medium</span>
+                  <span className={`asi-confidence-meter__tick${confidenceTone.bucket === 'high' ? ' active' : ''}`}>High</span>
+                </div>
+              </article>
+            </div>
+            <article className="asi-signals-bento__card asi-signals-bento__card--secondary">
+              <h4 className="asi-signals-bento__side-title">Strategy and Intelligence</h4>
+              {verticalBoxSections.length > 0 ? (
+                <div className="asi-vertical-panel">
+                  {verticalBoxSections.map((section, index) => (
+                    <section className="asi-vertical-panel__item" key={`${index}-${section.heading.slice(0, 24)}`}>
+                      {section.heading ? <p className="asi-vertical-panel__heading">{section.heading}</p> : null}
+                      {section.text ? <p className="asi-vertical-panel__text">{section.text}</p> : null}
+                    </section>
+                  ))}
+                </div>
+              ) : (
+                <p style={{ margin: 0, fontSize: 12, color: '#64748b' }}>
+                  No additional strategy sections available.
+                </p>
+              )}
+            </article>
+          </div>
+        </div>
+      ) : businessSummary ? (
         <div
           className="asi-summary-card"
           style={{
@@ -269,8 +598,8 @@ function SignalsTab({ accountId }) {
             <img src={fileTextIcon} alt="" width={26} height={26} aria-hidden style={{ display: 'block' }} />
           </div>
           <div>
-            <h3 style={{fontSize:16,fontWeight:600,color:'#0f172a',marginBottom:6}}>Business Summary</h3>
-            <p style={{fontSize:13,color:'#334155',lineHeight:1.7}}>{businessSummary}</p>
+            <h3 style={{fontSize:16,fontWeight:600,color:'#0f172a',marginBottom:6}}>Executive Account summary</h3>
+            <p style={{fontSize:13,color:'#334155',lineHeight:1.7}}>{summaryText}</p>
           </div>
         </div>
       ) : null}
@@ -325,13 +654,21 @@ const EMPTY_ORG = {
     { key: 'business_leadership', label: 'Business Leadership', icon: 'bank', people: [], viewAllLabel: 'View All Business Leadership (0)' },
     { key: 'opportunity_owners', label: 'Opportunity Owners', icon: 'revenue', people: [], viewAllLabel: 'View All Opportunity Owners (0)' },
   ],
+  topOpportunityOwners: [],
 };
 
-function OrganizationTab({ accountId, name }) {
+function OrganizationTab({ accountId, name, opportunities = [] }) {
+  const ORGANIZATION_OPP_OWNERS_TAB_LABEL = 'Key Leaders to Engage';
+  const SCROLL_TOP_OFFSET_PX = 110;
+  const navigate = useNavigate();
   const [activeOrgTab, setActiveOrgTab] = React.useState(0);
   const [expandedOpp, setExpandedOpp] = React.useState(null);
+  const [scrollToOppCardIndex, setScrollToOppCardIndex] = React.useState(null);
+  const [hoveredOppId, setHoveredOppId] = React.useState(null);
   const [orgData, setOrgData] = React.useState(EMPTY_ORG);
   const [isLoadingOrg, setIsLoadingOrg] = React.useState(true);
+  const expandedOppPanelRef = React.useRef(null);
+  const topOppCardRefs = React.useRef(new Map());
 
   React.useEffect(() => {
     let cancelled = false;
@@ -348,8 +685,11 @@ function OrganizationTab({ accountId, name }) {
           setOrgData({
             kpis: org?.kpis ?? EMPTY_ORG.kpis,
             tabs: Array.isArray(org?.tabs) && org.tabs.length > 0 ? org.tabs : EMPTY_ORG.tabs,
+            topOpportunityOwners: Array.isArray(org?.topOpportunityOwners) ? org.topOpportunityOwners : [],
           });
           setActiveOrgTab(0);
+          setExpandedOpp(null);
+          setHoveredOppId(null);
         }
       } catch (err) {
         console.error('Failed to load organization', err);
@@ -364,7 +704,36 @@ function OrganizationTab({ accountId, name }) {
     };
   }, [accountId]);
 
-  const tab = orgData.tabs[activeOrgTab] ?? orgData.tabs[0];
+  const isOpportunityOwnersTabEntry = React.useCallback((entry) => {
+    const key = String(entry?.key ?? '').toLowerCase();
+    const label = String(entry?.label ?? '').toLowerCase();
+    return key === 'opportunity_owners'
+      || label === 'opportunity owners'
+      || label === 'key leaders to engage';
+  }, []);
+  const orderedOrgTabs = React.useMemo(() => {
+    const tabs = Array.isArray(orgData.tabs) ? orgData.tabs : [];
+    const renamed = tabs.map((entry) => (
+      isOpportunityOwnersTabEntry(entry)
+        ? { ...entry, label: ORGANIZATION_OPP_OWNERS_TAB_LABEL }
+        : entry
+    ));
+    const owners = renamed.filter((entry) => isOpportunityOwnersTabEntry(entry));
+    const others = renamed.filter((entry) => !isOpportunityOwnersTabEntry(entry));
+    return [...owners, ...others];
+  }, [orgData.tabs, isOpportunityOwnersTabEntry]);
+  const tab = orderedOrgTabs[activeOrgTab] ?? orderedOrgTabs[0];
+  const isOpportunityOwnersTab = isOpportunityOwnersTabEntry(tab);
+  const isSynovusOpportunityOwnersTab = /synovus/i.test(String(name ?? '')) && isOpportunityOwnersTab;
+  const compactTablePaddingX = isOpportunityOwnersTab ? 14 : 20;
+  const compactTablePaddingY = isOpportunityOwnersTab ? 10 : 14;
+  const stakeholderGridColumns = isSynovusOpportunityOwnersTab
+    ? '230px minmax(190px,1fr) minmax(250px,1.35fr) 90px'
+    : '240px 210px 170px 1fr 110px 100px';
+  const stakeholderColumnGapPx = isSynovusOpportunityOwnersTab ? 2 : 1;
+  const stakeholderHeaders = isSynovusOpportunityOwnersTab
+    ? ['Stakeholder', 'Executive Priority', 'Related Opportunities', 'Influence']
+    : ['Stakeholder', 'Title', 'Function', 'Executive Priority', 'Opportunities', 'Influence'];
 
   const stars = (n) => Array.from({length:5}, (_, i) => (
     <span key={i} style={{color: i < n ? '#f59e0b' : '#e2e8f0', fontSize:15}}>★</span>
@@ -406,7 +775,278 @@ function OrganizationTab({ accountId, name }) {
   ];
 
   const engagementColor = (e) => e==='Very High' ? '#16a34a' : e==='High' ? '#2563eb' : '#94a3b8';
-  const showStaticOpportunityOwners = Boolean(name?.toLowerCase().includes('synovus'));
+  const formatOpportunityTitle = (value) => {
+    const raw = String(value ?? '').trim();
+    if (!raw) return 'Untitled Opportunity';
+    if (raw.includes('_')) {
+      return raw.replace(/_/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+    return raw;
+  };
+  const resolveSynovusRelatedOpportunityTitles = (values = []) => {
+    const resolved = [];
+    values.forEach((rawValue) => {
+      const normalized = normalizeStakeholderName(String(rawValue ?? '').replace(/_/g, ' '));
+      const aliased = SYNOVUS_RELATED_OPP_TITLE_ALIASES[normalized];
+      if (Array.isArray(aliased)) {
+        aliased.forEach((title) => {
+          if (title && !resolved.includes(title)) resolved.push(title);
+        });
+        return;
+      }
+      const formatted = formatOpportunityTitle(rawValue);
+      if (formatted && !resolved.includes(formatted)) resolved.push(formatted);
+    });
+    return resolved;
+  };
+  const normalizeOpportunityLookupKey = (value) => (
+    String(value ?? '')
+      .toLowerCase()
+      .replace(/[_-]+/g, ' ')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim()
+  );
+  const stakeholderPool = React.useMemo(() => {
+    const merged = [];
+    const seen = new Set();
+    for (const orgTab of orgData.tabs ?? []) {
+      for (const person of orgTab.people ?? []) {
+        const key = String(person?.name ?? '').trim().toLowerCase();
+        if (!key || seen.has(key)) continue;
+        seen.add(key);
+        merged.push(person);
+      }
+    }
+    return merged;
+  }, [orgData.tabs]);
+  const complexityMetaFromOpportunity = (opp) => {
+    const confidence = Number(opp?.confidenceScore);
+    if (Number.isFinite(confidence) && confidence > 0) {
+      if (confidence >= 4.5) return { complexity: 5, complexityLabel: 'High' };
+      if (confidence >= 3.5) return { complexity: 4, complexityLabel: 'High' };
+      if (confidence >= 2.5) return { complexity: 3, complexityLabel: 'Medium' };
+      return { complexity: 2, complexityLabel: 'Low' };
+    }
+    const priority = String(opp?.priority ?? '').toLowerCase();
+    if (priority.includes('high')) return { complexity: 4, complexityLabel: 'High' };
+    if (priority.includes('medium')) return { complexity: 3, complexityLabel: 'Medium' };
+    return { complexity: 2, complexityLabel: 'Low' };
+  };
+  const budgetVisibilityFromDealSize = (dealSize) => {
+    const values = String(dealSize ?? '')
+      .match(/[\d.]+/g)
+      ?.map(Number)
+      .filter((value) => Number.isFinite(value)) ?? [];
+    const max = values.length ? Math.max(...values) : 0;
+    if (max >= 8) return 'High';
+    if (max >= 3) return 'Medium';
+    return 'Low';
+  };
+  const engagementLabelFromInfluence = (influence) => (
+    influence >= 5 ? 'Very High' : influence >= 4 ? 'High' : 'Medium'
+  );
+  const topOpportunityOwners = React.useMemo(() => {
+    const PRIORITY_ORDER = {
+      critical: 0,
+      hot: 1,
+      high: 2,
+      'medium-high': 3,
+      medium: 4,
+      low: 5,
+    };
+    const TYPE_ORDER = {
+      'Confirmed Opportunity': 0,
+      Confirmed: 0,
+      'Confirmed / Inferred': 1,
+      'Inferred Opportunity': 2,
+      Inferred: 2,
+      'Strategic Hypothesis': 3,
+      Watchlist: 4,
+      'Strategic Hypothesis / Watchlist': 4,
+    };
+    const roleOrder = [
+      'Executive Sponsor',
+      'Economic Buyer',
+      'Business Owner',
+      'Technology Owner',
+      'Data Owner',
+      'Risk Stakeholder',
+    ];
+    const sortedOpps = [...(opportunities ?? [])].sort((a, b) => {
+      const pa = PRIORITY_ORDER[String(a?.priority ?? '').trim().toLowerCase()] ?? 99;
+      const pb = PRIORITY_ORDER[String(b?.priority ?? '').trim().toLowerCase()] ?? 99;
+      if (pa !== pb) return pa - pb;
+
+      const ta = TYPE_ORDER[a?.opportunityType] ?? 99;
+      const tb = TYPE_ORDER[b?.opportunityType] ?? 99;
+      return ta - tb;
+    });
+
+    if (!sortedOpps.length) {
+      return Array.isArray(orgData.topOpportunityOwners) && orgData.topOpportunityOwners.length > 0
+        ? orgData.topOpportunityOwners
+        : (SYNOVUS_ORG.topOpportunityOwners ?? []);
+    }
+
+    return sortedOpps.map((opp, index) => {
+      const complexityMeta = complexityMetaFromOpportunity(opp);
+      const priority = String(opp?.priority ?? 'Medium');
+      const rank = Number(opp?.rank) || index + 1;
+      const clusterStart = stakeholderPool.length ? (index * 2) % stakeholderPool.length : 0;
+      const buyingCenter = roleOrder.map((role, roleIndex) => {
+        const person = stakeholderPool.length
+          ? stakeholderPool[(clusterStart + roleIndex) % stakeholderPool.length]
+          : null;
+        const nameText = person?.name ?? role;
+        const initials = person?.initials
+          ?? String(nameText).split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase();
+        const influence = Number(person?.stars) || (4 - (roleIndex > 3 ? 1 : 0));
+        return {
+          role,
+          initials,
+          bg: person?.bg ?? '#64748b',
+          name: nameText,
+          title: person?.title ?? 'Stakeholder',
+          function: person?.function ?? 'Organization',
+          influence,
+          engagement: engagementLabelFromInfluence(influence),
+        };
+      });
+      const owners = buyingCenter.slice(0, 3).map((person) => ({ i: person.initials, bg: person.bg }));
+      return {
+        opportunityId: opp?.id ?? `opp-${rank}`,
+        rank,
+        priority,
+        title: String(opp?.title ?? 'Untitled Opportunity'),
+        complexity: complexityMeta.complexity,
+        complexityLabel: complexityMeta.complexityLabel,
+        timeline: opp?.timeline ?? 'TBD',
+        budgetVisibility: budgetVisibilityFromDealSize(opp?.dealSize),
+        strategicImportance: priority.toLowerCase().includes('high') ? 'Critical' : 'High',
+        buyerLens: opp?.buyer ?? 'Opportunity Lens',
+        owners,
+        extraOwners: Math.max(0, buyingCenter.length - owners.length),
+        buyingCenter,
+      };
+    });
+  }, [opportunities, orgData.topOpportunityOwners, stakeholderPool]);
+  const relatedOpportunitiesByOwner = React.useMemo(() => {
+    if (!isSynovusOpportunityOwnersTab || topOpportunityOwners.length === 0) return new Map();
+    const mapped = new Map();
+    topOpportunityOwners.forEach((opp) => {
+      const opportunityTitle = formatOpportunityTitle(opp?.title);
+      (opp.buyingCenter ?? []).forEach((owner) => {
+        const normalizedName = normalizeStakeholderName(owner?.name);
+        if (!normalizedName) return;
+        if (!mapped.has(normalizedName)) mapped.set(normalizedName, []);
+        const list = mapped.get(normalizedName);
+        if (!list.includes(opportunityTitle)) list.push(opportunityTitle);
+      });
+    });
+    return mapped;
+  }, [isSynovusOpportunityOwnersTab, topOpportunityOwners]);
+  const relatedOpportunityIndexByKey = React.useMemo(() => {
+    const indexMap = new Map();
+    topOpportunityOwners.forEach((opp, idx) => {
+      const titleKey = normalizeOpportunityLookupKey(opp?.title);
+      const formattedTitleKey = normalizeOpportunityLookupKey(formatOpportunityTitle(opp?.title));
+      const idKey = normalizeOpportunityLookupKey(opp?.opportunityId);
+      if (titleKey && !indexMap.has(titleKey)) indexMap.set(titleKey, idx);
+      if (formattedTitleKey && !indexMap.has(formattedTitleKey)) indexMap.set(formattedTitleKey, idx);
+      if (idKey && !indexMap.has(idKey)) indexMap.set(idKey, idx);
+    });
+    return indexMap;
+  }, [topOpportunityOwners]);
+  const setTopOppCardRef = React.useCallback((idx, node) => {
+    if (node) {
+      topOppCardRefs.current.set(idx, node);
+    } else {
+      topOppCardRefs.current.delete(idx);
+    }
+  }, []);
+  const scrollElementWithTopOffset = React.useCallback((element, offsetPx = SCROLL_TOP_OFFSET_PX) => {
+    if (!element || typeof window === 'undefined') return;
+    const absoluteTop = window.scrollY + element.getBoundingClientRect().top;
+    window.scrollTo({
+      top: Math.max(0, absoluteTop - offsetPx),
+      behavior: 'smooth',
+    });
+  }, []);
+  const openTopOpportunityCard = React.useCallback((rawOpportunityValue) => {
+    const lookupKey = normalizeOpportunityLookupKey(rawOpportunityValue);
+    if (!lookupKey) return;
+    let targetIndex = relatedOpportunityIndexByKey.get(lookupKey);
+    if (typeof targetIndex !== 'number') {
+      targetIndex = topOpportunityOwners.findIndex((opp) => {
+        const rawKey = normalizeOpportunityLookupKey(opp?.title);
+        const displayKey = normalizeOpportunityLookupKey(formatOpportunityTitle(opp?.title));
+        return rawKey.includes(lookupKey)
+          || lookupKey.includes(rawKey)
+          || displayKey.includes(lookupKey)
+          || lookupKey.includes(displayKey);
+      });
+    }
+    if (typeof targetIndex !== 'number' || targetIndex < 0) return;
+    setExpandedOpp(targetIndex);
+    setScrollToOppCardIndex(targetIndex);
+    const selectedOpp = topOpportunityOwners[targetIndex];
+    setHoveredOppId(selectedOpp?.opportunityId || selectedOpp?.title || `slot-${targetIndex}`);
+  }, [relatedOpportunityIndexByKey, topOpportunityOwners]);
+  const openOpportunityDetailFromTopCard = React.useCallback((opp) => {
+    const opportunityId = String(opp?.opportunityId ?? '').trim();
+    if (!accountId || !opportunityId) return;
+    navigate(`/accounts/${encodeURIComponent(accountId)}/opportunities/${encodeURIComponent(opportunityId)}`);
+  }, [accountId, navigate]);
+  React.useEffect(() => {
+    if (expandedOpp === null) return;
+    const raf = window.requestAnimationFrame(() => {
+      if (typeof scrollToOppCardIndex === 'number') {
+        const targetCard = topOppCardRefs.current.get(scrollToOppCardIndex);
+        if (targetCard) {
+          // Keep the selected lower card fully visible after expansion.
+          scrollElementWithTopOffset(targetCard, 140);
+          setScrollToOppCardIndex(null);
+          return;
+        }
+      }
+      if (expandedOppPanelRef.current) {
+        scrollElementWithTopOffset(expandedOppPanelRef.current);
+      }
+    });
+    return () => window.cancelAnimationFrame(raf);
+  }, [expandedOpp, scrollElementWithTopOffset, scrollToOppCardIndex]);
+  const displayedStakeholders = React.useMemo(() => {
+    if (!isSynovusOpportunityOwnersTab) return tab?.people ?? [];
+    const list = [...stakeholderPool];
+    list.sort((a, b) => {
+      const starsA = Number(a?.stars ?? 0);
+      const starsB = Number(b?.stars ?? 0);
+      if (starsA !== starsB) return starsB - starsA;
+      const oppsA = Number(a?.opps ?? 0);
+      const oppsB = Number(b?.opps ?? 0);
+      if (oppsA !== oppsB) return oppsB - oppsA;
+      return String(a?.name ?? '').localeCompare(String(b?.name ?? ''));
+    });
+    return list;
+  }, [isSynovusOpportunityOwnersTab, stakeholderPool, tab?.people]);
+  const showStaticOpportunityOwners = topOpportunityOwners.length > 0;
+  const topOpportunityOwnerSlots = (() => {
+    const cardsPerRow = 5;
+    if (topOpportunityOwners.length === 0) return [];
+    const padded = [...topOpportunityOwners];
+    const remainder = padded.length % cardsPerRow;
+    if (remainder !== 0) {
+      const placeholdersNeeded = cardsPerRow - remainder;
+      for (let i = 0; i < placeholdersNeeded; i += 1) {
+        padded.push(null);
+      }
+    }
+    return padded;
+  })();
+  const getTopOpportunityTitle = React.useCallback((opp) => {
+    if (!opp) return 'Untitled Opportunity';
+    return formatOpportunityTitle(opp.title);
+  }, []);
 
   return (
     <div className="animate-in">
@@ -434,7 +1074,7 @@ function OrganizationTab({ accountId, name }) {
       <div style={{background:'white',borderRadius:12,boxShadow:'var(--card-shadow)',overflow:'hidden',marginBottom:24}}>
         {/* Tab bar — leadership_type pivot */}
         <div style={{display:'flex',borderBottom:'1px solid #e2e8f0',padding:'0 20px',gap:0}}>
-          {orgData.tabs.map((t, idx) => (
+          {orderedOrgTabs.map((t, idx) => (
             <button key={t.key || t.label} onClick={() => setActiveOrgTab(idx)} style={{
               display:'flex',alignItems:'center',gap:8,padding:'14px 20px',fontSize:13,fontWeight:500,
               color: activeOrgTab===idx ? '#2563eb' : '#64748b',
@@ -448,43 +1088,122 @@ function OrganizationTab({ accountId, name }) {
           ))}
         </div>
         {/* Table header */}
-        <div style={{display:'grid',gridTemplateColumns:'240px 210px 170px 1fr 110px 100px',padding:'10px 20px',background:'#f8fafc',borderBottom:'1px solid #e2e8f0'}}>
-          {['Stakeholder','Title','Function','Key Focus Areas','Opportunities','Influence'].map((h,hi) => (
-            <span key={h} style={{fontSize:11,fontWeight:600,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'0.05em',textAlign:hi===4?'center':'left'}}>{h}</span>
+        <div style={{display:'grid',gridTemplateColumns:stakeholderGridColumns,columnGap:stakeholderColumnGapPx,padding:`9px ${compactTablePaddingX}px`,background:'#f8fafc',borderBottom:'1px solid #e2e8f0'}}>
+          {stakeholderHeaders.map((h,hi) => (
+            <span key={h} style={{fontSize:11,fontWeight:600,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'0.05em',textAlign:!isSynovusOpportunityOwnersTab && hi===4?'center':'left'}}>{h}</span>
           ))}
         </div>
         {/* Rows */}
         {isLoadingOrg && (
           <div style={{padding:'28px 20px',textAlign:'center',fontSize:13,color:'#64748b'}}>Loading organization…</div>
         )}
-        {!isLoadingOrg && (tab?.people ?? []).length === 0 && (
+        {!isLoadingOrg && displayedStakeholders.length === 0 && (
           <div style={{padding:'28px 20px',textAlign:'center',fontSize:13,color:'#64748b'}}>No stakeholders mapped for this leadership type yet.</div>
         )}
-        {!isLoadingOrg && (tab?.people ?? []).map((p, i) => (
-          <div key={p.id || `${p.name}-${i}`} style={{
-            display:'grid',gridTemplateColumns:'240px 210px 170px 1fr 110px 100px',
-            alignItems:'center',padding:'14px 20px',
-            borderBottom: i < tab.people.length - 1 ? '1px solid #f1f5f9' : 'none',
-          }}>
-            <div style={{display:'flex',alignItems:'center',gap:10}}>
-              <div style={{width:34,height:34,borderRadius:'50%',background:p.bg,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
-                <span style={{fontSize:12,fontWeight:700,color:'#fff'}}>{p.initials}</span>
+        {!isLoadingOrg && displayedStakeholders.map((p, i) => {
+          const linkedinUrl = getStakeholderLinkedInUrl(name, p.name);
+          const stakeholderNameKey = normalizeStakeholderName(p.name);
+          const ownerEnrichment = SYNOVUS_OPP_OWNER_ENRICHMENT_BY_NAME[stakeholderNameKey] ?? null;
+          const executivePriorityValues = ownerEnrichment?.executivePriority?.length
+            ? ownerEnrichment.executivePriority
+            : (p.focus ?? []);
+          const relatedOppsFromCsv = resolveSynovusRelatedOpportunityTitles(
+            ownerEnrichment?.relatedOpportunities ?? [],
+          );
+          const relatedOppsFromDynamic = relatedOpportunitiesByOwner.get(stakeholderNameKey) ?? [];
+          const relatedOpps = relatedOppsFromCsv.length > 0 ? relatedOppsFromCsv : relatedOppsFromDynamic;
+          const whyItMattersText = String(
+            ownerEnrichment?.whyItMatters
+            ?? p.whyItMatters
+            ?? p.why_it_matters
+            ?? '',
+          ).trim();
+          return (
+            <div key={p.id || `${p.name}-${i}`} style={{
+              display:'grid',gridTemplateColumns:stakeholderGridColumns,columnGap:stakeholderColumnGapPx,
+              alignItems:'start',padding:`${compactTablePaddingY}px ${compactTablePaddingX}px`,
+              borderBottom: i < displayedStakeholders.length - 1 ? '1px solid #f1f5f9' : 'none',
+            }}>
+              <div style={{display:'flex',alignItems:'center',gap:10}}>
+                <div style={{width:34,height:34,borderRadius:'50%',background:p.bg,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
+                  <span style={{fontSize:12,fontWeight:700,color:'#fff'}}>{p.initials}</span>
+                </div>
+                <div style={{minWidth:0}}>
+                  <div style={{display:'flex',alignItems:'center',gap:6}}>
+                    <span style={{fontSize:14,fontWeight:600,color:'#0f172a'}}>{p.name}</span>
+                    <LinkedInIconLink url={linkedinUrl} stakeholderName={p.name} />
+                  </div>
+                  {isSynovusOpportunityOwnersTab ? (
+                    <p style={{fontSize:11,color:'#64748b',lineHeight:1.3,marginTop:2}}>
+                      {p.title || '—'}
+                    </p>
+                  ) : null}
+                </div>
               </div>
-              <div style={{display:'flex',alignItems:'center',gap:6}}>
-                <span style={{fontSize:14,fontWeight:600,color:'#0f172a'}}>{p.name}</span>
-              </div>
+              {!isSynovusOpportunityOwnersTab ? (
+                <span style={{fontSize:13,color:'#475569',lineHeight:1.4}}>{p.title}</span>
+              ) : null}
+              {isSynovusOpportunityOwnersTab ? (
+                <>
+                  <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>
+                    {executivePriorityValues.map(a => (
+                      <span key={a} style={{fontSize:11,padding:'2px 8px',borderRadius:20,background:'#eff6ff',color:'#2563eb',fontWeight:500}}>{a}</span>
+                    ))}
+                  </div>
+                  <div style={{paddingRight:10, minWidth: 0}}>
+                    {relatedOpps.length === 0 ? (
+                      <span style={{fontSize:12,color:'#94a3b8'}}>—</span>
+                    ) : (
+                      <ol style={{margin:0,paddingLeft:16,listStyleType:'decimal',display:'grid',gap:3,minWidth:0}}>
+                        {relatedOpps.map((oppName) => (
+                          <li key={`${p.name}-${oppName}`} style={{fontSize:11,color:'#334155',lineHeight:1.35,minWidth:0}}>
+                            <button
+                              type="button"
+                              onClick={() => openTopOpportunityCard(oppName)}
+                              style={{
+                                border: 'none',
+                                background: 'transparent',
+                                padding: 0,
+                                cursor: 'pointer',
+                                color: '#64748b',
+                                fontSize: 11,
+                                lineHeight: 1.35,
+                                whiteSpace: 'normal',
+                                overflowWrap: 'anywhere',
+                                wordBreak: 'break-word',
+                                width: '100%',
+                                textAlign: 'left',
+                                textDecoration: 'none',
+                              }}
+                              onMouseEnter={(event) => { event.currentTarget.style.textDecoration = 'underline'; }}
+                              onMouseLeave={(event) => { event.currentTarget.style.textDecoration = 'none'; }}
+                              title={oppName}
+                            >
+                              {oppName}
+                            </button>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <span style={{fontSize:13,color:'#64748b'}}>{p.function}</span>
+                  <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>
+                    {(p.focus ?? []).map(a => (
+                      <span key={a} style={{fontSize:11,padding:'2px 8px',borderRadius:20,background:'#eff6ff',color:'#2563eb',fontWeight:500}}>{a}</span>
+                    ))}
+                  </div>
+                </>
+              )}
+              {!isSynovusOpportunityOwnersTab ? (
+                <span style={{fontSize:14,fontWeight:600,color:'#0f172a',textAlign:'center',display:'block',alignSelf:'start'}}>{p.opps}</span>
+              ) : null}
+              <div style={{alignSelf:'start'}}>{stars(p.stars)}</div>
             </div>
-            <span style={{fontSize:13,color:'#475569',lineHeight:1.4}}>{p.title}</span>
-            <span style={{fontSize:13,color:'#64748b'}}>{p.function}</span>
-            <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>
-              {(p.focus ?? []).map(a => (
-                <span key={a} style={{fontSize:11,padding:'2px 8px',borderRadius:20,background:'#eff6ff',color:'#2563eb',fontWeight:500}}>{a}</span>
-              ))}
-            </div>
-            <span style={{fontSize:14,fontWeight:600,color:'#0f172a',textAlign:'center',display:'block'}}>{p.opps}</span>
-            <div>{stars(p.stars)}</div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Top Opportunity Owners — static Synovus enrichment until opp-owner mapping is modeled */}
@@ -496,13 +1215,16 @@ function OrganizationTab({ accountId, name }) {
 
       {/* Expanded card view */}
       {expandedOpp !== null && (
-        <div style={{background:'white',borderRadius:12,boxShadow:'var(--card-shadow)',padding:24,marginBottom:20,border:'2px solid #2563eb'}}>
+        <div ref={expandedOppPanelRef} style={{background:'white',borderRadius:12,boxShadow:'var(--card-shadow)',padding:24,marginBottom:20,border:'2px solid #2563eb'}}>
           {/* Back + header */}
           <button onClick={() => setExpandedOpp(null)} style={{background:'none',border:'none',cursor:'pointer',fontSize:13,color:'#2563eb',fontWeight:500,marginBottom:16,display:'flex',alignItems:'center',gap:4}}>
             ← Back to Organization
           </button>
           {(() => {
-            const opp = SYNOVUS_ORG.topOpportunityOwners[expandedOpp];
+            const opp = topOpportunityOwners[expandedOpp];
+            if (!opp) {
+              return <div style={{padding:'10px 0',fontSize:13,color:'#64748b'}}>No details found for this opportunity.</div>;
+            }
             const priorityStyle = opp.priority==='High' ? {bg:'#fef2f2',color:'#dc2626'} : {bg:'#fff7ed',color:'#ea580c'};
             return (
               <>
@@ -511,7 +1233,29 @@ function OrganizationTab({ accountId, name }) {
                   <div style={{flex:1}}>
                     <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:8}}>
                       <span style={{width:28,height:28,borderRadius:'50%',background:'#eff6ff',color:'#2563eb',fontWeight:700,fontSize:13,display:'flex',alignItems:'center',justifyContent:'center'}}>{opp.rank}</span>
-                      <span style={{fontSize:18,fontWeight:700,color:'#0f172a'}}>{opp.title}</span>
+                      <button
+                        type="button"
+                        onClick={() => openOpportunityDetailFromTopCard(opp)}
+                        style={{
+                          border: 'none',
+                          background: 'transparent',
+                          padding: 0,
+                          margin: 0,
+                          fontSize: 18,
+                          fontWeight: 700,
+                          color: '#0f172a',
+                          overflowWrap: 'anywhere',
+                          wordBreak: 'break-word',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          textDecoration: 'none',
+                        }}
+                        onMouseEnter={(event) => { event.currentTarget.style.textDecoration = 'underline'; }}
+                        onMouseLeave={(event) => { event.currentTarget.style.textDecoration = 'none'; }}
+                        title="Open opportunity detail"
+                      >
+                        {getTopOpportunityTitle(opp)}
+                      </button>
                       <span style={{fontSize:11,fontWeight:700,padding:'3px 10px',borderRadius:20,background:priorityStyle.bg,color:priorityStyle.color}}>{opp.priority} Priority</span>
                     </div>
                     {/* Meta row */}
@@ -574,22 +1318,51 @@ function OrganizationTab({ accountId, name }) {
 
       {/* Opportunity cards grid */}
       <div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:14}}>
-        {SYNOVUS_ORG.topOpportunityOwners.map((opp, idx) => {
+        {topOpportunityOwnerSlots.map((opp, idx) => {
+          if (!opp) {
+            return (
+              <div
+                key={`top-opp-placeholder-${idx}`}
+                style={{
+                  borderRadius: 12,
+                  padding: '16px',
+                  border: '1px solid transparent',
+                  background: 'transparent',
+                  minHeight: 188,
+                }}
+              />
+            );
+          }
           const ps = opp.priority==='High' ? {bg:'#fef2f2',color:'#dc2626'} : {bg:'#fff7ed',color:'#ea580c'};
           const isOpen = expandedOpp === idx;
+          const isHovered = hoveredOppId === (opp.opportunityId || opp.title || `slot-${idx}`);
+          const ownerCluster = Array.isArray(opp.owners) ? opp.owners : [];
           return (
             <div key={opp.title}
+              ref={(node) => setTopOppCardRef(idx, node)}
               onClick={() => setExpandedOpp(isOpen ? null : idx)}
-              style={{background:'white',borderRadius:12,padding:'16px',boxShadow:'var(--card-shadow)',cursor:'pointer',border: isOpen ? '2px solid #2563eb' : '2px solid transparent',transition:'border 0.15s'}}>
+              onMouseEnter={() => setHoveredOppId(opp.opportunityId || opp.title || `slot-${idx}`)}
+              onMouseLeave={() => setHoveredOppId(null)}
+              style={{
+                background:'white',
+                borderRadius:12,
+                padding:'16px',
+                minWidth:0,
+                boxShadow:(isOpen || isHovered) ? '0 12px 28px rgba(0, 26, 65, 0.2), 0 6px 14px rgba(0, 0, 0, 0.12)' : 'var(--card-shadow)',
+                cursor:'pointer',
+                border: isOpen ? '2px solid #2563eb' : '2px solid transparent',
+                transform: isOpen ? 'translateY(-1px)' : isHovered ? 'translateY(-2px)' : 'translateY(0)',
+                transition:'border 0.15s ease, box-shadow 0.18s ease, transform 0.18s ease',
+              }}>
               <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10}}>
                 <span style={{fontSize:11,fontWeight:600,padding:'3px 10px',borderRadius:20,background:ps.bg,color:ps.color}}>{opp.priority}</span>
                 <span style={{fontSize:10,color:'#94a3b8'}}>#{opp.rank}</span>
               </div>
-              <p style={{fontSize:13,fontWeight:600,color:'#0f172a',lineHeight:1.4,marginBottom:14,minHeight:52}}>{opp.title}</p>
+              <p style={{fontSize:13,fontWeight:600,color:'#0f172a',lineHeight:1.4,marginBottom:14,minHeight:52,overflowWrap:'anywhere',wordBreak:'break-word'}}>{getTopOpportunityTitle(opp)}</p>
               <p style={{fontSize:11,fontWeight:600,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'0.04em',marginBottom:8}}>Owner Cluster</p>
               <div style={{display:'flex',alignItems:'center',gap:0,marginBottom:14}}>
-                {opp.owners.map((o, oi) => (
-                  <div key={oi} style={{width:28,height:28,borderRadius:'50%',background:o.bg,display:'flex',alignItems:'center',justifyContent:'center',border:'2px solid white',marginLeft:oi>0?-8:0,position:'relative',zIndex:opp.owners.length-oi}}>
+                {ownerCluster.map((o, oi) => (
+                  <div key={oi} style={{width:28,height:28,borderRadius:'50%',background:o.bg,display:'flex',alignItems:'center',justifyContent:'center',border:'2px solid white',marginLeft:oi>0?-8:0,position:'relative',zIndex:ownerCluster.length-oi}}>
                     <span style={{fontSize:9,fontWeight:700,color:'#fff'}}>{o.i}</span>
                   </div>
                 ))}
@@ -855,6 +1628,7 @@ export default function AccountOverviewPage() {
   const [accountData, setAccountData] = useState(null);
   const [isLoadingAccount, setIsLoadingAccount] = useState(true);
   const [isDownloadingReport, setIsDownloadingReport] = useState(false);
+  const [showSynovusMergeNotice, setShowSynovusMergeNotice] = useState(true);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
   const fromParam = searchParams.get('from');
@@ -923,6 +1697,10 @@ export default function AccountOverviewPage() {
     };
   }, [accountId]);
 
+  useEffect(() => {
+    setShowSynovusMergeNotice(true);
+  }, [accountId]);
+
   // Never show a previously viewed bank while the next account is loading.
   const realAccount =
     accountData && String(accountData.id) === String(accountId) ? accountData : null;
@@ -959,6 +1737,8 @@ export default function AccountOverviewPage() {
         wealthBank: null,
         competitiveLandscape: [],
       };
+  const isSynovusOverview = activeTab === 'Overview'
+    && String(acct?.name ?? '').toLowerCase().includes('synovus');
 
   return (
     <div className="animate-in">
@@ -970,7 +1750,79 @@ export default function AccountOverviewPage() {
       <div className="asi-bank-header">
         <BankLogo name={acct.name} size={56} />
         <div>
-          <h1 className="asi-bank-header__name">{acct.name} {activeTab === 'Overview' ? 'Overview' : activeTab}</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+            <h1 className="asi-bank-header__name" style={{ margin: 0 }}>
+              {acct.name} {activeTab === 'Overview' ? 'Overview' : activeTab}
+            </h1>
+            {isSynovusOverview && showSynovusMergeNotice && (
+              <div
+                role="alert"
+                aria-live="polite"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  border: '1px solid #bfdbfe',
+                  background: '#eff6ff',
+                  color: '#1e3a8a',
+                  borderRadius: 999,
+                  padding: '6px 10px',
+                  minWidth: 0,
+                  maxWidth: '70vw',
+                }}
+              >
+                <span
+                  aria-hidden
+                  style={{
+                    width: 18,
+                    height: 18,
+                    borderRadius: '50%',
+                    background: '#2563eb',
+                    color: '#ffffff',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 12,
+                    fontWeight: 700,
+                    flexShrink: 0,
+                  }}
+                >
+                  i
+                </span>
+                <span
+                  style={{
+                    fontSize: 12,
+                    lineHeight: 1.2,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  Synovus has officially merged with Pinnacle Financial Partners, and all branches are scheduled to fully transition to the Pinnacle brand in early 2027.
+                </span>
+                <button
+                  type="button"
+                  aria-label="Dismiss Synovus merger notice"
+                  onClick={() => setShowSynovusMergeNotice(false)}
+                  style={{
+                    marginLeft: 2,
+                    border: 'none',
+                    background: 'transparent',
+                    color: '#1e3a8a',
+                    fontSize: 14,
+                    lineHeight: 1,
+                    cursor: 'pointer',
+                    padding: 0,
+                    width: 18,
+                    height: 18,
+                    flexShrink: 0,
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            )}
+          </div>
           <p className="asi-bank-header__sub">
             {isLoadingAccount && 'Loading account data... '}
             {activeTab==='Overview' && 'Strategic account overview for portfolio review and expansion planning.'}
@@ -1011,7 +1863,7 @@ export default function AccountOverviewPage() {
       {activeTab==='Overview'      && <OverviewTab acct={acct}/>}
       {activeTab==='Signals'       && <SignalsTab accountId={accountId}/>}
       {activeTab==='Opportunities' && <OpportunitiesTab account={realAccount}/>}
-      {activeTab==='Organization'  && <OrganizationTab accountId={accountId} name={acct.name}/>}
+      {activeTab==='Organization'  && <OrganizationTab accountId={accountId} name={acct.name} opportunities={realAccount?.opportunities ?? []}/>}
       {activeTab==='News & Events'  && <NewsTab accountId={acct.id}/>}
     </div>
   );

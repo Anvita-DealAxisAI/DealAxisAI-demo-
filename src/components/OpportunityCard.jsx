@@ -32,6 +32,7 @@ function typeBadgeClass(opportunityType) {
 
 export default function OpportunityCard({
   opportunity,
+  rank,
   accountId,
   isExpanded = false,
   onToggle,
@@ -53,6 +54,7 @@ export default function OpportunityCard({
 
   const showTypeAsLabel = !priority && opportunityType === 'Emerging';
   const detailsId = `opportunity-details-${id}`;
+  const displayRank = Number.isFinite(Number(rank)) ? Number(rank) : null;
 
   const handleToggle = () => onToggle?.(id);
 
@@ -99,6 +101,9 @@ export default function OpportunityCard({
     >
       {/* ── Card summary (always visible) ── */}
       <div className="opportunity-card__summary">
+        {displayRank !== null && (
+          <span className="opportunity-card__rank-badge">{displayRank}</span>
+        )}
         <div className="opportunity-card__header">
           <div className="opportunity-card__badges">
             {priority && (

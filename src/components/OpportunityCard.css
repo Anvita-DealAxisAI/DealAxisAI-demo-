@@ -1,5 +1,6 @@
 .opportunity-card {
   background: var(--color-bg-card);
+  border: 1px solid rgba(0, 26, 65, 0.8);
   border-radius: var(--radius-card);
   box-shadow: var(--shadow-card);
   padding: 0;
@@ -7,14 +8,15 @@
   flex-direction: column;
   width: 100%;
   cursor: pointer;
-  transition: box-shadow 0.15s ease;
+  transition: box-shadow 0.18s ease, transform 0.18s ease;
   outline: none;
   text-align: left;
   overflow-anchor: none;
 }
 
 .opportunity-card:hover {
-  box-shadow: var(--shadow-card-hover);
+  box-shadow: 0 12px 28px rgba(0, 26, 65, 0.2), 0 6px 14px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
 }
 
 .opportunity-card:focus-visible {
@@ -22,14 +24,34 @@
 }
 
 .opportunity-card--expanded {
-  box-shadow: var(--shadow-card-hover);
+  box-shadow: 0 12px 28px rgba(0, 26, 65, 0.2), 0 6px 14px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
 }
 
 .opportunity-card__summary {
+  position: relative;
   padding: 20px 24px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.opportunity-card__rank-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-card) 0 8px 0;
+  background: rgba(0, 26, 65, 0.8);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  z-index: 1;
 }
 
 .opportunity-card__header {
@@ -38,6 +60,7 @@
   justify-content: space-between;
   gap: 12px;
   min-height: 28px;
+  padding-left: 30px;
 }
 
 .opportunity-card__badges {

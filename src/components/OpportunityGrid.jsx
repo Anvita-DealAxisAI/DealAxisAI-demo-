@@ -144,10 +144,11 @@ export default function OpportunityGrid({ opportunities = [], isLoading = false,
 
   return (
     <div className="opportunity-grid">
-      {sorted.map((opportunity) => (
+      {sorted.map((opportunity, index) => (
         <div key={opportunity.id} className="opportunity-grid__cell">
           <OpportunityCard
             opportunity={opportunity}
+            rank={opportunity.rank ?? index + 1}
             accountId={accountId}
             isExpanded={expandedId === opportunity.id}
             onToggle={handleToggle}
