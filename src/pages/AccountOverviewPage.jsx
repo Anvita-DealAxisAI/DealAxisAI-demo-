@@ -1161,6 +1161,9 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
                               type="button"
                               onClick={() => openTopOpportunityCard(oppName)}
                               style={{
+                                // Block-level so the list marker tracks the first
+                                // wrapped line instead of the button's baseline.
+                                display: 'block',
                                 border: 'none',
                                 background: 'transparent',
                                 padding: 0,
