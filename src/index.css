@@ -552,7 +552,7 @@ input, textarea, [contenteditable="true"] {
 
 .asi-signals-bento__right-top-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr) 168px;
   gap: 12px;
   align-items: stretch;
 }
@@ -564,7 +564,16 @@ input, textarea, [contenteditable="true"] {
 .asi-signals-bento__mini-card--meter {
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: space-between;
+  gap: 8px;
+  /* Square at the fixed column width; the 132px gauge sets the floor. */
+  min-height: 168px;
+  text-align: center;
+}
+
+.asi-signals-bento__mini-card--meter .asi-signals-bento__side-title {
+  font-size: 13px;
 }
 
 
