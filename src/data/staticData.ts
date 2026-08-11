@@ -10,13 +10,16 @@
   Regions:     { logo: '/banks/regions.png',     bg: '#16a34a', initials: 'RE' },
   KeyBank:     { logo: '/banks/keybank.png',     bg: '#dc2626', initials: 'KB' },
   Comerica:    { logo: '/banks/comerica.png',    bg: '#1d4ed8', initials: 'CM' },
+  'Jack Henry':{ logo: '/banks/jackhenry.jpeg',  bg: '#001A41', initials: 'JH' },
 };
 
 export const PORTFOLIO_ACCOUNTS = [
   // easeX / matrixY are chart coordinates for a readable static demo layout
   // (0 = Easy / bottom value band, 100 = Hard / top value band).
+  // Featured demo order: Citizens, Synovus, Jack Henry first; remaining accounts after.
   { id:'A001', name:'Citizens',    opps:28, value:'$77M', valueMid:77, capabilities:['Data','AI'],        monStart:'June 2026',   status:'Hot',     easeX:18, matrixY:78, color:'#3b82f6' },
   { id:'A002', name:'Synovus',     opps:10, value:'$42M', valueMid:42, capabilities:['QE','AI'],          monStart:'July 2026',   status:'Hot',     easeX:46, matrixY:52, color:'#f97316' },
+  { id:'A0011', name:'Jack Henry', opps:37, value:'$54M', valueMid:54, capabilities:['Core','Digital','Data','AI'], monStart:'August 2026', status:'Hot', easeX:40, matrixY:72, color:'#001A41', sector:'Core Banking Platform provider' },
   { id:'A003', name:'BECU',        opps:10, value:'$12M', valueMid:12, capabilities:['Data','AI'],        monStart:'July 2026',   status:'Active',  easeX:32, matrixY:30, color:'#3b82f6' },
   { id:'A004', name:'PNC',         opps:9,  value:'$8M',  valueMid:8,  capabilities:['Reg Rpt','Data'],   monStart:'June 2026',   status:'Active',  easeX:68, matrixY:24, color:'#22c55e' },
   { id:'A005', name:'US Bank',     opps:8,  value:'$7M',  valueMid:7,  capabilities:['Cloud','Infra'],    monStart:'May 2026',    status:'Active',  easeX:88, matrixY:16, color:'#eab308' },
@@ -46,7 +49,7 @@ export const SYNOVUS_SIGNALS = [
 
 export const SYNOVUS_ORG = {
   summary: 'Synovus operates as a hybrid organization, vertically aligned by core business linesΓÇöRetail Banking, Commercial Banking, and Wealth ManagementΓÇösupported by centralized enterprise functions. The technology, data, and analytics leadership (CIO, CDO, and CAO) work in close partnership to coordinate technology strategy, modernization, risk management, and customer experience initiatives across all lines of business.',
-  kpis: { totalStakeholders:48, executiveLeaders:15, functionLeaders:32, opportunityOwners:15 },
+  kpis: { totalStakeholders:48, executiveLeaders:15, technologyLeaders:12, functionLeaders:32, opportunityOwners:15 },
   tabs: [
     {
       label: 'Executive Leadership',

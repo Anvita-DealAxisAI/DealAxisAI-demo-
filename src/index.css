@@ -169,6 +169,70 @@ input, textarea, [contenteditable="true"] {
 .asi-bank-header__name { font-size: 26px; font-weight: 700; color: var(--text-primary); }
 .asi-bank-header__sub { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
 
+/* Compact Synovus merger info tip (i-dot → hover/focus popover) */
+.asi-info-tip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.asi-info-tip__trigger {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: #2563eb;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.asi-info-tip__trigger:hover,
+.asi-info-tip__trigger:focus-visible {
+  background: #1d4ed8;
+  outline: none;
+}
+.asi-info-tip__panel {
+  position: absolute;
+  left: calc(100% + 8px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  width: max-content;
+  max-width: min(280px, 70vw);
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1e3a8a;
+  font-size: 12px;
+  line-height: 1.35;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.12);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.12s ease, visibility 0.12s ease;
+}
+.asi-info-tip:hover .asi-info-tip__panel,
+.asi-info-tip:focus-within .asi-info-tip__panel,
+.asi-info-tip.is-open .asi-info-tip__panel {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+@media (max-width: 640px) {
+  .asi-info-tip__panel {
+    left: 50%;
+    top: calc(100% + 8px);
+    transform: translateX(-50%);
+  }
+}
+
 /* Tabs */
 .asi-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 24px; }
 .asi-tab {

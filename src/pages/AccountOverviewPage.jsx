@@ -36,9 +36,13 @@ const TABS = ['Overview','Signals','Opportunities','Organization','News & Events
 
 const SYNOVUS_LINKEDIN_BY_NAME = Object.freeze({
   'kevin blair': 'https://www.linkedin.com/in/kevin-blair-849a767/',
+  'zack bishop': 'https://www.linkedin.com/in/zackbishop/',
   'vikram ramani': 'https://www.linkedin.com/in/vikramramani/',
+  'liz wolverton': 'https://www.linkedin.com/in/liz-wolverton-9212b7146/',
   'shellie creson': 'https://www.linkedin.com/in/shellie-creson-9467495/',
   'jennifer spinks upshaw': 'https://www.linkedin.com/in/jennifer-spinks-upshaw-8622859/',
+  'jamie gregory': 'https://www.linkedin.com/in/jamie-gregory-7030455/',
+  'allan e kamensky': 'https://www.linkedin.com/in/allan-kamensky-7b9a89203/',
   'dana sanders': 'https://www.linkedin.com/in/dana-sanders-75764b196/',
   'charissa sumerlin': 'https://www.linkedin.com/in/charissa-sumerlin-7138636/',
   'gloria c banks crcm cerp': 'https://www.linkedin.com/in/gloria-c-banks-crcm-cerp-a3b71050/',
@@ -53,6 +57,7 @@ const SYNOVUS_LINKEDIN_BY_NAME = Object.freeze({
   'michael robertson': 'https://www.linkedin.com/in/michael-robertson-11a642114/',
   'keith thomas': 'https://www.linkedin.com/in/keith-thomas-73890410/',
   'femi o': 'https://www.linkedin.com/in/femionafowokan/',
+  'john e lucas': 'https://www.linkedin.com/in/john-e-lucas/',
   'jeff nicolosi': 'https://www.linkedin.com/in/jeff-nicolosi-8aa31610/',
   'david correa': 'https://www.linkedin.com/in/david-correa-664a9a4/',
   'jeffrey beisler snell ph d ctp phr shrm cp': 'https://www.linkedin.com/in/jeffrey-beisler-snell-ph-d-ctp-phr-shrm-cp-51894084/',
@@ -69,51 +74,559 @@ const SYNOVUS_LINKEDIN_BY_NAME = Object.freeze({
 
 const SYNOVUS_OPP_OWNER_ENRICHMENT_BY_NAME = Object.freeze({
   'kevin blair': {
-    executivePriority: [
-      'Enterprise leadership',
-      'Merger integration oversight',
-      'Systems and brand conversion readiness',
-      'Commercial treasury and ERP workflow',
-      'Enterprise data and reporting controls',
-    ],
-    whyItMatters:
-      'Selected for Executive Leadership relevance and executive seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.',
-    relatedOpportunities: [
-      'march_2027_systems_brand_and_client_experience_conversion_readiness',
-      'commercial_treasury_and_erp_connected_workflow_expansion',
-      'enterprise_data_finance_and_regulatory_control_alignment',
-      'financial_crime_fraud_scams_disputes_readiness',
-    ],
+    executivePriority: ["Enterprise leadership", "Merger integration oversight", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Enterprise data and reporting controls"],
+    whyItMatters: "Selected for Executive Leadership relevance and executive seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "commercial_treasury_and_erp_connected_workflow_expansion", "enterprise_data_finance_and_regulatory_control_alignment", "financial_crime_fraud_scams_disputes_readiness"],
+  },
+  'zack bishop': {
+    executivePriority: ["Operating model readiness", "Change and delivery execution"],
+    whyItMatters: "Selected for Operations, Technology and Integration relevance and executive seniority. No direct opportunity ownership count assigned because Step 3/4 did not map this stakeholder to a specific opportunity.",
+    relatedOpportunities: [],
   },
   'vikram ramani': {
-    executivePriority: [
-      'Enterprise technology strategy',
-      'Technology modernization',
-      'Systems and brand conversion readiness',
-    ],
-    whyItMatters:
-      'Selected for Technology relevance and executive seniority. Mapped to 2 identified opportunities through Step 3/4 buying-center evidence.',
-    relatedOpportunities: [
-      'march_2027_systems_brand_and_client_experience_conversion_readiness',
-      'integration_operating_model_change_and_workforce_enablement',
-    ],
+    executivePriority: ["Enterprise technology strategy", "Technology modernization", "Systems and brand conversion readiness"],
+    whyItMatters: "Selected for Technology relevance and executive seniority. Mapped to 2 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "integration_operating_model_change_and_workforce_enablement"],
+  },
+  'liz wolverton': {
+    executivePriority: ["Digital product and banking platforms", "Client experience continuity"],
+    whyItMatters: "Selected for Digital, Product and Customer Experience relevance and executive seniority. No direct opportunity ownership count assigned because Step 3/4 did not map this stakeholder to a specific opportunity.",
+    relatedOpportunities: [],
+  },
+  'shellie creson': {
+    executivePriority: ["Risk and compliance governance", "Control and regulatory readiness", "Enterprise data and reporting controls", "AML/BSA and sanctions readiness"],
+    whyItMatters: "Selected for Risk relevance and executive seniority. Mapped to 3 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["enterprise_data_finance_and_regulatory_control_alignment", "financial_crime_fraud_scams_disputes_readiness", "aml_bsa_sanctions_control_and_case_management_readiness"],
+  },
+  'jennifer spinks upshaw': {
+    executivePriority: ["Operating model readiness", "Change and delivery execution"],
+    whyItMatters: "Selected for Administration and Shared Services relevance and executive seniority. No direct opportunity ownership count assigned because Step 3/4 did not map this stakeholder to a specific opportunity.",
+    relatedOpportunities: [],
+  },
+  'jamie gregory': {
+    executivePriority: ["Finance and reporting controls", "Regulatory and management reporting"],
+    whyItMatters: "Selected for Finance relevance and executive seniority. No direct opportunity ownership count assigned because Step 3/4 did not map this stakeholder to a specific opportunity.",
+    relatedOpportunities: [],
+  },
+  'allan e kamensky': {
+    executivePriority: ["Risk and compliance governance", "Control and regulatory readiness"],
+    whyItMatters: "Selected for Legal and Governance relevance and executive seniority. No direct opportunity ownership count assigned because Step 3/4 did not map this stakeholder to a specific opportunity.",
+    relatedOpportunities: [],
+  },
+  'dana sanders': {
+    executivePriority: ["Risk and compliance governance", "Control and regulatory readiness", "Enterprise data and reporting controls", "AML/BSA and sanctions readiness"],
+    whyItMatters: "Selected for Internal Audit relevance and executive seniority. Mapped to 3 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["enterprise_data_finance_and_regulatory_control_alignment", "financial_crime_fraud_scams_disputes_readiness", "aml_bsa_sanctions_control_and_case_management_readiness"],
+  },
+  'charissa sumerlin': {
+    executivePriority: ["Functional leadership", "Opportunity validation", "Systems and brand conversion readiness", "Digital and branch continuity"],
+    whyItMatters: "Selected for Credit Risk relevance and executive seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "digital_and_branch_channel_conversion_continuity", "integration_operating_model_change_and_workforce_enablement", "cyber_identity_resilience_and_conversion_controls"],
+  },
+  'gloria c banks crcm cerp': {
+    executivePriority: ["Risk and compliance governance", "Control and regulatory readiness", "Enterprise data and reporting controls", "AML/BSA and sanctions readiness"],
+    whyItMatters: "Selected for Compliance and Ethics relevance and executive seniority. Mapped to 3 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["enterprise_data_finance_and_regulatory_control_alignment", "financial_crime_fraud_scams_disputes_readiness", "aml_bsa_sanctions_control_and_case_management_readiness"],
+  },
+  'adam archer': {
+    executivePriority: ["Infrastructure and IT operations", "Operational resilience", "Systems and brand conversion readiness", "Digital and branch continuity"],
+    whyItMatters: "Selected for Infrastructure and IT Operations relevance and svp_vp seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "digital_and_branch_channel_conversion_continuity", "integration_operating_model_change_and_workforce_enablement", "cyber_identity_resilience_and_conversion_controls"],
+  },
+  'sanjeev jha': {
+    executivePriority: ["Digital product and banking platforms", "Client experience continuity", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Digital and branch continuity"],
+    whyItMatters: "Selected for Product Engineering relevance and svp_vp seniority. Mapped to 3 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "commercial_treasury_and_erp_connected_workflow_expansion", "digital_and_branch_channel_conversion_continuity"],
+  },
+  'santosh kokate': {
+    executivePriority: ["Enterprise technology strategy", "Technology modernization", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Enterprise data and reporting controls"],
+    whyItMatters: "Selected for Divisional CIO / Technology Leadership relevance and executive seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "commercial_treasury_and_erp_connected_workflow_expansion", "enterprise_data_finance_and_regulatory_control_alignment", "financial_crime_fraud_scams_disputes_readiness"],
+  },
+  'casey toops': {
+    executivePriority: ["Enterprise technology strategy", "Technology modernization", "Systems and brand conversion readiness", "Digital and branch continuity"],
+    whyItMatters: "Selected for Pinnacle CIO / Technology Leadership relevance and executive seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "digital_and_branch_channel_conversion_continuity", "integration_operating_model_change_and_workforce_enablement", "cyber_identity_resilience_and_conversion_controls"],
+  },
+  'kevin d johnson': {
+    executivePriority: ["Data, analytics and AI", "Reporting and data governance", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Enterprise data and reporting controls"],
+    whyItMatters: "Selected for AI and Automation relevance and svp_vp seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "commercial_treasury_and_erp_connected_workflow_expansion", "enterprise_data_finance_and_regulatory_control_alignment", "financial_crime_fraud_scams_disputes_readiness"],
   },
   'branden hillis': {
-    executivePriority: [
-      'Integration management',
-      'Operating model readiness',
-      'Cross-functional conversion orchestration',
-    ],
-    whyItMatters:
-      'Selected for Integration Management relevance and SVP/VP seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.',
-    relatedOpportunities: [
-      'march_2027_systems_brand_and_client_experience_conversion_readiness',
-      'commercial_treasury_and_erp_connected_workflow_expansion',
-      'integration_operating_model_change_and_workforce_enablement',
-      'cyber_identity_resilience_and_conversion_controls',
-    ],
+    executivePriority: ["Merger integration management", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow"],
+    whyItMatters: "Selected for Integration Management relevance and svp_vp seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "commercial_treasury_and_erp_connected_workflow_expansion", "integration_operating_model_change_and_workforce_enablement", "cyber_identity_resilience_and_conversion_controls"],
+  },
+  'jason olson': {
+    executivePriority: ["Enterprise architecture", "Platform and integration design", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow"],
+    whyItMatters: "Selected for Enterprise Architecture relevance and director seniority. Mapped to 2 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "commercial_treasury_and_erp_connected_workflow_expansion"],
+  },
+  'rob bankston': {
+    executivePriority: ["Integration delivery", "Application development", "Systems and brand conversion readiness", "Digital and branch continuity"],
+    whyItMatters: "Selected for Application Development and Delivery relevance and svp_vp seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "digital_and_branch_channel_conversion_continuity", "integration_operating_model_change_and_workforce_enablement", "cyber_identity_resilience_and_conversion_controls"],
+  },
+  'michael robertson': {
+    executivePriority: ["Data, analytics and AI", "Reporting and data governance", "Systems and brand conversion readiness", "Enterprise data and reporting controls", "Digital and branch continuity"],
+    whyItMatters: "Selected for Data Management Services relevance and director seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "enterprise_data_finance_and_regulatory_control_alignment", "digital_and_branch_channel_conversion_continuity", "financial_crime_fraud_scams_disputes_readiness"],
+  },
+  'keith thomas': {
+    executivePriority: ["Cybersecurity and identity", "Conversion control readiness"],
+    whyItMatters: "Selected for Cybersecurity / Information Security relevance and executive seniority. Mapped to 1 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["cyber_identity_resilience_and_conversion_controls"],
+  },
+  'femi o': {
+    executivePriority: ["Data, analytics and AI", "Reporting and data governance", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Enterprise data and reporting controls"],
+    whyItMatters: "Selected for AI and Automation Governance relevance and svp_vp seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "commercial_treasury_and_erp_connected_workflow_expansion", "enterprise_data_finance_and_regulatory_control_alignment", "financial_crime_fraud_scams_disputes_readiness"],
+  },
+  'john e lucas': {
+    executivePriority: ["Treasury and payments", "Commercial workflow enablement"],
+    whyItMatters: "Selected for Treasury Product Management and Development relevance and director seniority. No direct opportunity ownership count assigned because Step 3/4 did not map this stakeholder to a specific opportunity.",
+    relatedOpportunities: [],
+  },
+  'jeff nicolosi': {
+    executivePriority: ["Commercial banking growth", "Client relationship enablement", "Systems and brand conversion readiness", "Digital and branch continuity"],
+    whyItMatters: "Selected for Commercial Banking / Group Leadership relevance and svp_vp seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "digital_and_branch_channel_conversion_continuity", "integration_operating_model_change_and_workforce_enablement", "cyber_identity_resilience_and_conversion_controls"],
+  },
+  'david correa': {
+    executivePriority: ["Functional leadership", "Opportunity validation", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow"],
+    whyItMatters: "Selected for Capital Markets relevance and svp_vp seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "commercial_treasury_and_erp_connected_workflow_expansion", "integration_operating_model_change_and_workforce_enablement", "cyber_identity_resilience_and_conversion_controls"],
+  },
+  'jeffrey beisler snell ph d ctp phr shrm cp': {
+    executivePriority: ["Treasury and payments", "Commercial workflow enablement", "Commercial treasury and ERP workflow"],
+    whyItMatters: "Selected for International Banking and Treasury Management relevance and svp_vp seniority. Mapped to 1 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["commercial_treasury_and_erp_connected_workflow_expansion"],
+  },
+  'chris dodson': {
+    executivePriority: ["Enterprise architecture", "Platform and integration design", "Systems and brand conversion readiness", "Digital and branch continuity"],
+    whyItMatters: "Selected for Technology, Architecture and Engineering relevance and director seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "digital_and_branch_channel_conversion_continuity", "integration_operating_model_change_and_workforce_enablement", "cyber_identity_resilience_and_conversion_controls"],
+  },
+  'julian cornett': {
+    executivePriority: ["Enterprise architecture", "Platform and integration design", "Systems and brand conversion readiness", "Digital and branch continuity"],
+    whyItMatters: "Selected for Technology, Architecture and Engineering relevance and director seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "digital_and_branch_channel_conversion_continuity", "integration_operating_model_change_and_workforce_enablement", "cyber_identity_resilience_and_conversion_controls"],
+  },
+  'christine antonson': {
+    executivePriority: ["Data, analytics and AI", "Reporting and data governance", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Digital and branch continuity"],
+    whyItMatters: "Selected for Enterprise Data, Analytics and AI relevance and manager seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "commercial_treasury_and_erp_connected_workflow_expansion", "digital_and_branch_channel_conversion_continuity", "integration_operating_model_change_and_workforce_enablement"],
+  },
+  'gopinath devarajan': {
+    executivePriority: ["Data, analytics and AI", "Reporting and data governance", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Enterprise data and reporting controls"],
+    whyItMatters: "Selected for Risk, Compliance and Audit relevance and architect_lead seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "commercial_treasury_and_erp_connected_workflow_expansion", "enterprise_data_finance_and_regulatory_control_alignment", "integration_operating_model_change_and_workforce_enablement"],
+  },
+  'grace clark': {
+    executivePriority: ["Data, analytics and AI", "Reporting and data governance", "Systems and brand conversion readiness", "Enterprise data and reporting controls", "AML/BSA and sanctions readiness"],
+    whyItMatters: "Selected for Risk, Compliance and Audit relevance and director seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "enterprise_data_finance_and_regulatory_control_alignment", "financial_crime_fraud_scams_disputes_readiness", "aml_bsa_sanctions_control_and_case_management_readiness"],
+  },
+  'katherine hamilton': {
+    executivePriority: ["Data, analytics and AI", "Reporting and data governance", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Enterprise data and reporting controls"],
+    whyItMatters: "Selected for Enterprise Data, Analytics and AI relevance and architect_lead seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "commercial_treasury_and_erp_connected_workflow_expansion", "enterprise_data_finance_and_regulatory_control_alignment", "integration_operating_model_change_and_workforce_enablement"],
+  },
+  'michaela p': {
+    executivePriority: ["Cybersecurity and identity", "Conversion control readiness", "Systems and brand conversion readiness", "Enterprise data and reporting controls", "AML/BSA and sanctions readiness"],
+    whyItMatters: "Selected for Cybersecurity, Identity and Operational Resilience relevance and manager seniority. Mapped to 4 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "enterprise_data_finance_and_regulatory_control_alignment", "cyber_identity_resilience_and_conversion_controls", "aml_bsa_sanctions_control_and_case_management_readiness"],
+  },
+  'sathish madanagopalan': {
+    executivePriority: ["Data, analytics and AI", "Reporting and data governance", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Digital and branch continuity"],
+    whyItMatters: "Selected for Digital, Retail Banking and Client Experience relevance and director seniority. Mapped to 3 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["march_2027_systems_brand_and_client_experience_conversion_readiness", "commercial_treasury_and_erp_connected_workflow_expansion", "digital_and_branch_channel_conversion_continuity"],
+  },
+  'sue j nelson crcm amlp': {
+    executivePriority: ["Risk and compliance governance", "Control and regulatory readiness", "AML/BSA and sanctions readiness"],
+    whyItMatters: "Selected for BSA/AML Compliance and Financial Crime relevance and director seniority. Mapped to 1 identified opportunities through Step 3/4 buying-center evidence.",
+    relatedOpportunities: ["aml_bsa_sanctions_control_and_case_management_readiness"],
   },
 });
+
+const SYNOVUS_KEY_LEADERS = Object.freeze([
+  {
+    name: "Kevin Blair",
+    title: "President and CEO, Pinnacle Financial Partners",
+    function: "Executive Leadership",
+    initials: "KB",
+    bg: "#3b82f6",
+    stars: 5,
+    opps: 4,
+    focus: ["Enterprise leadership", "Merger integration oversight", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Enterprise data and reporting controls"],
+  },
+  {
+    name: "Zack Bishop",
+    title: "Chief Operating Officer",
+    function: "Executive Leadership",
+    initials: "ZB",
+    bg: "#22c55e",
+    stars: 5,
+    opps: 0,
+    focus: ["Operating model readiness", "Change and delivery execution"],
+  },
+  {
+    name: "Vikram Ramani",
+    title: "Chief Information Officer",
+    function: "Executive Leadership",
+    initials: "VR",
+    bg: "#8b5cf6",
+    stars: 5,
+    opps: 2,
+    focus: ["Enterprise technology strategy", "Technology modernization", "Systems and brand conversion readiness"],
+  },
+  {
+    name: "Liz Wolverton",
+    title: "Chief Digital and Product Solutions Officer",
+    function: "Executive Leadership",
+    initials: "LW",
+    bg: "#f97316",
+    stars: 5,
+    opps: 0,
+    focus: ["Digital product and banking platforms", "Client experience continuity"],
+  },
+  {
+    name: "Shellie Creson",
+    title: "Chief Risk Officer at Pinnacle Financial Partners",
+    function: "Executive Leadership",
+    initials: "SC",
+    bg: "#14b8a6",
+    stars: 5,
+    opps: 3,
+    focus: ["Risk and compliance governance", "Control and regulatory readiness", "Enterprise data and reporting controls", "AML/BSA and sanctions readiness"],
+  },
+  {
+    name: "Jennifer Spinks Upshaw",
+    title: "EVP, Chief Administrative Officer at Pinnacle Financial Partners",
+    function: "Executive Leadership",
+    initials: "JU",
+    bg: "#2563eb",
+    stars: 5,
+    opps: 0,
+    focus: ["Operating model readiness", "Change and delivery execution"],
+  },
+  {
+    name: "Jamie Gregory",
+    title: "Chief Financial Officer",
+    function: "Executive Leadership",
+    initials: "JG",
+    bg: "#16a34a",
+    stars: 5,
+    opps: 0,
+    focus: ["Finance and reporting controls", "Regulatory and management reporting"],
+  },
+  {
+    name: "Allan E. Kamensky",
+    title: "Chief Legal Officer",
+    function: "Executive Leadership",
+    initials: "AK",
+    bg: "#7c3aed",
+    stars: 5,
+    opps: 0,
+    focus: ["Risk and compliance governance", "Control and regulatory readiness"],
+  },
+  {
+    name: "Dana Sanders",
+    title: "Chief Audit Executive at Pinnacle Financial Partners",
+    function: "Executive Leadership",
+    initials: "DS",
+    bg: "#ea580c",
+    stars: 5,
+    opps: 3,
+    focus: ["Risk and compliance governance", "Control and regulatory readiness", "Enterprise data and reporting controls", "AML/BSA and sanctions readiness"],
+  },
+  {
+    name: "Charissa Sumerlin",
+    title: "Chief Credit Officer at Pinnacle Financial Partners",
+    function: "Executive Leadership",
+    initials: "CS",
+    bg: "#0891b2",
+    stars: 5,
+    opps: 4,
+    focus: ["Functional leadership", "Opportunity validation", "Systems and brand conversion readiness", "Digital and branch continuity"],
+  },
+  {
+    name: "Gloria C Banks, CRCM, CERP",
+    title: "EVP, Chief Ethics & Chief Compliance Officer at Synovus",
+    function: "Executive Leadership",
+    initials: "GC",
+    bg: "#ca8a04",
+    stars: 5,
+    opps: 3,
+    focus: ["Risk and compliance governance", "Control and regulatory readiness", "Enterprise data and reporting controls", "AML/BSA and sanctions readiness"],
+  },
+  {
+    name: "Adam Archer",
+    title: "Head of Infrastructure and IT Operations at Synovus",
+    function: "Technology Leadership",
+    initials: "AA",
+    bg: "#64748b",
+    stars: 4,
+    opps: 4,
+    focus: ["Infrastructure and IT operations", "Operational resilience", "Systems and brand conversion readiness", "Digital and branch continuity"],
+  },
+  {
+    name: "Sanjeev Jha",
+    title: "Managing Director & Head of Product Development at Pinnacle Financial Partners ✦ Responsible for Product Engineering acr",
+    function: "Technology Leadership",
+    initials: "SJ",
+    bg: "#3b82f6",
+    stars: 4,
+    opps: 3,
+    focus: ["Digital product and banking platforms", "Client experience continuity", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Digital and branch continuity"],
+  },
+  {
+    name: "Santosh Kokate",
+    title: "Divisional CIO, Managing Director at Pinnacle Financial Partners",
+    function: "Technology Leadership",
+    initials: "SK",
+    bg: "#22c55e",
+    stars: 5,
+    opps: 4,
+    focus: ["Enterprise technology strategy", "Technology modernization", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Enterprise data and reporting controls"],
+  },
+  {
+    name: "Casey Toops",
+    title: "SVP, Chief Information Officer @ Pinnacle Financial Partners",
+    function: "Technology Leadership",
+    initials: "CT",
+    bg: "#8b5cf6",
+    stars: 5,
+    opps: 4,
+    focus: ["Enterprise technology strategy", "Technology modernization", "Systems and brand conversion readiness", "Digital and branch continuity"],
+  },
+  {
+    name: "Kevin D. Johnson",
+    title: "Head of AI & Automation @ Pinnacle Financial Partners",
+    function: "Technology Leadership",
+    initials: "KJ",
+    bg: "#f97316",
+    stars: 4,
+    opps: 4,
+    focus: ["Data, analytics and AI", "Reporting and data governance", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Enterprise data and reporting controls"],
+  },
+  {
+    name: "Branden Hillis",
+    title: "Executive Director; Head of Integration Management",
+    function: "Technology Leadership",
+    initials: "BH",
+    bg: "#14b8a6",
+    stars: 4,
+    opps: 4,
+    focus: ["Merger integration management", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow"],
+  },
+  {
+    name: "Jason Olson",
+    title: "Director, Enterprise Architecture @ Pinnacle Financial Partners",
+    function: "Technology Leadership",
+    initials: "JO",
+    bg: "#2563eb",
+    stars: 5,
+    opps: 2,
+    focus: ["Enterprise architecture", "Platform and integration design", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow"],
+  },
+  {
+    name: "Rob Bankston",
+    title: "Executive Director, Application Development and Delivery",
+    function: "Technology Leadership",
+    initials: "RB",
+    bg: "#16a34a",
+    stars: 5,
+    opps: 4,
+    focus: ["Integration delivery", "Application development", "Systems and brand conversion readiness", "Digital and branch continuity"],
+  },
+  {
+    name: "Michael Robertson",
+    title: "Senior I.T. Director, Data Management Services at Synovus",
+    function: "Technology Leadership",
+    initials: "MR",
+    bg: "#7c3aed",
+    stars: 4,
+    opps: 4,
+    focus: ["Data, analytics and AI", "Reporting and data governance", "Systems and brand conversion readiness", "Enterprise data and reporting controls", "Digital and branch continuity"],
+  },
+  {
+    name: "Keith Thomas",
+    title: "CISO",
+    function: "Technology Leadership",
+    initials: "KT",
+    bg: "#ea580c",
+    stars: 5,
+    opps: 1,
+    focus: ["Cybersecurity and identity", "Conversion control readiness"],
+  },
+  {
+    name: "Femi O.",
+    title: "SVP, Director AI and Automation Governance at Pinnacle Financial Partners",
+    function: "Technology Leadership",
+    initials: "FO",
+    bg: "#0891b2",
+    stars: 4,
+    opps: 4,
+    focus: ["Data, analytics and AI", "Reporting and data governance", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Enterprise data and reporting controls"],
+  },
+  {
+    name: "John E. Lucas",
+    title: "Director of Product Management and Development, Treasury and Payment Solutions",
+    function: "Business Leadership",
+    initials: "JL",
+    bg: "#ca8a04",
+    stars: 3,
+    opps: 0,
+    focus: ["Treasury and payments", "Commercial workflow enablement"],
+  },
+  {
+    name: "Jeff Nicolosi",
+    title: "Managing Director & Group Head at Synovus",
+    function: "Business Leadership",
+    initials: "JN",
+    bg: "#64748b",
+    stars: 4,
+    opps: 4,
+    focus: ["Commercial banking growth", "Client relationship enablement", "Systems and brand conversion readiness", "Digital and branch continuity"],
+  },
+  {
+    name: "David Correa",
+    title: "Managing Director, Capital Markets at Synovus",
+    function: "Business Leadership",
+    initials: "DC",
+    bg: "#3b82f6",
+    stars: 4,
+    opps: 4,
+    focus: ["Functional leadership", "Opportunity validation", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow"],
+  },
+  {
+    name: "Jeffrey Beisler-Snell, Ph.D., CTP, PHR, SHRM-CP",
+    title: "Ph.D.",
+    function: "Business Leadership",
+    initials: "JC",
+    bg: "#22c55e",
+    stars: 4,
+    opps: 1,
+    focus: ["Treasury and payments", "Commercial workflow enablement", "Commercial treasury and ERP workflow"],
+  },
+  {
+    name: "Chris Dodson",
+    title: "Director, Information Technology",
+    function: "Opportunity Owners",
+    initials: "CD",
+    bg: "#8b5cf6",
+    stars: 5,
+    opps: 4,
+    focus: ["Enterprise architecture", "Platform and integration design", "Systems and brand conversion readiness", "Digital and branch continuity"],
+  },
+  {
+    name: "Julian Cornett",
+    title: "Director, Secretary, Treasurer at Pinnacle Technology USA, Inc.",
+    function: "Opportunity Owners",
+    initials: "JC",
+    bg: "#f97316",
+    stars: 5,
+    opps: 4,
+    focus: ["Enterprise architecture", "Platform and integration design", "Systems and brand conversion readiness", "Digital and branch continuity"],
+  },
+  {
+    name: "Christine Antonson",
+    title: "Product Innovation & Integration, Program Manager",
+    function: "Opportunity Owners",
+    initials: "CA",
+    bg: "#14b8a6",
+    stars: 4,
+    opps: 4,
+    focus: ["Data, analytics and AI", "Reporting and data governance", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Digital and branch continuity"],
+  },
+  {
+    name: "Gopinath Devarajan",
+    title: "Data & AI Executive",
+    function: "Opportunity Owners",
+    initials: "GD",
+    bg: "#2563eb",
+    stars: 4,
+    opps: 4,
+    focus: ["Data, analytics and AI", "Reporting and data governance", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Enterprise data and reporting controls"],
+  },
+  {
+    name: "Grace Clark",
+    title: "Senior Director of Model Risk & Data Governance at Pinnacle Financial Partners",
+    function: "Opportunity Owners",
+    initials: "GC",
+    bg: "#16a34a",
+    stars: 4,
+    opps: 4,
+    focus: ["Data, analytics and AI", "Reporting and data governance", "Systems and brand conversion readiness", "Enterprise data and reporting controls", "AML/BSA and sanctions readiness"],
+  },
+  {
+    name: "Katherine Hamilton",
+    title: "Lead, Executive Reporting & Integration (COO Org)",
+    function: "Opportunity Owners",
+    initials: "KH",
+    bg: "#7c3aed",
+    stars: 4,
+    opps: 4,
+    focus: ["Data, analytics and AI", "Reporting and data governance", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Enterprise data and reporting controls"],
+  },
+  {
+    name: "Michaela P.",
+    title: "Program Manager",
+    function: "Opportunity Owners",
+    initials: "MP",
+    bg: "#ea580c",
+    stars: 4,
+    opps: 4,
+    focus: ["Cybersecurity and identity", "Conversion control readiness", "Systems and brand conversion readiness", "Enterprise data and reporting controls", "AML/BSA and sanctions readiness"],
+  },
+  {
+    name: "Sathish Madanagopalan",
+    title: "Director, Product Engineering",
+    function: "Opportunity Owners",
+    initials: "SM",
+    bg: "#0891b2",
+    stars: 5,
+    opps: 3,
+    focus: ["Data, analytics and AI", "Reporting and data governance", "Systems and brand conversion readiness", "Commercial treasury and ERP workflow", "Digital and branch continuity"],
+  },
+  {
+    name: "Sue J Nelson, CRCM, AMLP",
+    title: "Director BSA/AML Compliance- Corporate BSA/AML Officer at Synovus Financial Corp",
+    function: "Opportunity Owners",
+    initials: "SA",
+    bg: "#ca8a04",
+    stars: 4,
+    opps: 1,
+    focus: ["Risk and compliance governance", "Control and regulatory readiness", "AML/BSA and sanctions readiness"],
+  },
+]);
+
+const synovusLeaderHasRelatedOpportunities = (leader) => {
+  const key = normalizeStakeholderName(leader?.name);
+  const fromEnrichment = SYNOVUS_OPP_OWNER_ENRICHMENT_BY_NAME[key]?.relatedOpportunities;
+  if (Array.isArray(fromEnrichment)) return fromEnrichment.length > 0;
+  return Number(leader?.opps ?? 0) > 0;
+};
+
+// Key Leaders tab: only people with at least one related opportunity.
+const SYNOVUS_KEY_LEADERS_TO_ENGAGE = Object.freeze(
+  SYNOVUS_KEY_LEADERS.filter((leader) => synovusLeaderHasRelatedOpportunities(leader)),
+);
+
+// People with an empty Related Opportunities column, filed by Leadership Group.
+const SYNOVUS_LEADERS_BY_GROUP = Object.freeze(
+  SYNOVUS_KEY_LEADERS
+    .filter((leader) => !synovusLeaderHasRelatedOpportunities(leader))
+    .reduce((acc, leader) => {
+      const groupKey = normalizeStakeholderName(leader?.function);
+      if (!groupKey) return acc;
+      if (!acc[groupKey]) acc[groupKey] = [];
+      acc[groupKey].push(leader);
+      return acc;
+    }, {}),
+);
 
 const SYNOVUS_RELATED_OPP_TITLE_ALIASES = Object.freeze({
   // Supabase rank labels -> demo opportunity titles shown in UI
@@ -201,6 +714,15 @@ function OverviewTab({ acct }) {
   const commercialBankText = acct.commercialBank ?? '—';
   const wealthBankText = acct.wealthBank ?? '—';
   const competitiveRows = Array.isArray(acct.competitiveLandscape) ? acct.competitiveLandscape : [];
+  const capabilityList = String(acct.capabilities ?? '')
+    .split(/[,|]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const hasFinancials = [acct.assetSize, acct.revenue, acct.nim, acct.efficiencyRatio]
+    .some((v) => v != null && String(v).trim() && String(v).trim() !== '—');
+  const hasStrategy = strategyText && strategyText !== '—';
+  const hasSegments = [retailBankText, commercialBankText, wealthBankText]
+    .some((t) => t && t !== '—');
 
   return (
     <div className="animate-in">
@@ -208,7 +730,7 @@ function OverviewTab({ acct }) {
       <div className="portfolio-kpi-grid portfolio-kpi-grid--3">
         {[
           {
-            label: 'About Bank',
+            label: 'About',
             variant: 'accounts',
             sub: aboutText,
           },
@@ -233,7 +755,34 @@ function OverviewTab({ acct }) {
         ))}
       </div>
 
+      {capabilityList.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, color: '#0f172a', marginBottom: 12 }}>Capabilities</h3>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+            {capabilityList.map((cap) => (
+              <span
+                key={cap}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  padding: '6px 12px',
+                  borderRadius: 8,
+                  background: '#eff6ff',
+                  color: '#1e40af',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  border: '1px solid #bfdbfe',
+                }}
+              >
+                {cap}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Key Financials */}
+      {hasFinancials && (
       <div style={{marginBottom:20}}>
         <h3 style={{fontSize:16,fontWeight:600,color:'#0f172a',marginBottom:12}}>Key Financials</h3>
         <div className="asi-financials">
@@ -255,8 +804,10 @@ function OverviewTab({ acct }) {
           ))}
         </div>
       </div>
+      )}
 
       {/* Business Strategy */}
+      {hasStrategy && (
       <div className="asi-strategy">
         <div className="asi-strategy__icon"><img src={businessStrategyIcon} alt="" width={24} height={24} aria-hidden /></div>
         <div>
@@ -264,8 +815,10 @@ function OverviewTab({ acct }) {
           <p className="asi-strategy__text">{strategyText}</p>
         </div>
       </div>
+      )}
 
       {/* Competitive Landscape */}
+      {competitiveRows.length > 0 && (
       <div style={{marginBottom:20}}>
         <h3 style={{fontSize:16,fontWeight:600,color:'#0f172a',marginBottom:12}}>Competitive Landscape</h3>
         <div className="asi-card" style={{overflow:'hidden'}}>
@@ -277,7 +830,7 @@ function OverviewTab({ acct }) {
               <th style={{ textAlign: 'center', fontSize: '12px', textTransform: 'none', letterSpacing: 'normal' }}>Efficiency Ratio</th>
             </tr></thead>
             <tbody>
-              {(competitiveRows.length ? competitiveRows : [{ bankName: '—', assetSize: '—', revenue: '—', efficiencyRatio: '—' }]).map((r)=>(
+              {competitiveRows.map((r)=>(
                 <tr key={`${r.bankName}-${r.assetSize}-${r.revenue}-${r.efficiencyRatio}`}>
                   <td><div style={{display:'flex',alignItems:'center',gap:10}}><BankLogo name={r.bankName} size={28}/><span style={{fontWeight:500}}>{r.bankName}</span></div></td>
                   <td style={{textAlign:'center'}}>{r.assetSize}</td>
@@ -289,8 +842,10 @@ function OverviewTab({ acct }) {
           </table>
         </div>
       </div>
+      )}
 
       {/* Business Segments */}
+      {hasSegments && (
       <div className="asi-info-grid">
         {[
           { title:'Retail Bank',       icon: shoppingCartIcon,   color:'blue',  bg:'#eff6ff',
@@ -309,6 +864,7 @@ function OverviewTab({ acct }) {
           </div>
         ))}
       </div>
+      )}
     </div>
   );
 }
@@ -739,7 +1295,44 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
     <span key={i} style={{color: i < n ? '#f59e0b' : '#e2e8f0', fontSize:15}}>★</span>
   ));
 
-  const kpis = [
+  const isSynovusOrg = /synovus/i.test(String(name ?? ''));
+  const synovusKeyLeadersCount = SYNOVUS_KEY_LEADERS_TO_ENGAGE.length;
+  const kpis = isSynovusOrg
+    ? [
+      {
+        label: 'Total Stakeholders',
+        value: orgData.kpis.totalStakeholders,
+        sub: 'Across all functions',
+        icon: stakeholdersIcon,
+        color: '#eff6ff',
+        gradient: 'linear-gradient(135deg, rgba(96, 176, 232, 0.03) 0%, rgba(37, 99, 235, 0.06) 35%, rgba(0, 89, 207, 0.09) 70%, rgba(0, 89, 207, 0.1) 100%)',
+      },
+      {
+        label: 'Key Leaders to Engage',
+        value: synovusKeyLeadersCount,
+        sub: 'Priority engagement targets',
+        icon: teamIcon,
+        color: '#fff7ed',
+        gradient: 'linear-gradient(135deg, rgba(254, 226, 226, 0.03) 0%, rgba(252, 165, 165, 0.06) 35%, rgba(239, 68, 68, 0.09) 70%, rgba(220, 38, 38, 0.1) 100%)',
+      },
+      {
+        label: 'Executive Leaders',
+        value: orgData.kpis.executiveLeaders,
+        sub: 'CxO / SVP / EVP',
+        icon: userStarIcon,
+        color: '#f0fdf4',
+        gradient: 'linear-gradient(135deg, rgba(204, 251, 196, 0.03) 0%, rgba(130, 209, 115, 0.06) 35%, rgba(36, 158, 70, 0.09) 70%, rgba(36, 158, 70, 0.1) 100%)',
+      },
+      {
+        label: 'Technology Leaders',
+        value: orgData.kpis.technologyLeaders,
+        sub: 'Technology leadership',
+        icon: userPenIcon,
+        color: '#faf5ff',
+        gradient: 'linear-gradient(135deg, rgba(237, 233, 254, 0.03) 0%, rgba(196, 181, 253, 0.06) 35%, rgba(139, 92, 246, 0.09) 70%, rgba(109, 40, 217, 0.1) 100%)',
+      },
+    ]
+    : [
     {
       label:'Total Stakeholders',
       value:orgData.kpis.totalStakeholders,
@@ -1016,19 +1609,35 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
     return () => window.cancelAnimationFrame(raf);
   }, [expandedOpp, scrollElementWithTopOffset, scrollToOppCardIndex]);
   const displayedStakeholders = React.useMemo(() => {
-    if (!isSynovusOpportunityOwnersTab) return tab?.people ?? [];
-    const list = [...stakeholderPool];
-    list.sort((a, b) => {
-      const starsA = Number(a?.stars ?? 0);
-      const starsB = Number(b?.stars ?? 0);
-      if (starsA !== starsB) return starsB - starsA;
-      const oppsA = Number(a?.opps ?? 0);
-      const oppsB = Number(b?.opps ?? 0);
-      if (oppsA !== oppsB) return oppsB - oppsA;
-      return String(a?.name ?? '').localeCompare(String(b?.name ?? ''));
-    });
-    return list;
-  }, [isSynovusOpportunityOwnersTab, stakeholderPool, tab?.people]);
+    const sortStakeholders = (list) => {
+      const next = [...list];
+      next.sort((a, b) => {
+        const starsA = Number(a?.stars ?? 0);
+        const starsB = Number(b?.stars ?? 0);
+        if (starsA !== starsB) return starsB - starsA;
+        const oppsA = Number(a?.opps ?? 0);
+        const oppsB = Number(b?.opps ?? 0);
+        if (oppsA !== oppsB) return oppsB - oppsA;
+        return String(a?.name ?? '').localeCompare(String(b?.name ?? ''));
+      });
+      return next;
+    };
+
+    if (isSynovusOpportunityOwnersTab) {
+      return sortStakeholders(SYNOVUS_KEY_LEADERS_TO_ENGAGE);
+    }
+
+    // Synovus leadership-group tabs: people with empty Related Opportunities.
+    if (/synovus/i.test(String(name ?? '')) && tab?.label) {
+      const groupKey = normalizeStakeholderName(tab.label);
+      const groupPeople = SYNOVUS_LEADERS_BY_GROUP[groupKey];
+      if (Array.isArray(groupPeople)) {
+        return sortStakeholders(groupPeople);
+      }
+    }
+
+    return tab?.people ?? [];
+  }, [isSynovusOpportunityOwnersTab, name, tab?.label, tab?.people]);
   const showStaticOpportunityOwners = topOpportunityOwners.length > 0;
   const topOpportunityOwnerSlots = (() => {
     const cardsPerRow = 5;
@@ -1631,7 +2240,7 @@ export default function AccountOverviewPage() {
   const [accountData, setAccountData] = useState(null);
   const [isLoadingAccount, setIsLoadingAccount] = useState(true);
   const [isDownloadingReport, setIsDownloadingReport] = useState(false);
-  const [showSynovusMergeNotice, setShowSynovusMergeNotice] = useState(true);
+  const [synovusMergeTipOpen, setSynovusMergeTipOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const tabParam = searchParams.get('tab');
   const fromParam = searchParams.get('from');
@@ -1701,7 +2310,7 @@ export default function AccountOverviewPage() {
   }, [accountId]);
 
   useEffect(() => {
-    setShowSynovusMergeNotice(true);
+    setSynovusMergeTipOpen(false);
   }, [accountId]);
 
   // Never show a previously viewed bank while the next account is loading.
@@ -1711,6 +2320,7 @@ export default function AccountOverviewPage() {
     ? {
         id: realAccount.id,
         name: realAccount.name,
+        sector: realAccount.sector,
         about: realAccount.about,
         products: realAccount.products,
         services: realAccount.services,
@@ -1723,10 +2333,12 @@ export default function AccountOverviewPage() {
         commercialBank: realAccount.commercialBank,
         wealthBank: realAccount.wealthBank,
         competitiveLandscape: realAccount.competitiveLandscape,
+        capabilities: realAccount.capabilities,
       }
     : {
         id: accountId,
         name: isLoadingAccount ? 'Loading…' : 'Account',
+        sector: null,
         about: null,
         products: null,
         services: null,
@@ -1739,6 +2351,7 @@ export default function AccountOverviewPage() {
         commercialBank: null,
         wealthBank: null,
         competitiveLandscape: [],
+        capabilities: null,
       };
   const isSynovusOverview = activeTab === 'Overview'
     && String(acct?.name ?? '').toLowerCase().includes('synovus');
@@ -1757,78 +2370,42 @@ export default function AccountOverviewPage() {
             <h1 className="asi-bank-header__name" style={{ margin: 0 }}>
               {acct.name} {activeTab === 'Overview' ? 'Overview' : activeTab}
             </h1>
-            {isSynovusOverview && showSynovusMergeNotice && (
+            {isSynovusOverview && (
               <div
-                role="alert"
-                aria-live="polite"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  border: '1px solid #bfdbfe',
-                  background: '#eff6ff',
-                  color: '#1e3a8a',
-                  borderRadius: 999,
-                  padding: '6px 10px',
-                  minWidth: 0,
-                  maxWidth: '70vw',
-                }}
+                className={`asi-info-tip${synovusMergeTipOpen ? ' is-open' : ''}`}
+                onMouseEnter={() => setSynovusMergeTipOpen(true)}
+                onMouseLeave={() => setSynovusMergeTipOpen(false)}
               >
-                <span
-                  aria-hidden
-                  style={{
-                    width: 18,
-                    height: 18,
-                    borderRadius: '50%',
-                    background: '#2563eb',
-                    color: '#ffffff',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 12,
-                    fontWeight: 700,
-                    flexShrink: 0,
+                <button
+                  type="button"
+                  className="asi-info-tip__trigger"
+                  aria-label="Synovus merger info"
+                  aria-expanded={synovusMergeTipOpen}
+                  aria-controls="synovus-merge-tip"
+                  onClick={() => setSynovusMergeTipOpen((open) => !open)}
+                  onBlur={(e) => {
+                    if (!e.currentTarget.parentElement?.contains(e.relatedTarget)) {
+                      setSynovusMergeTipOpen(false);
+                    }
                   }}
                 >
                   i
-                </span>
-                <span
-                  style={{
-                    fontSize: 12,
-                    lineHeight: 1.2,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
+                </button>
+                <div
+                  id="synovus-merge-tip"
+                  role="tooltip"
+                  className="asi-info-tip__panel"
                 >
                   Synovus has officially merged with Pinnacle Financial Partners, and all branches are scheduled to fully transition to the Pinnacle brand in early 2027.
-                </span>
-                <button
-                  type="button"
-                  aria-label="Dismiss Synovus merger notice"
-                  onClick={() => setShowSynovusMergeNotice(false)}
-                  style={{
-                    marginLeft: 2,
-                    border: 'none',
-                    background: 'transparent',
-                    color: '#1e3a8a',
-                    fontSize: 14,
-                    lineHeight: 1,
-                    cursor: 'pointer',
-                    padding: 0,
-                    width: 18,
-                    height: 18,
-                    flexShrink: 0,
-                  }}
-                >
-                  ×
-                </button>
+                </div>
               </div>
             )}
           </div>
           <p className="asi-bank-header__sub">
             {isLoadingAccount && 'Loading account data... '}
-            {activeTab==='Overview' && 'Strategic account overview for portfolio review and expansion planning.'}
+            {activeTab==='Overview' && (acct.sector
+              ? acct.sector
+              : 'Strategic account overview for portfolio review and expansion planning.')}
             {activeTab==='Signals' && 'Business and technology signals shaping account priorities and GTM timing.'}
             {activeTab==='Opportunities' && 'Ranked revenue plays derived from outside-in business, technology and stakeholder signals.'}
             {activeTab==='Organization' && 'Organization structure and leadership hierarchy shaping account access and buying influence.'}

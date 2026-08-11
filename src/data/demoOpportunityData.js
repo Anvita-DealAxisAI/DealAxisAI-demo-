@@ -1,4 +1,5 @@
 import { getAccountById } from './mockData';
+import { JACK_HENRY_ACCOUNT } from './jackHenryOpportunityData';
 
 const ACCOUNT_ID_TO_MOCK_ID = {
   A002: '1', // Synovus
@@ -984,6 +985,7 @@ function buildFallbackAccount(accountId, accountName) {
 
 export function getDemoOpportunityAccount(accountId, accountName) {
   if (accountName === 'Citizens' || accountId === 'A001') return CITIZENS_ACCOUNT;
+  if (accountName === 'Jack Henry' || accountId === 'A0011') return JACK_HENRY_ACCOUNT;
 
   const mappedId = ACCOUNT_ID_TO_MOCK_ID[accountId] ?? accountId;
   if (mappedId === '1') {

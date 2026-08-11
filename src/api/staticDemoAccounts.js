@@ -44,6 +44,28 @@ const GENERIC_OVERVIEW = {
   ],
 };
 
+/** Curated overview fields keyed by account id (partial → merged over GENERIC). */
+const ACCOUNT_OVERVIEW_BY_ID = {
+  A0011: {
+    about:
+      'Jack Henry & Associates, Inc. is a publicly traded U.S. financial technology provider serving community and regional banks, credit unions, fintechs and related businesses with core processing, digital banking, payments, lending, operational, security and complementary solutions.',
+    products:
+      'Jack Henry offers digital banking capabilities, digital add-ons, account origination, web solutions and open-banking integration.',
+    services:
+      "Jack Henry's payments portfolio includes digital payments, instant payments, card processing, ACH, wires, remote deposit, receivables and embedded-payment capabilities.",
+    // Fintech / platform provider — omit bank-style financial KPIs until sourced.
+    assetSize: null,
+    revenue: null,
+    nim: null,
+    efficiencyRatio: null,
+    businessStrategy: null,
+    retailBank: null,
+    commercialBank: null,
+    wealthBank: null,
+    competitiveLandscape: [],
+  },
+};
+
 function monStartToIso(monStart) {
   const [month, year] = String(monStart ?? '').trim().split(/\s+/);
   if (!month || !year) return new Date().toISOString();
@@ -130,9 +152,13 @@ function redistributeDealSizes(opportunities, valueMidM) {
 function buildAccount(row) {
   const demo = getDemoOpportunityAccount(row.id, row.name) ?? {};
   const accountCaps = toCapabilityList(row.capabilities);
-  const isFallbackAccount = row.id !== 'A001' && row.id !== 'A002';
+  const curatedOverview = ACCOUNT_OVERVIEW_BY_ID[row.id];
+  // Curated accounts without opp data yet should not inherit generic fallback plays.
+  const isOverviewOnly = Boolean(curatedOverview) && (row.opps === 0 || !demo.opportunities?.length);
+  const hasCuratedOpps = Boolean(demo.opportunities?.length) && (row.id === 'A001' || row.id === 'A002' || row.id === 'A0011' || Boolean(curatedOverview));
+  const isFallbackAccount = !hasCuratedOpps && row.id !== 'A001' && row.id !== 'A002' && !isOverviewOnly;
 
-  let rawOpportunities = demo.opportunities ?? [];
+  let rawOpportunities = isOverviewOnly ? [] : (demo.opportunities ?? []);
   if (isFallbackAccount) {
     rawOpportunities = redistributeDealSizes(rawOpportunities, row.valueMid);
   }
@@ -142,22 +168,30 @@ function buildAccount(row) {
   );
 
   const summary = {
-    totalOpportunities: demo.summary?.totalOpportunities ?? opportunities.length ?? row.opps ?? 0,
-    // Curated portfolio midpoint keeps KPI/matrix storytelling consistent in the demo.
-    opportunityRange: row.value ? `${row.value}+` : (demo.summary?.opportunityRange ?? `$${row.valueMid ?? 0}M+`),
+    totalOpportunities: isOverviewOnly
+      ? 0
+      : (demo.summary?.totalOpportunities ?? opportunities.length ?? row.opps ?? 0),
+    // Prefer curated demo range when present (Jack Henry / Citizens / Synovus).
+    opportunityRange: isOverviewOnly
+      ? '—'
+      : (demo.summary?.opportunityRange
+        ?? (row.value ? `${row.value}+` : `$${row.valueMid ?? 0}M+`)),
     topServiceLineThemes:
       demo.summary?.topServiceLineThemes ?? accountCaps.join(', '),
     stakeholdersCount:
       demo.summary?.stakeholdersCount ??
-      (row.id === 'A002' ? SYNOVUS_ORG.kpis.totalStakeholders : 8),
+      (row.id === 'A002' ? SYNOVUS_ORG.kpis.totalStakeholders : (isOverviewOnly ? 0 : 8)),
   };
 
   const mock = row.id === 'A002' ? getAccountById('1') : null;
-  const overviewFields = overviewFromMock(mock);
+  const overviewFields = curatedOverview
+    ? { ...GENERIC_OVERVIEW, ...curatedOverview }
+    : overviewFromMock(mock);
 
   return {
     id: row.id,
     name: row.name,
+    sector: row.sector ?? null,
     status: row.status,
     capabilities: accountCaps.join(', '),
     updatedAt: monStartToIso(row.monStart),

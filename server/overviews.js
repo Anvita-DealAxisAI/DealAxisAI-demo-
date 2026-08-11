@@ -1,7 +1,7 @@
 /**
  * Static overview widgets not yet in the DB schema (Synovus MVP).
  */
-import { ACCOUNT_SYNOVUS } from './ids.js';
+import { ACCOUNT_SYNOVUS, ACCOUNT_JACK_HENRY } from './ids.js';
 
 export const accountOverviewsById = {
   [ACCOUNT_SYNOVUS]: {
@@ -63,6 +63,28 @@ export const accountOverviewsById = {
     ],
     serviceLineThemes: ['Core Conversion', 'Digital', 'Treasury', 'AI', 'Data'],
     stakeholdersCount: 12,
+  },
+  [ACCOUNT_JACK_HENRY]: {
+    subtitle: 'Core Banking Platform provider',
+    about:
+      'Jack Henry & Associates, Inc. is a publicly traded U.S. financial technology provider serving community and regional banks, credit unions, fintechs and related businesses with core processing, digital banking, payments, lending, operational, security and complementary solutions.',
+    products:
+      'Jack Henry offers digital banking capabilities, digital add-ons, account origination, web solutions and open-banking integration.',
+    services:
+      "Jack Henry's payments portfolio includes digital payments, instant payments, card processing, ACH, wires, remote deposit, receivables and embedded-payment capabilities.",
+    financials: [],
+    strategy: null,
+    competitors: [],
+    segments: [],
+    snapshot: {
+      description:
+        'Jack Henry is a core banking platform provider with digital, data, and AI capability themes relevant to SI partnership and implementation conversations.',
+      tags: ['Core', 'Digital', 'Data', 'AI'],
+    },
+    valueHypothesis: null,
+    signalTimeline: [],
+    serviceLineThemes: ['Core', 'Digital', 'Data', 'AI'],
+    stakeholdersCount: 0,
   },
 };
 

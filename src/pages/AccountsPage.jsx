@@ -6,6 +6,17 @@ import { fetchAccountsList } from '../api/accounts';
 import hotAccountsIcon from '../../logo/icons/hot-accounts.svg';
 import './AccountsPage.css';
 
+/** Featured accounts shown first on the Accounts grid (demo order). */
+const FEATURED_ACCOUNT_ORDER = ['Citizens', 'Synovus', 'Jack Henry'];
+
+function featuredAccountRank(name) {
+  const normalized = String(name ?? '').trim().toLowerCase();
+  const index = FEATURED_ACCOUNT_ORDER.findIndex(
+    (featured) => featured.toLowerCase() === normalized,
+  );
+  return index === -1 ? Number.MAX_SAFE_INTEGER : index;
+}
+
 function accountNumberSortKey(id) {
   const value = String(id ?? '').trim();
   const match = value.match(/(\d+)/);
@@ -119,6 +130,10 @@ export default function AccountsPage() {
 
   const visibleAccounts = [...accounts]
     .sort((a, b) => {
+      // Citizens, Synovus, Jack Henry first; remaining accounts after (by id).
+      const aFeatured = featuredAccountRank(a.name);
+      const bFeatured = featuredAccountRank(b.name);
+      if (aFeatured !== bFeatured) return aFeatured - bFeatured;
       const aKey = accountNumberSortKey(a.id);
       const bKey = accountNumberSortKey(b.id);
       if (aKey !== bKey) return aKey - bKey;

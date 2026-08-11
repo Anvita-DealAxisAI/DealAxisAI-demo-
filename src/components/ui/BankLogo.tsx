@@ -1,4 +1,5 @@
 import { bankLogos } from './bankLogosData';
+import jackHenryLogo from '../../../logo/jackhenry.jpeg';
 
 interface BankLogoProps {
   name: string;
@@ -30,11 +31,17 @@ const fallbacks: Record<string, { bg: string; color: string; abbr: string }> = {
   'Regions':      { bg: '#5a9e32', color: '#fff', abbr: 'RE' },
   'KeyBank':      { bg: '#cc0000', color: '#fff', abbr: 'KE' },
   'Commerce Bank':{ bg: '#004B87', color: '#fff', abbr: 'CO' },
+  'Jack Henry':   { bg: '#001A41', color: '#fff', abbr: 'JH' },
+};
+
+/** Path/import logos that are not in the generated base64 bankLogos map. */
+const logoOverrides: Record<string, { img: string; bg: string; pad: number }> = {
+  'Jack Henry': { img: jackHenryLogo, bg: '#001A41', pad: 0 },
 };
 
 export default function BankLogo({ name, size = 36, shape = 'rounded' }: BankLogoProps) {
   const key = normalizeName(name);
-  const logo = bankLogos[key];
+  const logo = logoOverrides[key] || bankLogos[key];
   const fb = fallbacks[key] || fallbacks[name] || { bg: '#475569', color: '#fff', abbr: name.slice(0, 2).toUpperCase() };
   const borderRadius = shape === 'circle' ? '50%' : 8;
 
