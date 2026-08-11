@@ -12,13 +12,43 @@ function priorityClass(priority) {
   return '';
 }
 
-function readinessBadgeClass(salesReadiness) {
-  const key = String(salesReadiness ?? '').trim().toLowerCase();
-  if (key === 'high' || key === 'very high') return 'opportunity-card__badge--type';
-  if (key === 'medium-high') return 'opportunity-card__badge--type-hypothesis';
-  if (key === 'medium') return 'opportunity-card__badge--type-emerging';
-  if (key === 'low-medium' || key === 'low') return 'opportunity-card__badge--type-watchlist';
+function classificationBadgeClass(opportunityClassification) {
+  const key = String(opportunityClassification ?? '').trim().toLowerCase();
+  if (key === 'emerging') return 'opportunity-card__badge--type-emerging';
+  if (key === 'strategic hypothesis' || key === 'strategic hypothesis opportunity') {
+    return 'opportunity-card__badge--type-hypothesis';
+  }
+  if (
+    key === 'strategic hypothesis / watchlist'
+    || key === 'watchlist'
+    || key === 'watchlist opportunity'
+  ) return 'opportunity-card__badge--type-watchlist';
+  if (key === 'confirmed opportunity' || key === 'confirmed') {
+    return 'opportunity-card__badge--type';
+  }
+  if (key === 'inferred opportunity' || key === 'inferred') {
+    return 'opportunity-card__badge--type-emerging';
+  }
   return 'opportunity-card__badge--type';
+}
+
+/** Prefer opportunity_classification; only accept Confirmed/Inferred/Watchlist-style labels. */
+function resolveClassificationLabel(opportunityClassification, opportunityType) {
+  const candidates = [opportunityClassification, opportunityType];
+  for (const value of candidates) {
+    const key = String(value ?? '').trim().toLowerCase();
+    if (!key) continue;
+    if (
+      key.includes('confirmed')
+      || key.includes('inferred')
+      || key.includes('watchlist')
+      || key.includes('strategic hypothesis')
+      || key === 'emerging'
+    ) {
+      return String(value).trim();
+    }
+  }
+  return null;
 }
 
 export default function OpportunityCard({
@@ -33,7 +63,7 @@ export default function OpportunityCard({
     id,
     title,
     priority,
-    salesReadiness,
+    opportunityClassification,
     opportunityType,
     dealSize,
     timeline,
@@ -43,6 +73,7 @@ export default function OpportunityCard({
     technologyStack,
   } = opportunity;
 
+  const classificationLabel = resolveClassificationLabel(opportunityClassification, opportunityType);
   const showTypeAsLabel = !priority && opportunityType === 'Emerging';
   const detailsId = `opportunity-details-${id}`;
   const displayRank = Number.isFinite(Number(rank)) ? Number(rank) : null;
@@ -102,9 +133,9 @@ export default function OpportunityCard({
                 {priority}
               </span>
             )}
-            {salesReadiness && !showTypeAsLabel && (
-              <span className={`opportunity-card__badge ${readinessBadgeClass(salesReadiness)}`}>
-                {salesReadiness}
+            {classificationLabel && !showTypeAsLabel && (
+              <span className={`opportunity-card__badge ${classificationBadgeClass(classificationLabel)}`}>
+                {classificationLabel}
               </span>
             )}
           </div>

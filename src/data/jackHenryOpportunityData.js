@@ -55,12 +55,29 @@ function sanitizeTechnologyStack(stack) {
 const DEMO_TOP_N = 10;
 
 const opportunities = (jackHenryOpportunities ?? [])
-  .map((opp) => ({
-    ...opp,
-    // List/matrix surfaces expect a flat capability list.
-    capabilities: Array.isArray(opp.capabilities) ? opp.capabilities : [],
-    technologyStack: sanitizeTechnologyStack(opp.technologyStack),
-  }))
+  .map((opp) => {
+    // Source export swapped naming vs app schema:
+    // opportunityType holds Confirmed/Inferred/Watchlist (app: opportunityClassification)
+    // opportunityClassification holds service category (Platform Engineering, etc.)
+    const classification =
+      opp.opportunityType
+      || opp.opportunityClassification
+      || null;
+    const serviceCategory =
+      opp.opportunityClassification
+      && !/opportunity$/i.test(String(opp.opportunityClassification))
+        ? opp.opportunityClassification
+        : null;
+
+    return {
+      ...opp,
+      capabilities: Array.isArray(opp.capabilities) ? opp.capabilities : [],
+      technologyStack: sanitizeTechnologyStack(opp.technologyStack),
+      opportunityClassification: classification,
+      opportunityType: classification,
+      serviceCategory,
+    };
+  })
   // Demo surface: keep the top N ranked plays only.
   .sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999))
   .slice(0, DEMO_TOP_N);
