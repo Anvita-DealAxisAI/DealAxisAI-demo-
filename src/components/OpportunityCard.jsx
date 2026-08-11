@@ -12,21 +12,12 @@ function priorityClass(priority) {
   return '';
 }
 
-function typeBadgeClass(opportunityType) {
-  if (opportunityType === 'Emerging') return 'opportunity-card__badge--type-emerging';
-  if (opportunityType === 'Strategic Hypothesis') return 'opportunity-card__badge--type-hypothesis';
-  if (opportunityType === 'Strategic Hypothesis Opportunity') return 'opportunity-card__badge--type-hypothesis';
-  if (
-    opportunityType === 'Strategic Hypothesis / Watchlist'
-    || opportunityType === 'Watchlist'
-    || opportunityType === 'Watchlist Opportunity'
-  ) return 'opportunity-card__badge--type-watchlist';
-  if (opportunityType === 'Confirmed Opportunity' || opportunityType === 'Confirmed') {
-    return 'opportunity-card__badge--type';
-  }
-  if (opportunityType === 'Inferred Opportunity' || opportunityType === 'Inferred') {
-    return 'opportunity-card__badge--type-emerging';
-  }
+function readinessBadgeClass(salesReadiness) {
+  const key = String(salesReadiness ?? '').trim().toLowerCase();
+  if (key === 'high' || key === 'very high') return 'opportunity-card__badge--type';
+  if (key === 'medium-high') return 'opportunity-card__badge--type-hypothesis';
+  if (key === 'medium') return 'opportunity-card__badge--type-emerging';
+  if (key === 'low-medium' || key === 'low') return 'opportunity-card__badge--type-watchlist';
   return 'opportunity-card__badge--type';
 }
 
@@ -42,7 +33,7 @@ export default function OpportunityCard({
     id,
     title,
     priority,
-    opportunityClassification,
+    salesReadiness,
     opportunityType,
     dealSize,
     timeline,
@@ -111,9 +102,9 @@ export default function OpportunityCard({
                 {priority}
               </span>
             )}
-            {(opportunityClassification || opportunityType) && !showTypeAsLabel && (
-              <span className={`opportunity-card__badge ${typeBadgeClass(opportunityClassification || opportunityType)}`}>
-                {opportunityClassification || opportunityType}
+            {salesReadiness && !showTypeAsLabel && (
+              <span className={`opportunity-card__badge ${readinessBadgeClass(salesReadiness)}`}>
+                {salesReadiness}
               </span>
             )}
           </div>

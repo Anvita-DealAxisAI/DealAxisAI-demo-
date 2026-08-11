@@ -1211,7 +1211,28 @@ const EMPTY_ORG = {
     { key: 'opportunity_owners', label: 'Opportunity Owners', icon: 'revenue', people: [], viewAllLabel: 'View All Opportunity Owners (0)' },
   ],
   topOpportunityOwners: [],
+  pending: false,
 };
+
+function PendingDataPanel({ title, detail }) {
+  return (
+    <div
+      className="animate-in"
+      style={{
+        background: 'white',
+        borderRadius: 12,
+        boxShadow: 'var(--card-shadow)',
+        padding: '48px 28px',
+        textAlign: 'center',
+      }}
+    >
+      <p style={{ fontSize: 16, fontWeight: 600, color: '#0f172a', margin: 0 }}>{title}</p>
+      <p style={{ fontSize: 13, color: '#64748b', marginTop: 8, maxWidth: 420, marginLeft: 'auto', marginRight: 'auto', lineHeight: 1.45 }}>
+        {detail}
+      </p>
+    </div>
+  );
+}
 
 function OrganizationTab({ accountId, name, opportunities = [] }) {
   const ORGANIZATION_OPP_OWNERS_TAB_LABEL = 'Key Leaders to Engage';
@@ -1238,10 +1259,14 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
       try {
         const org = await fetchAccountOrganizationById(accountId);
         if (!cancelled) {
+          const isPending = Boolean(org?.pending);
           setOrgData({
             kpis: org?.kpis ?? EMPTY_ORG.kpis,
-            tabs: Array.isArray(org?.tabs) && org.tabs.length > 0 ? org.tabs : EMPTY_ORG.tabs,
+            tabs: isPending
+              ? []
+              : (Array.isArray(org?.tabs) && org.tabs.length > 0 ? org.tabs : EMPTY_ORG.tabs),
             topOpportunityOwners: Array.isArray(org?.topOpportunityOwners) ? org.topOpportunityOwners : [],
+            pending: isPending,
           });
           setActiveOrgTab(0);
           setExpandedOpp(null);
@@ -1657,6 +1682,15 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
     return formatOpportunityTitle(opp.title);
   }, []);
 
+  if (!isLoadingOrg && orgData.pending) {
+    return (
+      <PendingDataPanel
+        title="Organization data is on the way"
+        detail={`${name || 'This account'} stakeholder mapping and leadership hierarchy are not loaded yet. Check back once the org chart is curated.`}
+      />
+    );
+  }
+
   return (
     <div className="animate-in">
 
@@ -2061,7 +2095,7 @@ function formatPipeList(value) {
 
 function NewsTab({ accountId }) {
   const [activeNewsTab, setActiveNewsTab] = useState(0);
-  const [newsData, setNewsData] = useState({ bankNews: [], industryUpdates: [], upcomingEvents: [] });
+  const [newsData, setNewsData] = useState({ bankNews: [], industryUpdates: [], upcomingEvents: [], pending: false });
   const [isLoadingNews, setIsLoadingNews] = useState(true);
   const [newsError, setNewsError] = useState('');
 
@@ -2073,11 +2107,18 @@ function NewsTab({ accountId }) {
       setNewsError('');
       try {
         const data = await fetchAccountNewsById(accountId);
-        if (!cancelled) setNewsData(data);
+        if (!cancelled) {
+          setNewsData({
+            bankNews: data?.bankNews ?? [],
+            industryUpdates: data?.industryUpdates ?? [],
+            upcomingEvents: data?.upcomingEvents ?? [],
+            pending: Boolean(data?.pending),
+          });
+        }
       } catch (err) {
         console.error('Failed to load account news', err);
         if (!cancelled) {
-          setNewsData({ bankNews: [], industryUpdates: [], upcomingEvents: [] });
+          setNewsData({ bankNews: [], industryUpdates: [], upcomingEvents: [], pending: false });
           setNewsError(err?.message || 'Failed to load news');
         }
       } finally {
@@ -2089,6 +2130,15 @@ function NewsTab({ accountId }) {
       cancelled = true;
     };
   }, [accountId]);
+
+  if (!isLoadingNews && newsData.pending) {
+    return (
+      <PendingDataPanel
+        title="News & events are on the way"
+        detail="Company news, industry updates, and upcoming events for this account are not loaded yet. Check back once the feed is curated."
+      />
+    );
+  }
 
   const newsTabs = [
     { label:'Bank News',        icon:'bank'    },

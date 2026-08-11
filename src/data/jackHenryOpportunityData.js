@@ -52,12 +52,18 @@ function sanitizeTechnologyStack(stack) {
   };
 }
 
-const opportunities = (jackHenryOpportunities ?? []).map((opp) => ({
-  ...opp,
-  // List/matrix surfaces expect a flat capability list.
-  capabilities: Array.isArray(opp.capabilities) ? opp.capabilities : [],
-  technologyStack: sanitizeTechnologyStack(opp.technologyStack),
-}));
+const DEMO_TOP_N = 10;
+
+const opportunities = (jackHenryOpportunities ?? [])
+  .map((opp) => ({
+    ...opp,
+    // List/matrix surfaces expect a flat capability list.
+    capabilities: Array.isArray(opp.capabilities) ? opp.capabilities : [],
+    technologyStack: sanitizeTechnologyStack(opp.technologyStack),
+  }))
+  // Demo surface: keep the top N ranked plays only.
+  .sort((a, b) => (Number(a.rank) || 999) - (Number(b.rank) || 999))
+  .slice(0, DEMO_TOP_N);
 
 const opportunityRange = buildRangeFromOpportunities(opportunities);
 

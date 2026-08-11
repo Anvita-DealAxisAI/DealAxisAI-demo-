@@ -5,6 +5,8 @@
 import {
   PORTFOLIO_ACCOUNTS,
   SYNOVUS_SIGNALS,
+  JACK_HENRY_SIGNALS,
+  JACK_HENRY_EXEC_INTELLIGENCE,
   SYNOVUS_ORG,
   SYNOVUS_NEWS,
   getDemoAccountsSubset,
@@ -223,6 +225,28 @@ export function getStaticAccountById(accountId, bankCount) {
 }
 
 export function getStaticSignals(accountId) {
+  if (accountId === 'A0011') {
+    const jh = JACK_HENRY_EXEC_INTELLIGENCE;
+    return {
+      businessSummary: {
+        heading: 'Executive Account summary',
+        points: jh.points,
+        operatingPriorities: jh.operatingPriorities,
+        postureStatements: jh.postureStatements,
+        verticalBoxSections: jh.verticalBoxSections,
+        confidence: jh.confidence,
+      },
+      cards: JACK_HENRY_SIGNALS.map((s) => ({
+        id: s.id,
+        title: s.title,
+        text: s.desc,
+        color: s.color,
+        icon: s.icon,
+        relevance: s.relevance,
+      })),
+    };
+  }
+
   const synovusExecutiveSummaryPoints = [
     'Synovus should be approached as a legacy commercial-bank franchise inside the combined Pinnacle Financial Partners organization, with the strongest account signal centered on March 2027 systems and brand conversion. The account posture should combine integration assurance, commercial treasury growth enablement, data/control readiness, channel continuity, and disciplined risk validation without implying vendor replacement or approved SI scope.',
     'The institution is operating in a post-close merger context as part of Pinnacle Financial Partners, with expanded regional scale and a public conversion milestone ahead.',
@@ -482,7 +506,24 @@ const SYNOVUS_REAL_TOP_OPP_OWNERS = SYNOVUS_REAL_TOP_OPP_OWNER_ROWS.map((row) =>
   };
 });
 
+const PENDING_ORG = Object.freeze({
+  summary: null,
+  kpis: {
+    totalStakeholders: 0,
+    executiveLeaders: 0,
+    technologyLeaders: 0,
+    opportunityOwners: 0,
+  },
+  tabs: [],
+  stakeholders: [],
+  topOpportunityOwners: [],
+  pending: true,
+});
+
 export function getStaticOrganization(accountId) {
+  // Jack Henry org chart / stakeholders are not curated yet — do not inherit Synovus.
+  if (accountId === 'A0011') return { ...PENDING_ORG };
+
   const kpis = SYNOVUS_ORG.kpis ?? {};
   const topOpportunityOwners = accountId === 'A002'
     ? SYNOVUS_REAL_TOP_OPP_OWNERS
@@ -498,6 +539,7 @@ export function getStaticOrganization(accountId) {
     tabs: SYNOVUS_ORG.tabs ?? [],
     stakeholders: [],
     topOpportunityOwners,
+    pending: false,
   };
 }
 
@@ -557,8 +599,17 @@ function parseEventDateRange(value) {
   return { startDate, endDate };
 }
 
+const PENDING_NEWS = Object.freeze({
+  bankNews: [],
+  industryUpdates: [],
+  upcomingEvents: [],
+  pending: true,
+});
+
 export function getStaticNews(accountId) {
-  void accountId;
+  // Jack Henry news/events are not curated yet — do not inherit Synovus.
+  if (accountId === 'A0011') return { ...PENDING_NEWS };
+
   const bankNews = (SYNOVUS_NEWS.bankNews ?? []).map((item, i) => ({
     id: `bn_${i}`,
     news_item_id: `bn_${i}`,
@@ -608,7 +659,7 @@ export function getStaticNews(accountId) {
     };
   });
 
-  return { bankNews, industryUpdates, upcomingEvents };
+  return { bankNews, industryUpdates, upcomingEvents, pending: false };
 }
 
 export function getStaticOpportunity(accountId, opportunityId) {

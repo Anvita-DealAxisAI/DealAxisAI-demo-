@@ -19,7 +19,7 @@ export const PORTFOLIO_ACCOUNTS = [
   // Featured demo order: Citizens, Synovus, Jack Henry first; remaining accounts after.
   { id:'A001', name:'Citizens',    opps:28, value:'$77M', valueMid:77, capabilities:['Data','AI'],        monStart:'June 2026',   status:'Hot',     easeX:18, matrixY:78, color:'#3b82f6' },
   { id:'A002', name:'Synovus',     opps:10, value:'$42M', valueMid:42, capabilities:['QE','AI'],          monStart:'July 2026',   status:'Hot',     easeX:46, matrixY:52, color:'#f97316' },
-  { id:'A0011', name:'Jack Henry', opps:37, value:'$54M', valueMid:54, capabilities:['Core','Digital','Data','AI'], monStart:'August 2026', status:'Hot', easeX:40, matrixY:72, color:'#001A41', sector:'Core Banking Platform provider' },
+  { id:'A0011', name:'Jack Henry', opps:10, value:'$38M', valueMid:38, capabilities:['Core','Digital','Data','AI'], monStart:'August 2026', status:'Hot', easeX:40, matrixY:72, color:'#001A41', sector:'Core Banking Platform provider' },
   { id:'A003', name:'BECU',        opps:10, value:'$12M', valueMid:12, capabilities:['Data','AI'],        monStart:'July 2026',   status:'Active',  easeX:32, matrixY:30, color:'#3b82f6' },
   { id:'A004', name:'PNC',         opps:9,  value:'$8M',  valueMid:8,  capabilities:['Reg Rpt','Data'],   monStart:'June 2026',   status:'Active',  easeX:68, matrixY:24, color:'#22c55e' },
   { id:'A005', name:'US Bank',     opps:8,  value:'$7M',  valueMid:7,  capabilities:['Cloud','Infra'],    monStart:'May 2026',    status:'Active',  easeX:88, matrixY:16, color:'#eab308' },
@@ -45,6 +45,102 @@ export const SYNOVUS_SIGNALS = [
   { id:'s4', color:'orange', icon:'brief',   title:'Commercial Growth Efficiencies',relevance:'Active',         desc:'Expanding middle-market and corporate relationships, enhancing treasury management capabilities, and delivering specialized industry solutions.' },
   { id:'s5', color:'purple', icon:'person',  title:'Wealth Growth Efficiencies',    relevance:'High relevance', desc:'Growing advisory and affluent relationships through integrated planning, expanded product capabilities, and investments in advisor productivity and digital tools.' },
   { id:'s6', color:'teal',   icon:'cloud',   title:'Technology Priorities',         relevance:'Active',         desc:'Modernizing core platforms and data foundations, advancing cloud and API enablement, and strengthening operational resilience, security, and risk management.' },
+];
+
+/** Jack Henry (A0011) Signals — mapped from Exec Acct Intelligence CSV (same fields as Synovus). */
+export const JACK_HENRY_EXEC_INTELLIGENCE = {
+  points: [
+    'Jack Henry is a financially healthy, U.S.-focused banking technology provider with steady high-single-digit growth, expanding operating leverage, and a visible product-led strategy centered on cloud-native platform evolution, core and digital modernization, payments growth, open APIs, partner ecosystem scale, and AI-enabled product security. The account is attractive for selective pursuit because the portfolio supports credible consulting-led entry plays and broad engineering, implementation, integration, data, security, and operations expansion. The strongest posture is to lead with product and platform architecture, API and ecosystem readiness, engineering productivity, product security, and implementation acceleration while validating roadmap, buyer, budget, platform, and services-model assumptions.',
+    'A scaled U.S. financial technology provider serving approximately 7,400 community banks and credit unions with core, digital, payments, lending, operational, security, and complementary solutions.',
+    'Broad product and platform transformation. Jack Henry appears to be pursuing broad but portfolio-dependent product and platform transformation, combining cloud-native evolution, API and ecosystem scale, payments and digital growth, AI-enabled security, and operating leverage. Execution is likely uneven by product and operating function',
+  ],
+  operatingPriorities: [
+    'Sustain revenue growth and operating leverage',
+    'Scale cloud processing, hosting, payments, and digital transaction activity',
+    'Increase product release velocity and engineering productivity',
+    'Improve platform availability, resilience, and product security',
+    'Support customer implementation and transition capacity',
+    'Expand API, developer, and partner ecosystem adoption',
+    'Integrate acquired capabilities while preserving product and customer continuity',
+  ],
+  // Strategic Posture = Technology Services Inference fields (same order as Synovus).
+  postureStatements: [
+    'Cloud-native product and platform architecture | Core, digital, and payments engineering | API and partner ecosystem | Product security and AI assurance | Engineering productivity, DevSecOps, and Quality Engineering | Client implementation and conversion | Data foundations and PaaS integration',
+    'Confirmed technologies: Jack Henry Platform | jXchange | SymXchange | SilverLake | Symitar | GCP for Jack Henry Digital | Victor Technologies PaaS | Payrailz | Instant Payments / Payments Hub | Rapid Transfers | Fintech Integration Network | Banno Digital Toolkit | Google Cloud agentic-defense products | Proprietary Jack Henry AI Security Platform | Banno Digital Platform | Public stack indicators: Kubernetes | Terraform | GitHub Actions | CircleCI | Docker | Swagger/OpenAPI | Redis | Postgres | Scala | C# | Java | Ruby | Go | Python | Node.js | AWS | Azure | GCP | Cloud Functions | Azure Functions | AWS Lambda | Kotlin | Objective-C | Swift',
+    'Strong evidence and portfolio breadth create attractive entry and expansion paths, but detailed pursuit must remain validation-led. Overall account attractiveness: High. Recommended pursuit posture: Pursue Selectively.',
+    'Validate product and platform priorities with product, technology, and engineering functions. | Prepare an executive workshop around cloud-native product evolution, API ecosystem scale, engineering productivity, and customer implementation. | Lead with the highest-readiness architecture or engineering assessment. | Confirm buyer, budget, platform, and timing assumptions before detailed solutioning. | Monitor Professional Services and Managed Services trigger events.',
+  ],
+  verticalBoxSections: [
+    {
+      heading: 'Business Strategy',
+      text: "Jack Henry's publicly demonstrated strategy centers on profitable growth through a unified cloud-native product direction, expansion in digital and payments, open API and partner ecosystem scale, AI-enabled product security, customer continuity, and disciplined execution. Financial results indicate continuing investment capacity, while the public strategy remains product-led rather than framed as a single enterprise transformation program.",
+    },
+    {
+      heading: 'AccountSignal AI Inference',
+      text: "The combined evidence suggests that Jack Henry's transformation demand is concentrating around shared cloud-native product foundations, engineering productivity, API ecosystem scale, product security, implementation industrialization, and selective data and services operating-model needs. The strongest inferences concern platform and engineering execution; broader Data and AI, Professional Services, and Managed Services implications require more validation.",
+    },
+    {
+      heading: 'Primary Inference',
+      text: 'Platform transformation is concentrating around shared cloud-native foundations. Multiple core, digital, payments, API, and cloud-operations opportunities suggest that management attention is likely concentrating on shared architecture, interoperability, reliability, and gradual transition rather than isolated product refreshes. This is reasonable because the inference combines multiple product, financial, technology, customer, engineering, and opportunity signals that converge on a common execution or investment pattern.',
+    },
+    {
+      heading: 'Executive Intelligence Summary',
+      text: 'Jack Henry is an attractive but validation-sensitive account. Public strategy and financial momentum support focused pursuit around cloud-native product evolution, digital and payments growth, API ecosystem scale, product security, engineering productivity, and client implementation. The account is most mature for consulting and architecture entry; broader implementation, conversion, data, Professional Services, and Managed Services demand requires progressively stronger validation.',
+    },
+  ],
+  confidence: 'High',
+};
+
+/** Jack Henry Signal Inventory cards (priority themes). */
+export const JACK_HENRY_SIGNALS = [
+  {
+    id: 'jh_s1',
+    color: 'blue',
+    icon: 'cloud',
+    title: 'Cloud-native platform and shared engineering foundations',
+    relevance: 'High relevance',
+    desc: 'Cloud-native platform and shared engineering foundations is a likely 12-24 month investment area because it links public growth or strategic evidence to operating requirements.',
+  },
+  {
+    id: 'jh_s2',
+    color: 'green',
+    icon: 'trend',
+    title: 'Payments scalability, resilience and digital growth',
+    relevance: 'High relevance',
+    desc: 'Payments scalability, resilience and digital growth is a likely 12-24 month investment area because it links public growth or strategic evidence to operating requirements.',
+  },
+  {
+    id: 'jh_s3',
+    color: 'purple',
+    icon: 'gear',
+    title: 'AI security and responsible AI enablement',
+    relevance: 'High relevance',
+    desc: 'AI security and responsible AI enablement is a likely 12-24 month investment area because it links public growth or strategic evidence to operating requirements.',
+  },
+  {
+    id: 'jh_s4',
+    color: 'orange',
+    icon: 'brief',
+    title: 'API ecosystem and developer platform',
+    relevance: 'Active',
+    desc: 'API ecosystem and developer platform is a likely 12-24 month investment area because it links public growth or strategic evidence to operating requirements.',
+  },
+  {
+    id: 'jh_s5',
+    color: 'teal',
+    icon: 'people',
+    title: 'Client implementation and conversion productivity',
+    relevance: 'Active',
+    desc: 'Client implementation and conversion productivity is a likely 12-24 month investment area because it links public growth or strategic evidence to operating requirements.',
+  },
+  {
+    id: 'jh_s6',
+    color: 'purple',
+    icon: 'person',
+    title: 'Engineering productivity and cost-to-serve',
+    relevance: 'Active',
+    desc: 'Engineering productivity and cost-to-serve is a likely 12-24 month investment area because it links public growth or strategic evidence to operating requirements.',
+  },
 ];
 
 export const SYNOVUS_ORG = {
