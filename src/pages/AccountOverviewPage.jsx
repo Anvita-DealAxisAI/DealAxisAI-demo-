@@ -22,6 +22,7 @@ import userPenIcon from '../../logo/icons/user-pen.svg';
 import brainIcon from '../../logo/icons/brain.svg';
 import { SYNOVUS_ORG, SYNOVUS_OPPORTUNITIES } from '../data/staticData';
 import OpportunitiesContent from '../components/OpportunitiesContent';
+import ListPagination from '../components/ListPagination';
 import {
   fetchAccountById,
   fetchAccountNewsById,
@@ -413,7 +414,7 @@ const SYNOVUS_KEY_LEADERS = Object.freeze([
   },
   {
     name: "Branden Hillis",
-    title: "Executive Director; Head of Integration Management",
+    title: "Head of Integration Management",
     function: "Technology Leadership",
     initials: "BH",
     bg: "#14b8a6",
@@ -615,17 +616,15 @@ const SYNOVUS_KEY_LEADERS_TO_ENGAGE = Object.freeze(
   SYNOVUS_KEY_LEADERS.filter((leader) => synovusLeaderHasRelatedOpportunities(leader)),
 );
 
-// People with an empty Related Opportunities column, filed by Leadership Group.
+// Full leader roster grouped by leadership function (matches Organization tab labels).
 const SYNOVUS_LEADERS_BY_GROUP = Object.freeze(
-  SYNOVUS_KEY_LEADERS
-    .filter((leader) => !synovusLeaderHasRelatedOpportunities(leader))
-    .reduce((acc, leader) => {
-      const groupKey = normalizeStakeholderName(leader?.function);
-      if (!groupKey) return acc;
-      if (!acc[groupKey]) acc[groupKey] = [];
-      acc[groupKey].push(leader);
-      return acc;
-    }, {}),
+  SYNOVUS_KEY_LEADERS.reduce((acc, leader) => {
+    const groupKey = normalizeStakeholderName(leader?.function);
+    if (!groupKey) return acc;
+    if (!acc[groupKey]) acc[groupKey] = [];
+    acc[groupKey].push(leader);
+    return acc;
+  }, {}),
 );
 
 const SYNOVUS_RELATED_OPP_TITLE_ALIASES = Object.freeze({
@@ -1236,9 +1235,13 @@ function PendingDataPanel({ title, detail }) {
 
 function OrganizationTab({ accountId, name, opportunities = [] }) {
   const ORGANIZATION_OPP_OWNERS_TAB_LABEL = 'Key Leaders to Engage';
+  const LEADERS_PER_PAGE = 10;
+  const TOP_OPPS_PER_PAGE = 10;
   const SCROLL_TOP_OFFSET_PX = 110;
   const navigate = useNavigate();
   const [activeOrgTab, setActiveOrgTab] = React.useState(0);
+  const [leaderPage, setLeaderPage] = React.useState(0);
+  const [topOppPage, setTopOppPage] = React.useState(0);
   const [expandedOpp, setExpandedOpp] = React.useState(null);
   const [scrollToOppCardIndex, setScrollToOppCardIndex] = React.useState(null);
   const [hoveredOppId, setHoveredOppId] = React.useState(null);
@@ -1305,14 +1308,23 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
   }, [orgData.tabs, isOpportunityOwnersTabEntry]);
   const tab = orderedOrgTabs[activeOrgTab] ?? orderedOrgTabs[0];
   const isOpportunityOwnersTab = isOpportunityOwnersTabEntry(tab);
-  const isSynovusOpportunityOwnersTab = /synovus/i.test(String(name ?? '')) && isOpportunityOwnersTab;
+  const isKeyLeadersTab = isOpportunityOwnersTab;
+
+  React.useEffect(() => {
+    setLeaderPage(0);
+  }, [activeOrgTab, accountId]);
+
+  React.useEffect(() => {
+    setTopOppPage(0);
+    setExpandedOpp(null);
+  }, [accountId]);
   const compactTablePaddingX = isOpportunityOwnersTab ? 14 : 20;
   const compactTablePaddingY = isOpportunityOwnersTab ? 10 : 14;
-  const stakeholderGridColumns = isSynovusOpportunityOwnersTab
+  const stakeholderGridColumns = isKeyLeadersTab
     ? '230px minmax(190px,1fr) minmax(250px,1.35fr) 90px'
     : '240px 210px 170px 1fr 110px 100px';
-  const stakeholderColumnGapPx = isSynovusOpportunityOwnersTab ? 2 : 1;
-  const stakeholderHeaders = isSynovusOpportunityOwnersTab
+  const stakeholderColumnGapPx = isKeyLeadersTab ? 2 : 1;
+  const stakeholderHeaders = isKeyLeadersTab
     ? ['Stakeholder', 'Executive Priority', 'Related Opportunities', 'Influence']
     : ['Stakeholder', 'Title', 'Function', 'Executive Priority', 'Opportunities', 'Influence'];
 
@@ -1506,7 +1518,46 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
         : (SYNOVUS_ORG.topOpportunityOwners ?? []);
     }
 
+    const curatedByKey = new Map();
+    const registerCuratedKey = (key, curated) => {
+      const normalized = normalizeOpportunityLookupKey(key);
+      if (normalized && !curatedByKey.has(normalized)) curatedByKey.set(normalized, curated);
+    };
+    for (const curated of orgData.topOpportunityOwners ?? []) {
+      registerCuratedKey(curated.opportunityId, curated);
+      registerCuratedKey(curated.title, curated);
+      registerCuratedKey(formatOpportunityTitle(curated.title), curated);
+      for (const aliasId of curated.aliasIds ?? []) registerCuratedKey(aliasId, curated);
+    }
+
     return sortedOpps.map((opp, index) => {
+      const lookupKeys = [
+        opp?.id,
+        opp?.title,
+        formatOpportunityTitle(opp?.title),
+      ];
+      const curated = lookupKeys
+        .map((key) => curatedByKey.get(normalizeOpportunityLookupKey(key)))
+        .find(Boolean);
+
+      if (curated?.buyingCenter?.length) {
+        const rank = Number(opp?.rank) || curated.rank || index + 1;
+        const owners = (curated.buyingCenter ?? []).slice(0, 3).map((person) => ({
+          i: person.initials ?? String(person.name ?? '').split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase(),
+          bg: person.bg ?? '#64748b',
+        }));
+        return {
+          ...curated,
+          opportunityId: opp?.id ?? curated.opportunityId,
+          rank,
+          priority: String(opp?.priority ?? curated.priority ?? 'Medium'),
+          title: String(opp?.title ?? curated.title ?? 'Untitled Opportunity'),
+          timeline: opp?.timeline ?? curated.timeline ?? 'TBD',
+          owners,
+          extraOwners: Math.max(0, (curated.buyingCenter?.length ?? 0) - owners.length),
+        };
+      }
+
       const complexityMeta = complexityMetaFromOpportunity(opp);
       const priority = String(opp?.priority ?? 'Medium');
       const rank = Number(opp?.rank) || index + 1;
@@ -1549,7 +1600,7 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
     });
   }, [opportunities, orgData.topOpportunityOwners, stakeholderPool]);
   const relatedOpportunitiesByOwner = React.useMemo(() => {
-    if (!isSynovusOpportunityOwnersTab || topOpportunityOwners.length === 0) return new Map();
+    if (!isKeyLeadersTab || topOpportunityOwners.length === 0) return new Map();
     const mapped = new Map();
     topOpportunityOwners.forEach((opp) => {
       const opportunityTitle = formatOpportunityTitle(opp?.title);
@@ -1562,7 +1613,7 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
       });
     });
     return mapped;
-  }, [isSynovusOpportunityOwnersTab, topOpportunityOwners]);
+  }, [isKeyLeadersTab, topOpportunityOwners]);
   const relatedOpportunityIndexByKey = React.useMemo(() => {
     const indexMap = new Map();
     topOpportunityOwners.forEach((opp, idx) => {
@@ -1648,12 +1699,12 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
       return next;
     };
 
-    if (isSynovusOpportunityOwnersTab) {
+    if (isKeyLeadersTab) {
       return sortStakeholders(SYNOVUS_KEY_LEADERS_TO_ENGAGE);
     }
 
-    // Synovus leadership-group tabs: people with empty Related Opportunities.
-    if (/synovus/i.test(String(name ?? '')) && tab?.label) {
+    // Leadership-group tabs: full roster for the active group.
+    if (tab?.label) {
       const groupKey = normalizeStakeholderName(tab.label);
       const groupPeople = SYNOVUS_LEADERS_BY_GROUP[groupKey];
       if (Array.isArray(groupPeople)) {
@@ -1661,18 +1712,36 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
       }
     }
 
-    return tab?.people ?? [];
-  }, [isSynovusOpportunityOwnersTab, name, tab?.label, tab?.people]);
+    return sortStakeholders(tab?.people ?? []);
+  }, [isKeyLeadersTab, tab?.label, tab?.people]);
+
+  const leaderPageCount = Math.max(1, Math.ceil(displayedStakeholders.length / LEADERS_PER_PAGE));
+  const safeLeaderPage = Math.min(leaderPage, leaderPageCount - 1);
+  const paginatedStakeholders = displayedStakeholders.slice(
+    safeLeaderPage * LEADERS_PER_PAGE,
+    safeLeaderPage * LEADERS_PER_PAGE + LEADERS_PER_PAGE,
+  );
+
+  const topOppPageCount = Math.max(1, Math.ceil(topOpportunityOwners.length / TOP_OPPS_PER_PAGE));
+  const safeTopOppPage = Math.min(topOppPage, topOppPageCount - 1);
+  const paginatedTopOpportunityOwners = topOpportunityOwners.slice(
+    safeTopOppPage * TOP_OPPS_PER_PAGE,
+    safeTopOppPage * TOP_OPPS_PER_PAGE + TOP_OPPS_PER_PAGE,
+  );
+
   const showStaticOpportunityOwners = topOpportunityOwners.length > 0;
   const topOpportunityOwnerSlots = (() => {
     const cardsPerRow = 5;
-    if (topOpportunityOwners.length === 0) return [];
-    const padded = [...topOpportunityOwners];
+    if (paginatedTopOpportunityOwners.length === 0) return [];
+    const padded = paginatedTopOpportunityOwners.map((opp, localIdx) => ({
+      opp,
+      globalIdx: safeTopOppPage * TOP_OPPS_PER_PAGE + localIdx,
+    }));
     const remainder = padded.length % cardsPerRow;
     if (remainder !== 0) {
       const placeholdersNeeded = cardsPerRow - remainder;
       for (let i = 0; i < placeholdersNeeded; i += 1) {
-        padded.push(null);
+        padded.push({ opp: null, globalIdx: null });
       }
     }
     return padded;
@@ -1733,7 +1802,7 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
         {/* Table header */}
         <div style={{display:'grid',gridTemplateColumns:stakeholderGridColumns,columnGap:stakeholderColumnGapPx,padding:`9px ${compactTablePaddingX}px`,background:'#f8fafc',borderBottom:'1px solid #e2e8f0'}}>
           {stakeholderHeaders.map((h,hi) => (
-            <span key={h} style={{fontSize:11,fontWeight:600,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'0.05em',textAlign:!isSynovusOpportunityOwnersTab && hi===4?'center':'left'}}>{h}</span>
+            <span key={h} style={{fontSize:11,fontWeight:600,color:'#94a3b8',textTransform:'uppercase',letterSpacing:'0.05em',textAlign:!isKeyLeadersTab && hi===4?'center':'left'}}>{h}</span>
           ))}
         </div>
         {/* Rows */}
@@ -1743,7 +1812,7 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
         {!isLoadingOrg && displayedStakeholders.length === 0 && (
           <div style={{padding:'28px 20px',textAlign:'center',fontSize:13,color:'#64748b'}}>No stakeholders mapped for this leadership type yet.</div>
         )}
-        {!isLoadingOrg && displayedStakeholders.map((p, i) => {
+        {!isLoadingOrg && paginatedStakeholders.map((p, i) => {
           const linkedinUrl = getStakeholderLinkedInUrl(name, p.name);
           const stakeholderNameKey = normalizeStakeholderName(p.name);
           const ownerEnrichment = SYNOVUS_OPP_OWNER_ENRICHMENT_BY_NAME[stakeholderNameKey] ?? null;
@@ -1762,10 +1831,10 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
             ?? '',
           ).trim();
           return (
-            <div key={p.id || `${p.name}-${i}`} style={{
+            <div key={p.id || `${p.name}-${safeLeaderPage}-${i}`} style={{
               display:'grid',gridTemplateColumns:stakeholderGridColumns,columnGap:stakeholderColumnGapPx,
               alignItems:'start',padding:`${compactTablePaddingY}px ${compactTablePaddingX}px`,
-              borderBottom: i < displayedStakeholders.length - 1 ? '1px solid #f1f5f9' : 'none',
+              borderBottom: i < paginatedStakeholders.length - 1 ? '1px solid #f1f5f9' : 'none',
             }}>
               <div style={{display:'flex',alignItems:'center',gap:10}}>
                 <div style={{width:34,height:34,borderRadius:'50%',background:p.bg,display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}>
@@ -1776,17 +1845,17 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
                     <span style={{fontSize:14,fontWeight:600,color:'#0f172a'}}>{p.name}</span>
                     <LinkedInIconLink url={linkedinUrl} stakeholderName={p.name} />
                   </div>
-                  {isSynovusOpportunityOwnersTab ? (
+                  {isKeyLeadersTab ? (
                     <p style={{fontSize:11,color:'#64748b',lineHeight:1.3,marginTop:2}}>
                       {p.title || '—'}
                     </p>
                   ) : null}
                 </div>
               </div>
-              {!isSynovusOpportunityOwnersTab ? (
+              {!isKeyLeadersTab ? (
                 <span style={{fontSize:13,color:'#475569',lineHeight:1.4}}>{p.title}</span>
               ) : null}
-              {isSynovusOpportunityOwnersTab ? (
+              {isKeyLeadersTab ? (
                 <>
                   <div style={{display:'flex',gap:5,flexWrap:'wrap'}}>
                     {executivePriorityValues.map(a => (
@@ -1843,13 +1912,22 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
                   </div>
                 </>
               )}
-              {!isSynovusOpportunityOwnersTab ? (
+              {!isKeyLeadersTab ? (
                 <span style={{fontSize:14,fontWeight:600,color:'#0f172a',textAlign:'center',display:'block',alignSelf:'start'}}>{p.opps}</span>
               ) : null}
               <div style={{alignSelf:'start'}}>{stars(p.stars)}</div>
             </div>
           );
         })}
+        {!isLoadingOrg && (
+          <ListPagination
+            page={safeLeaderPage}
+            pageCount={leaderPageCount}
+            pageSize={LEADERS_PER_PAGE}
+            totalCount={displayedStakeholders.length}
+            onPageChange={setLeaderPage}
+          />
+        )}
       </div>
 
       {/* Top Opportunity Owners — static Synovus enrichment until opp-owner mapping is modeled */}
@@ -1964,11 +2042,11 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
 
       {/* Opportunity cards grid */}
       <div style={{display:'grid',gridTemplateColumns:'repeat(5,1fr)',gap:14}}>
-        {topOpportunityOwnerSlots.map((opp, idx) => {
-          if (!opp) {
+        {topOpportunityOwnerSlots.map((slot, idx) => {
+          if (!slot.opp) {
             return (
               <div
-                key={`top-opp-placeholder-${idx}`}
+                key={`top-opp-placeholder-${safeTopOppPage}-${idx}`}
                 style={{
                   borderRadius: 12,
                   padding: '16px',
@@ -1979,15 +2057,17 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
               />
             );
           }
+          const opp = slot.opp;
+          const globalIdx = slot.globalIdx;
           const ps = opp.priority==='High' ? {bg:'#fef2f2',color:'#dc2626'} : {bg:'#fff7ed',color:'#ea580c'};
-          const isOpen = expandedOpp === idx;
-          const isHovered = hoveredOppId === (opp.opportunityId || opp.title || `slot-${idx}`);
+          const isOpen = expandedOpp === globalIdx;
+          const isHovered = hoveredOppId === (opp.opportunityId || opp.title || `slot-${globalIdx}`);
           const ownerCluster = Array.isArray(opp.owners) ? opp.owners : [];
           return (
-            <div key={opp.title}
-              ref={(node) => setTopOppCardRef(idx, node)}
-              onClick={() => setExpandedOpp(isOpen ? null : idx)}
-              onMouseEnter={() => setHoveredOppId(opp.opportunityId || opp.title || `slot-${idx}`)}
+            <div key={opp.title || opp.opportunityId || `top-opp-${globalIdx}`}
+              ref={(node) => setTopOppCardRef(globalIdx, node)}
+              onClick={() => setExpandedOpp(isOpen ? null : globalIdx)}
+              onMouseEnter={() => setHoveredOppId(opp.opportunityId || opp.title || `slot-${globalIdx}`)}
               onMouseLeave={() => setHoveredOppId(null)}
               style={{
                 background:'white',
@@ -2026,6 +2106,18 @@ function OrganizationTab({ accountId, name, opportunities = [] }) {
             </div>
           );
         })}
+      </div>
+      <div style={{ background: 'white', borderRadius: 12, boxShadow: 'var(--card-shadow)', overflow: 'hidden', marginBottom: 24 }}>
+        <ListPagination
+          page={safeTopOppPage}
+          pageCount={topOppPageCount}
+          pageSize={TOP_OPPS_PER_PAGE}
+          totalCount={topOpportunityOwners.length}
+          onPageChange={(page) => {
+            setTopOppPage(page);
+            setExpandedOpp(null);
+          }}
+        />
       </div>
         </>
       )}

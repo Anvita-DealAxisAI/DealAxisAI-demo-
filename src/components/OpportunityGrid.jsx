@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import ListPagination from './ListPagination';
 import OpportunityCard from './OpportunityCard';
 import './OpportunityGrid.css';
+
+const OPPS_PER_PAGE = 10;
 
 const PRIORITY_ORDER = {
   critical: 0,
@@ -58,9 +61,25 @@ function OpportunityCardSkeleton() {
 
 export default function OpportunityGrid({ opportunities = [], isLoading = false, accountId }) {
   const [expandedId, setExpandedId] = useState(null);
+  const [oppPage, setOppPage] = useState(0);
   const pendingExpandIdRef = useRef(null);
   const switchTimerRef = useRef(null);
   const sorted = useMemo(() => sortOpportunities(opportunities), [opportunities]);
+  const oppPageCount = Math.max(1, Math.ceil(sorted.length / OPPS_PER_PAGE));
+  const safeOppPage = Math.min(oppPage, oppPageCount - 1);
+  const paginatedOpps = sorted.slice(
+    safeOppPage * OPPS_PER_PAGE,
+    safeOppPage * OPPS_PER_PAGE + OPPS_PER_PAGE,
+  );
+
+  useEffect(() => {
+    setOppPage(0);
+    setExpandedId(null);
+  }, [accountId, opportunities]);
+
+  useEffect(() => {
+    setExpandedId(null);
+  }, [safeOppPage]);
 
   const handleToggle = (id) => {
     if (switchTimerRef.current) {
@@ -143,18 +162,28 @@ export default function OpportunityGrid({ opportunities = [], isLoading = false,
   }
 
   return (
-    <div className="opportunity-grid">
-      {sorted.map((opportunity, index) => (
-        <div key={opportunity.id} className="opportunity-grid__cell">
-          <OpportunityCard
-            opportunity={opportunity}
-            rank={opportunity.rank ?? index + 1}
-            accountId={accountId}
-            isExpanded={expandedId === opportunity.id}
-            onToggle={handleToggle}
-          />
-        </div>
-      ))}
-    </div>
+    <>
+      <div className="opportunity-grid">
+        {paginatedOpps.map((opportunity, index) => (
+          <div key={opportunity.id} className="opportunity-grid__cell">
+            <OpportunityCard
+              opportunity={opportunity}
+              rank={opportunity.rank ?? safeOppPage * OPPS_PER_PAGE + index + 1}
+              accountId={accountId}
+              isExpanded={expandedId === opportunity.id}
+              onToggle={handleToggle}
+            />
+          </div>
+        ))}
+      </div>
+      <ListPagination
+        className="list-pagination--standalone"
+        page={safeOppPage}
+        pageCount={oppPageCount}
+        pageSize={OPPS_PER_PAGE}
+        totalCount={sorted.length}
+        onPageChange={setOppPage}
+      />
+    </>
   );
 }

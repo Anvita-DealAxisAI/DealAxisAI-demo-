@@ -314,18 +314,58 @@ const TOP_OPP_AVATAR_COLORS = ['#3b82f6', '#22c55e', '#8b5cf6', '#f97316', '#14b
 
 const SYNOVUS_REAL_TOP_OPP_OWNER_ROWS = [
   {
-    opportunityId: 'synovus_opp_001',
+    opportunityId: 'synovus_opp_enterprise_change_001',
+    aliasIds: ['synovus_opp_001', 'synovus_opp_enterprise_change_001'],
     rank: 1,
-    title: 'march_2027_systems_brand_and_client_experience_conversion_readiness',
+    title: 'Merger Conversion Assurance & Client Experience Command Center',
     priority: 'Critical',
     complexity: 'very_high',
     timeline: 'Q3 2026 through Q2 2027',
     budgetVisibility: 'Medium-High',
     strategicImportance: 'Protect client continuity, operating stability, and merger value realization while reducing conversion disruption risk.',
     buyerLens: 'Executive Mandate',
-    executiveSponsor: { name: 'Casey Toops', title: 'SVP, Chief Information Officer @ Pinnacle Financial Partners', influence: 5, engagement: 'high' },
-    technologyBuyer: { name: 'Sanjeev Jha', title: 'Managing Director & Head of Product Development at Pinnacle Financial Partners', influence: 5, engagement: 'high' },
-    dataBuyer: { name: 'Shanthi Mahendrakar', title: 'Head of Data Engineering and Architecture, Data Modernization - Pinnacle + Synovus', influence: 4, engagement: 'medium' },
+    buyingCenter: [
+      {
+        role: 'Budget Owner',
+        name: 'Branden Hillis',
+        title: 'Head of Integration Management',
+        function: 'Integration Management',
+        influence: 5,
+        engagement: 'High',
+      },
+      {
+        role: 'Technology Owner',
+        name: 'Vikram Ramani',
+        title: 'Chief Information Officer',
+        function: 'Enterprise Technology',
+        influence: 5,
+        engagement: 'High',
+      },
+      {
+        role: 'Data Owner',
+        name: 'Shanthi Mahendrakar',
+        title: 'Enterprise data',
+        function: 'Data & Analytics',
+        influence: 4,
+        engagement: 'Medium',
+      },
+      {
+        role: 'Operations Owner',
+        name: 'Zack Bishop',
+        title: 'Chief Operating Officer',
+        function: 'Operations',
+        influence: 5,
+        engagement: 'High',
+      },
+      {
+        role: 'Risk / Compliance Owner',
+        name: 'Shellie Creson',
+        title: 'Chief Risk Officer',
+        function: 'Enterprise Risk',
+        influence: 5,
+        engagement: 'High',
+      },
+    ],
   },
   {
     opportunityId: 'synovus_opp_002',
@@ -479,18 +519,30 @@ function toBuyerCard(role, functionName, buyer) {
 }
 
 const SYNOVUS_REAL_TOP_OPP_OWNERS = SYNOVUS_REAL_TOP_OPP_OWNER_ROWS.map((row) => {
-  const buyers = [
-    toBuyerCard('Executive Sponsor', 'Executive Leadership', row.executiveSponsor),
-    toBuyerCard('Economic Buyer', 'Finance', row.economicBuyer),
-    toBuyerCard('Business Owner', 'Business', row.businessBuyer),
-    toBuyerCard('Technology Owner', 'Technology', row.technologyBuyer),
-    toBuyerCard('Data Owner', 'Data & Analytics', row.dataBuyer),
-    toBuyerCard('Risk Stakeholder', 'Risk', row.riskBuyer),
-  ].filter(Boolean);
+  const buyers = Array.isArray(row.buyingCenter) && row.buyingCenter.length
+    ? row.buyingCenter.map((buyer) => ({
+      role: buyer.role,
+      initials: buyer.initials ?? initialsFromName(buyer.name),
+      bg: buyer.bg ?? hashColor(buyer.name),
+      name: buyer.name,
+      title: buyer.title ?? '',
+      function: buyer.function ?? 'Organization',
+      influence: Number(buyer.influence ?? 0) || 0,
+      engagement: titleCase(buyer.engagement || 'medium'),
+    }))
+    : [
+      toBuyerCard('Executive Sponsor', 'Executive Leadership', row.executiveSponsor),
+      toBuyerCard('Economic Buyer', 'Finance', row.economicBuyer),
+      toBuyerCard('Business Owner', 'Business', row.businessBuyer),
+      toBuyerCard('Technology Owner', 'Technology', row.technologyBuyer),
+      toBuyerCard('Data Owner', 'Data & Analytics', row.dataBuyer),
+      toBuyerCard('Risk Stakeholder', 'Risk', row.riskBuyer),
+    ].filter(Boolean);
   const owners = buyers.slice(0, 3).map((item) => ({ i: item.initials, bg: item.bg }));
   const mappedComplexity = mapComplexity(row.complexity);
   return {
     opportunityId: row.opportunityId,
+    aliasIds: row.aliasIds ?? [],
     rank: row.rank,
     priority: titleCase(row.priority),
     title: row.title,
@@ -521,9 +573,6 @@ const PENDING_ORG = Object.freeze({
 });
 
 export function getStaticOrganization(accountId) {
-  // Jack Henry org chart / stakeholders are not curated yet — do not inherit Synovus.
-  if (accountId === 'A0011') return { ...PENDING_ORG };
-
   const kpis = SYNOVUS_ORG.kpis ?? {};
   const topOpportunityOwners = accountId === 'A002'
     ? SYNOVUS_REAL_TOP_OPP_OWNERS
