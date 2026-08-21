@@ -9,7 +9,10 @@ import { fetchPortfolioAccounts } from '../../api/accounts';
 import { fetchWorkspace } from '../../api/client';
 import {
   MATRIX_CAPABILITY_COLORS,
+  MATRIX_CAPABILITY_FILTERS,
   buildPrioritizationMatrix,
+  capabilityDisplayLabel,
+  filterMatrixByCapability,
   getTopAccountCapabilities,
   totalValueToY,
   bubbleRadiusFromValue,
@@ -215,15 +218,18 @@ function buildPortfolioKpis(
 }
 
 const CAP_COLORS: Record<string,string> = {
-  'Data':          '#dbeafe',  'AI':           '#ede9fe',
-  'QE':            '#dcfce7',  'Reg Rpt':      '#fef9c3',
-  'Cloud':         '#cffafe',  'Infra':        '#e0f2fe',
-  'Core':          '#fce7f3',  'Digital':      '#f3e8ff',
-  'Cybersecurity': '#fef3c7',
+  'Data':                    '#dbeafe',  'AI':                     '#ede9fe',
+  'QE':                      '#dcfce7',  'Reg Rpt':                '#fef9c3',
+  'Cloud':                   '#cffafe',  'Infra':                  '#e0f2fe',
+  'Core':                    '#fce7f3',  'Digital':                '#f3e8ff',
+  'Cybersecurity':           '#fef3c7',
+  'Enterprise Integration':  '#ccfbf1',  'Product Architecture':   '#e0e7ff',
+  'Payments Platforms':      '#ffedd5',
 };
 const CAP_TEXT: Record<string,string> = {
   'Data':'#1e40af','AI':'#6d28d9','QE':'#15803d','Reg Rpt':'#854d0e',
   'Cloud':'#0e7490','Infra':'#0369a1','Core':'#9d174d','Digital':'#7e22ce','Cybersecurity':'#92400e',
+  'Enterprise Integration':'#0f766e','Product Architecture':'#3730a3','Payments Platforms':'#c2410c',
 };
 
 const STATUS_ICON = {
@@ -280,6 +286,7 @@ export default function Portfolio() {
   const [workspaceName, setWorkspaceName] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('All');
+  const [capabilityFilter, setCapabilityFilter] = useState('All Capabilities');
   const [accountSort, setAccountSort] = useState<AccountSortOption>(DEFAULT_ACCOUNT_SORT);
   const [isDownloadingMatrix, setIsDownloadingMatrix] = useState(false);
   const matrixExportRef = useRef<HTMLDivElement | null>(null);
@@ -351,6 +358,10 @@ export default function Portfolio() {
     () => buildPrioritizationMatrix(accounts, clientCapabilities, deriveStatus),
     [accounts, clientCapabilities],
   );
+  const filteredMatrixRows = useMemo(
+    () => filterMatrixByCapability(matrixRows, capabilityFilter),
+    [matrixRows, capabilityFilter],
+  );
   const portfolioKpis = useMemo(
     () => buildPortfolioKpis(visibleAccounts, accounts, isLoading),
     [visibleAccounts, accounts, isLoading],
@@ -384,7 +395,7 @@ export default function Portfolio() {
         .map((account) => [account.id, account.matrixLayout!]),
     );
 
-    const bubbles = matrixRows.map((row) => {
+    const bubbles = filteredMatrixRows.map((row) => {
       const layout = layoutById.get(row.id);
       const valueMid = layout?.valueMid ?? row.totalValue;
       const x = layout?.easeX ?? row.easeX;
@@ -444,7 +455,7 @@ export default function Portfolio() {
     });
 
     return bubbles;
-  }, [accounts, matrixRows]);
+  }, [accounts, filteredMatrixRows]);
 
   return (
     <div className="portfolio-page">
@@ -481,18 +492,34 @@ export default function Portfolio() {
 
       {/* Prioritization Matrix */}
       <div ref={matrixExportRef} className="asi-card" style={{padding:24,marginBottom:24}}>
-        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:12,gap:12,flexWrap:'wrap'}}>
           <h2 style={{fontSize:17,fontWeight:600,color:'#0f172a',margin:0}}>Prioritization Matrix</h2>
-          <button
-            type="button"
-            className="asi-btn asi-btn--outline asi-btn--sm"
-            onClick={handleDownloadMatrix}
-            disabled={isDownloadingMatrix}
-            aria-label="Download prioritization matrix image"
-            data-no-export="true"
-          >
-            Download PNG
-          </button>
+          <div style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}} data-no-export="true">
+            <label style={{display:'flex',alignItems:'center',gap:8,fontSize:12,fontWeight:600,color:'#64748b'}}>
+              Capabilities
+              <select
+                value={capabilityFilter}
+                onChange={(e) => setCapabilityFilter(e.target.value)}
+                aria-label="Filter matrix by capability"
+                style={{minWidth:160,fontSize:12,padding:'7px 10px',borderRadius:8,border:'1px solid #e2e8f0',background:'white',color:'#0f172a',outline:'none',cursor:'pointer'}}
+              >
+                {MATRIX_CAPABILITY_FILTERS.map((cap) => (
+                  <option key={cap} value={cap}>
+                    {cap === 'All Capabilities' ? cap : capabilityDisplayLabel(cap)}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              type="button"
+              className="asi-btn asi-btn--outline asi-btn--sm"
+              onClick={handleDownloadMatrix}
+              disabled={isDownloadingMatrix}
+              aria-label="Download prioritization matrix image"
+            >
+              Download PNG
+            </button>
+          </div>
         </div>
         <div
           style={{
@@ -575,23 +602,33 @@ export default function Portfolio() {
             <div className="portfolio-matrix__legend">
               <p style={{fontSize:12,fontWeight:600,color:'#0f172a',marginBottom:12}}>Capabilities</p>
               {[
-                {c: MATRIX_CAPABILITY_COLORS.Data, l: 'Data'},
-                {c: MATRIX_CAPABILITY_COLORS.AI, l: 'AI'},
-                {c: MATRIX_CAPABILITY_COLORS.QE, l: 'Quality Engineering'},
-                {c: MATRIX_CAPABILITY_COLORS['Reg Rpt'], l: 'Reg Reporting'},
-                {c: MATRIX_CAPABILITY_COLORS.AML, l: 'AML / Financial Crime'},
-                {c: MATRIX_CAPABILITY_COLORS.Core, l: 'Core Modernization'},
-                {c: MATRIX_CAPABILITY_COLORS.Cybersecurity, l: 'Cybersecurity'},
-                {c: MATRIX_CAPABILITY_COLORS.Cloud, l: 'Cloud & Infra'},
-                {c: MATRIX_CAPABILITY_COLORS.Digital, l: 'Digital Experience'},
-                {c: MATRIX_CAPABILITY_COLORS.Other, l: 'Other'},
+                {key: 'Data', c: MATRIX_CAPABILITY_COLORS.Data, l: 'Data'},
+                {key: 'AI', c: MATRIX_CAPABILITY_COLORS.AI, l: 'AI'},
+                {key: 'QE', c: MATRIX_CAPABILITY_COLORS.QE, l: 'Quality Engineering'},
+                {key: 'Reg Rpt', c: MATRIX_CAPABILITY_COLORS['Reg Rpt'], l: 'Reg Reporting'},
+                {key: 'AML', c: MATRIX_CAPABILITY_COLORS.AML, l: 'AML / Financial Crime'},
+                {key: 'Core', c: MATRIX_CAPABILITY_COLORS.Core, l: 'Core Modernization'},
+                {key: 'Cybersecurity', c: MATRIX_CAPABILITY_COLORS.Cybersecurity, l: 'Cybersecurity'},
+                {key: 'Cloud', c: MATRIX_CAPABILITY_COLORS.Cloud, l: 'Cloud & Infra'},
+                {key: 'Digital', c: MATRIX_CAPABILITY_COLORS.Digital, l: 'Digital Experience'},
+                {key: 'Other', c: MATRIX_CAPABILITY_COLORS.Other, l: 'Other'},
               ].map(cap=>(
-                <div key={cap.l} style={{display:'flex',alignItems:'center',gap:8,marginBottom:7}}>
+                <button
+                  key={cap.l}
+                  type="button"
+                  className={`portfolio-matrix__legend-item${capabilityFilter === cap.key ? ' is-active' : ''}`}
+                  onClick={() => setCapabilityFilter((prev) => (prev === cap.key ? 'All Capabilities' : cap.key))}
+                  aria-pressed={capabilityFilter === cap.key}
+                  data-no-export="true"
+                >
                   <div style={{width:11,height:11,borderRadius:'50%',background:cap.c,flexShrink:0}}/>
-                  <span style={{fontSize:12,color:'#64748b'}}>{cap.l}</span>
-                </div>
+                  <span style={{fontSize:12,color: capabilityFilter === cap.key ? '#0f172a' : '#64748b', fontWeight: capabilityFilter === cap.key ? 600 : 400}}>{cap.l}</span>
+                </button>
               ))}
               <p style={{fontSize:11,color:'#94a3b8',marginTop:12,fontStyle:'italic'}}>Bubble size = Opportunity Value</p>
+              {capabilityFilter !== 'All Capabilities' && visibleBubbles.length === 0 ? (
+                <p style={{fontSize:12,color:'#64748b',marginTop:10}}>No accounts match this capability.</p>
+              ) : null}
             </div>
           </div>
         </div>
@@ -647,7 +684,7 @@ export default function Portfolio() {
               <th style={{textAlign:'center'}}>Opportunities</th>
               <th style={{textAlign:'center'}}>Opportunity Value</th>
               <th>Capabilities</th>
-              <th style={{textAlign:'center'}}>Updated At</th>
+              <th style={{textAlign:'center'}}>Monitoring started</th>
               <th>Status</th>
             </tr>
           </thead>

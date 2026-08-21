@@ -272,6 +272,7 @@ export function aggregateAccountForMatrix(account, clientCapabilities, deriveSta
   }
 
   const highest = [...valued].sort((a, b) => b.midpoint - a.midpoint)[0];
+  const capabilityLabels = capabilityEntries.map(([label]) => label);
   const topCapabilities = capabilityEntries
     .slice(0, 3)
     .map(([label, value]) => `${label} ${formatMillionsLabel(value)}`);
@@ -294,6 +295,7 @@ export function aggregateAccountForMatrix(account, clientCapabilities, deriveSta
     dominantCapability,
     dominantCapabilityLabel: capabilityDisplayLabel(dominantCapability),
     color: MATRIX_CAPABILITY_COLORS[dominantCapability] ?? MATRIX_CAPABILITY_COLORS.Other,
+    capabilityLabels,
     topCapabilities,
     highestValueOpportunity: highest
       ? { title: highest.title, value: formatMillionsLabel(highest.midpoint) }
@@ -364,7 +366,12 @@ export function filterMatrixByCapability(rows, capFilter) {
   const normalizedFilter = normalizeCapability(capFilter);
   if (!normalizedFilter) return rows;
   return rows.filter((row) => {
-    const dominant = normalizeCapability(row.dominantCapability);
-    return dominant?.matchKey === normalizedFilter.matchKey;
+    const labels = Array.isArray(row.capabilityLabels) && row.capabilityLabels.length
+      ? row.capabilityLabels
+      : [row.dominantCapability].filter(Boolean);
+    return labels.some((label) => {
+      const normalized = normalizeCapability(label);
+      return normalized?.matchKey === normalizedFilter.matchKey;
+    });
   });
 }
