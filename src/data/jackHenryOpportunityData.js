@@ -85,7 +85,7 @@ const opportunities = (jackHenryOpportunities ?? [])
 const opportunityRange = buildRangeFromOpportunities(opportunities);
 
 const JACK_HENRY_TOP_THEMES =
-  'Enterprise Integration, Product Architecture, Core, AI';
+  'Core, Digital, AI';
 
 export const JACK_HENRY_ACCOUNT = {
   id: 'A0011',

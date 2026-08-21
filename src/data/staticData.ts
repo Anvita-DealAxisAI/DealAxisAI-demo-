@@ -19,7 +19,7 @@ export const PORTFOLIO_ACCOUNTS = [
   // Featured demo order: Citizens, Synovus, Jack Henry first; remaining accounts after.
   { id:'A001', name:'Citizens',    opps:28, value:'$77M', valueMid:77, capabilities:['Data','AI'],        monStart:'June 2026',   status:'Hot',     easeX:18, matrixY:78, color:'#3b82f6' },
   { id:'A002', name:'Synovus',     opps:10, value:'$42M', valueMid:42, capabilities:['QE','AI'],          monStart:'July 2026',   status:'Hot',     easeX:46, matrixY:52, color:'#f97316' },
-  { id:'A0011', name:'Jack Henry', opps:10, value:'$38M', valueMid:38, capabilities:['Core','Digital','Data','AI'], monStart:'August 2026', status:'Hot', easeX:40, matrixY:72, color:'#001A41', sector:'Core Banking Platform provider' },
+  { id:'A0011', name:'Jack Henry', opps:10, value:'$38M', valueMid:38, capabilities:['Core','Digital','AI'], monStart:'August 2026', status:'Hot', easeX:40, matrixY:72, color:'#001A41', sector:'Core Banking Platform provider' },
   { id:'A003', name:'BECU',        opps:10, value:'$12M', valueMid:12, capabilities:['Data','AI'],        monStart:'July 2026',   status:'Active',  easeX:32, matrixY:30, color:'#3b82f6' },
   { id:'A004', name:'PNC',         opps:9,  value:'$8M',  valueMid:8,  capabilities:['Reg Rpt','Data'],   monStart:'June 2026',   status:'Active',  easeX:68, matrixY:24, color:'#22c55e' },
   { id:'A005', name:'US Bank',     opps:8,  value:'$7M',  valueMid:7,  capabilities:['Cloud','Infra'],    monStart:'May 2026',    status:'Active',  easeX:88, matrixY:16, color:'#eab308' },

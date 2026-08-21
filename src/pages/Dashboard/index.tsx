@@ -147,6 +147,17 @@ function deriveStatus(account: RealAccount): 'Hot' | 'Active' | 'Monitor' {
   return 'Monitor';
 }
 
+function portfolioCapabilityChips(account: RealAccount): string[] {
+  const isJackHenry =
+    account.id === 'A0011' || /jack\s*henry/i.test(String(account.name ?? ''));
+  // Jack Henry opportunity tags are long/custom; use the short curated account set
+  // so the portfolio row stays visually balanced with other banks.
+  if (isJackHenry) {
+    return getTopAccountCapabilities({ ...account, opportunities: [] }, 3);
+  }
+  return getTopAccountCapabilities(account, 4);
+}
+
 function buildPortfolioRows(accounts: RealAccount[]): PortfolioAccountRow[] {
   return accounts.map((account) => {
     const valueMid = parseRangeMidpoint(account.summary?.opportunityRange);
@@ -158,7 +169,7 @@ function buildPortfolioRows(accounts: RealAccount[]): PortfolioAccountRow[] {
       value: account.summary?.opportunityRange ?? formatMidpointValue(valueMid),
       valueMid,
       minValue,
-      capabilities: getTopAccountCapabilities(account, 4),
+      capabilities: portfolioCapabilityChips(account),
       updatedAtLabel: formatUpdatedAt(account.updatedAt),
       updatedAtTime: getUpdatedAtTime(account.updatedAt),
       status: deriveStatus(account),
