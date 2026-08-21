@@ -169,6 +169,18 @@ input, textarea, [contenteditable="true"] {
 .asi-bank-header__name { font-size: 26px; font-weight: 700; color: var(--text-primary); }
 .asi-bank-header__sub { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
 
+.asi-overview-pending {
+  margin: 0 0 16px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #64748b;
+  font-style: italic;
+}
+.asi-overview-pending--inset {
+  margin: 0;
+  padding: 16px 18px;
+}
+
 /* Compact Synovus merger info tip (i-dot → hover/focus popover) */
 .asi-info-tip {
   position: relative;

@@ -704,6 +704,8 @@ function LinkedInIconLink({ url, stakeholderName }) {
 }
 
 /* ─── OVERVIEW TAB ────────────────────────────────────────────────── */
+const OVERVIEW_PENDING_COPY = 'This data is yet to be curated.';
+
 function OverviewTab({ acct }) {
   const aboutText = acct.about ?? '—';
   const productsText = acct.products ?? '—';
@@ -713,15 +715,12 @@ function OverviewTab({ acct }) {
   const commercialBankText = acct.commercialBank ?? '—';
   const wealthBankText = acct.wealthBank ?? '—';
   const competitiveRows = Array.isArray(acct.competitiveLandscape) ? acct.competitiveLandscape : [];
-  const capabilityList = String(acct.capabilities ?? '')
-    .split(/[,|]/)
-    .map((s) => s.trim())
-    .filter(Boolean);
   const hasFinancials = [acct.assetSize, acct.revenue, acct.nim, acct.efficiencyRatio]
     .some((v) => v != null && String(v).trim() && String(v).trim() !== '—');
   const hasStrategy = strategyText && strategyText !== '—';
   const hasSegments = [retailBankText, commercialBankText, wealthBankText]
     .some((t) => t && t !== '—');
+  const detailsPending = !hasFinancials && !hasStrategy && !hasSegments && competitiveRows.length === 0;
 
   return (
     <div className="animate-in">
@@ -754,34 +753,13 @@ function OverviewTab({ acct }) {
         ))}
       </div>
 
-      {capabilityList.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, color: '#0f172a', marginBottom: 12 }}>Capabilities</h3>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-            {capabilityList.map((cap) => (
-              <span
-                key={cap}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  padding: '6px 12px',
-                  borderRadius: 8,
-                  background: '#eff6ff',
-                  color: '#1e40af',
-                  fontSize: 13,
-                  fontWeight: 600,
-                  border: '1px solid #bfdbfe',
-                }}
-              >
-                {cap}
-              </span>
-            ))}
-          </div>
-        </div>
+      {detailsPending && (
+        <p className="asi-overview-pending" role="status">
+          {OVERVIEW_PENDING_COPY}
+        </p>
       )}
 
       {/* Key Financials */}
-      {hasFinancials && (
       <div style={{marginBottom:20}}>
         <h3 style={{fontSize:16,fontWeight:600,color:'#0f172a',marginBottom:12}}>Key Financials</h3>
         <div className="asi-financials">
@@ -803,56 +781,54 @@ function OverviewTab({ acct }) {
           ))}
         </div>
       </div>
-      )}
 
       {/* Business Strategy */}
-      {hasStrategy && (
       <div className="asi-strategy">
         <div className="asi-strategy__icon"><img src={businessStrategyIcon} alt="" width={24} height={24} aria-hidden /></div>
         <div>
           <h3 className="asi-strategy__title">Business Strategy</h3>
-          <p className="asi-strategy__text">{strategyText}</p>
+          <p className="asi-strategy__text">{hasStrategy ? strategyText : '—'}</p>
         </div>
       </div>
-      )}
 
       {/* Competitive Landscape */}
-      {competitiveRows.length > 0 && (
       <div style={{marginBottom:20}}>
         <h3 style={{fontSize:16,fontWeight:600,color:'#0f172a',marginBottom:12}}>Competitive Landscape</h3>
         <div className="asi-card" style={{overflow:'hidden'}}>
-          <table className="asi-table overview-comp-table">
-            <thead><tr>
-              <th style={{ fontSize: '12px', textTransform: 'none', letterSpacing: 'normal' }}>Bank</th>
-              <th style={{ textAlign: 'center', fontSize: '12px', textTransform: 'none', letterSpacing: 'normal' }}>Asset Size</th>
-              <th style={{ textAlign: 'center', fontSize: '12px', textTransform: 'none', letterSpacing: 'normal' }}>Revenue</th>
-              <th style={{ textAlign: 'center', fontSize: '12px', textTransform: 'none', letterSpacing: 'normal' }}>Efficiency Ratio</th>
-            </tr></thead>
-            <tbody>
-              {competitiveRows.map((r)=>(
-                <tr key={`${r.bankName}-${r.assetSize}-${r.revenue}-${r.efficiencyRatio}`}>
-                  <td><div style={{display:'flex',alignItems:'center',gap:10}}><BankLogo name={r.bankName} size={28}/><span style={{fontWeight:500}}>{r.bankName}</span></div></td>
-                  <td style={{textAlign:'center'}}>{r.assetSize}</td>
-                  <td style={{textAlign:'center'}}>{r.revenue}</td>
-                  <td style={{textAlign:'center'}}>{r.efficiencyRatio}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {competitiveRows.length > 0 ? (
+            <table className="asi-table overview-comp-table">
+              <thead><tr>
+                <th style={{ fontSize: '12px', textTransform: 'none', letterSpacing: 'normal' }}>Bank</th>
+                <th style={{ textAlign: 'center', fontSize: '12px', textTransform: 'none', letterSpacing: 'normal' }}>Asset Size</th>
+                <th style={{ textAlign: 'center', fontSize: '12px', textTransform: 'none', letterSpacing: 'normal' }}>Revenue</th>
+                <th style={{ textAlign: 'center', fontSize: '12px', textTransform: 'none', letterSpacing: 'normal' }}>Efficiency Ratio</th>
+              </tr></thead>
+              <tbody>
+                {competitiveRows.map((r)=>(
+                  <tr key={`${r.bankName}-${r.assetSize}-${r.revenue}-${r.efficiencyRatio}`}>
+                    <td><div style={{display:'flex',alignItems:'center',gap:10}}><BankLogo name={r.bankName} size={28}/><span style={{fontWeight:500}}>{r.bankName}</span></div></td>
+                    <td style={{textAlign:'center'}}>{r.assetSize}</td>
+                    <td style={{textAlign:'center'}}>{r.revenue}</td>
+                    <td style={{textAlign:'center'}}>{r.efficiencyRatio}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="asi-overview-pending asi-overview-pending--inset">—</p>
+          )}
         </div>
       </div>
-      )}
 
       {/* Business Segments */}
-      {hasSegments && (
       <div className="asi-info-grid">
         {[
           { title:'Retail Bank',       icon: shoppingCartIcon,   color:'blue',  bg:'#eff6ff',
-            text: retailBankText },
+            text: hasSegments ? retailBankText : '—' },
           { title:'Commercial Bank',   icon: commercialBankIcon, color:'green', bg:'#f0fdf4',
-            text: commercialBankText },
+            text: hasSegments ? commercialBankText : '—' },
           { title:'Wealth Bank',       icon: walletIcon,         color:'purple',bg:'#f5f3ff',
-            text: wealthBankText },
+            text: hasSegments ? wealthBankText : '—' },
         ].map(c=>(
           <div key={c.title} className={`asi-info-card asi-info-card--${c.color}`}>
             <div className="asi-info-card__head">
@@ -863,7 +839,6 @@ function OverviewTab({ acct }) {
           </div>
         ))}
       </div>
-      )}
     </div>
   );
 }
